@@ -49,6 +49,8 @@ light_night_bathroom: "switch.luce_bagno_notte_2"
 light_path: "switch.shelly_pro2"
 light_small_bedroom: "switch.luce_camera_piccola_2"
 light_study: "switch.luce_studio_2"
+light_gate_power: "sensor.shelly_pro2_power_2"
+light_path_power: "sensor.shelly_pro2_power"
 
 # ------------------------------------------------------------
 # HEATING - LIVING ROOM
@@ -149,11 +151,3 @@ robot_loop_counter: "sensor.mower_loop"
 robot_parked: "sensor.mower_parked"
 robot_running: "sensor.mower_running"
 robot_tracking: "sensor.mower_tracking"
-
-# ------------------------------------------------------------
-# OTHER / ADVANCED
-# ------------------------------------------------------------
-Robot_jpg: "Robot.jpg"
-capture_card_png: "capture_card.png"
-sensor_shelly_pro2_power: "sensor.shelly_pro2_power"
-sensor_shelly_pro2_power_2: "sensor.shelly_pro2_power_2"
