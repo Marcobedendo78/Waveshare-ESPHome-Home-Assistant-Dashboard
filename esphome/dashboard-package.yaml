@@ -557,7 +557,7 @@ image:
 
   # Copiare capture_card.png nella cartella /config/esphome/
   - platform: file
-    file: "${capture_card_png}"
+    file: "${ev_image_file}"
     id: capture_photo
     type: RGB565
     resize: 455x303
@@ -565,7 +565,7 @@ image:
   # Foto reale usata nella card Home Assistant.
   # Copiare Robot.jpg nella cartella /config/esphome/
   - platform: file
-    file: "${Robot_jpg}"
+    file: "${robot_image_file}"
     id: robot_photo
     type: RGB565
     # Foto a tutta superficie del riquadro robot.
@@ -2333,7 +2333,7 @@ sensor:
   # Consumo luci esterne mostrato direttamente nei pulsanti
   - platform: homeassistant
     id: light_vialetto_power
-    entity_id: ${sensor_shelly_pro2_power}
+    entity_id: ${light_path_power}
     internal: true
     on_value:
       - lvgl.label.update:
@@ -2345,7 +2345,7 @@ sensor:
 
   - platform: homeassistant
     id: light_cancello_power
-    entity_id: ${sensor_shelly_pro2_power_2}
+    entity_id: ${light_gate_power}
     internal: true
     on_value:
       - lvgl.label.update:
