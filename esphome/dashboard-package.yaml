@@ -4080,7 +4080,7 @@ script:
       - homeassistant.action:
           action: mqtt.publish
           data:
-            topic: "home/robot/mower/control"
+            topic: "${robot_mqtt_control_topic}"
             payload: "start"
             qos: "0"
             retain: "false"
@@ -4090,7 +4090,7 @@ script:
       - homeassistant.action:
           action: mqtt.publish
           data:
-            topic: "home/robot/mower/control"
+            topic: "${robot_mqtt_control_topic}"
             payload: "pause"
             qos: "0"
             retain: "false"
@@ -4100,7 +4100,7 @@ script:
       - homeassistant.action:
           action: mqtt.publish
           data:
-            topic: "home/robot/mower/control"
+            topic: "${robot_mqtt_control_topic}"
             payload: "Exit Dock"
             qos: "0"
             retain: "false"
@@ -4110,7 +4110,7 @@ script:
       - homeassistant.action:
           action: mqtt.publish
           data:
-            topic: "home/robot/mower/control"
+            topic: "${robot_mqtt_control_topic}"
             payload: "dock"
             qos: "0"
             retain: "false"
@@ -4120,7 +4120,7 @@ script:
       - homeassistant.action:
           action: mqtt.publish
           data:
-            topic: "home/robot/mower/control"
+            topic: "${robot_mqtt_control_topic}"
             payload: "manuale"
             qos: "0"
             retain: "false"
@@ -4130,7 +4130,7 @@ script:
       - homeassistant.action:
           action: mqtt.publish
           data:
-            topic: "home/robot/mower/control"
+            topic: "${robot_mqtt_control_topic}"
             payload: "automatico"
             qos: "0"
             retain: "false"
@@ -4180,7 +4180,7 @@ script:
       - homeassistant.action:
           action: mqtt.publish
           data:
-            topic: "home/robot/mower/control/timers"
+            topic: "${robot_mqtt_timers_topic}"
             qos: "0"
             retain: "false"
           data_template:
@@ -12390,7 +12390,7 @@ interval:
                   - homeassistant.action:
                       action: mqtt.publish
                       data:
-                        topic: "home/robot/mower/control/joystick"
+                        topic: "${robot_mqtt_joystick_topic}"
                         qos: "0"
                         retain: "false"
                       data_template:
