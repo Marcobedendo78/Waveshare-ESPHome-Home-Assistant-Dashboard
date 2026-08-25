@@ -2,10 +2,19 @@
 # WAVESHARE ESP32-S3 TOUCH LCD 7B
 # Local ESPHome configuration example for v1.1.0
 #
-# 1) Copy this file as waveshare-display.yaml
-# 2) Copy user_config.example.yaml as user_config.yaml
-# 3) Edit user_config.yaml with your Home Assistant entities
-# 4) Add the required secrets to secrets.yaml
+# QUICK SETUP
+# 1) Copy this file as: waveshare-display.yaml
+# 2) Copy user_config.example.yaml as: user_config.yaml
+# 3) Keep these files in the SAME ESPHome directory:
+#      - sd_storage.h
+#      - Robot.jpg
+#      - capture_card.png
+# 4) Copy the required values from secrets.example.yaml into
+#    your normal ESPHome secrets.yaml file.
+# 5) Edit ONLY the values in user_config.yaml to match your
+#    Home Assistant entities and robot MQTT topics.
+#
+# dashboard-package.yaml is loaded remotely from GitHub.
 # ============================================================
 
 substitutions: !include user_config.yaml
@@ -22,6 +31,7 @@ esphome:
   name: ${device_name}
   friendly_name: ${friendly_name}
 
+  # Local file: must be in the same ESPHome configuration directory.
   includes:
     - sd_storage.h
 
