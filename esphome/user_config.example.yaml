@@ -151,3 +151,8 @@ robot_loop_counter: "sensor.mower_loop"
 robot_parked: "sensor.mower_parked"
 robot_running: "sensor.mower_running"
 robot_tracking: "sensor.mower_tracking"
+
+# MQTT topics used by the robot controls
+robot_mqtt_control_topic: "home/robot/mower/control"
+robot_mqtt_timers_topic: "home/robot/mower/control/timers"
+robot_mqtt_joystick_topic: "home/robot/mower/control/joystick"
