@@ -1,0 +1,432 @@
+# ============================================================
+# HOME ASSISTANT - DATI METEO PER DISPLAY ESP32
+#
+# Crea:
+#   - 7 giorni di previsione da weather.marco_e_licia_home
+#   - 31 valori giornalieri precipitazione per il grafico
+#
+# Le previsioni vengono aggiornate:
+#   - all'avvio di Home Assistant
+#   - ogni 30 minuti
+#
+# Il grafico precipitazioni usa il valore MAX giornaliero di:
+#   sensor.sensore_pioggia_aqara_2
+#
+# Questo replica la logica della mini-graph-card indicata:
+#   aggregate_func: max
+#   group_by: date
+# ============================================================
+
+template:
+  - trigger:
+      - platform: homeassistant
+        event: start
+      - platform: time_pattern
+        minutes: "/30"
+
+    action:
+      - action: weather.get_forecasts
+        target:
+          entity_id: weather.marco_e_licia_home
+        data:
+          type: daily
+        response_variable: daily_weather
+
+      - action: recorder.get_statistics
+        data:
+          statistic_ids:
+            - sensor.sensore_pioggia_aqara_2
+          start_time: "{{ (now() - timedelta(days=30)).replace(hour=0, minute=0, second=0, microsecond=0).isoformat() }}"
+          end_time: "{{ now().isoformat() }}"
+          period: day
+          types:
+            - max
+        response_variable: rain_stats
+
+    sensor:
+      - name: "Display Meteo Aggiornamento"
+        unique_id: display_meteo_aggiornamento
+        state: "{{ now().isoformat() }}"
+
+      - name: "Display Pioggia Max"
+        unique_id: display_pioggia_max
+        unit_of_measurement: "mm"
+        state: >-
+          {% set rows = rain_stats.get('statistics', {}).get('sensor.sensore_pioggia_aqara_2', []) %}
+          {% set ns = namespace(v=0) %}
+          {% for r in rows %}
+            {% set x = r.max | default(0) | float(0) %}
+            {% if x > ns.v %}{% set ns.v = x %}{% endif %}
+          {% endfor %}
+          {{ ns.v | round(2) }}
+
+      - name: "Display Meteo Giorno 0"
+        unique_id: display_meteo_giorno_0
+        state: >-
+          {% set f = daily_weather.get('weather.marco_e_licia_home', {}).get('forecast', []) %}
+          {{ f[0].condition if (f | count) > 0 else 'unknown' }}
+        attributes:
+          datetime: >-
+            {% set f = daily_weather.get('weather.marco_e_licia_home', {}).get('forecast', []) %}
+            {{ f[0].datetime if (f | count) > 0 else '' }}
+          temp_high: >-
+            {% set f = daily_weather.get('weather.marco_e_licia_home', {}).get('forecast', []) %}
+            {{ f[0].temperature | float(0) if (f | count) > 0 else 0 }}
+          temp_low: >-
+            {% set f = daily_weather.get('weather.marco_e_licia_home', {}).get('forecast', []) %}
+            {{ f[0].templow | default(f[0].temperature) | float(0) if (f | count) > 0 else 0 }}
+          precipitation: >-
+            {% set f = daily_weather.get('weather.marco_e_licia_home', {}).get('forecast', []) %}
+            {{ f[0].precipitation | default(0) | float(0) if (f | count) > 0 else 0 }}
+          precipitation_probability: >-
+            {% set f = daily_weather.get('weather.marco_e_licia_home', {}).get('forecast', []) %}
+            {{ f[0].precipitation_probability | default(0) | float(0) if (f | count) > 0 else 0 }}
+
+      - name: "Display Meteo Giorno 1"
+        unique_id: display_meteo_giorno_1
+        state: >-
+          {% set f = daily_weather.get('weather.marco_e_licia_home', {}).get('forecast', []) %}
+          {{ f[1].condition if (f | count) > 1 else 'unknown' }}
+        attributes:
+          datetime: >-
+            {% set f = daily_weather.get('weather.marco_e_licia_home', {}).get('forecast', []) %}
+            {{ f[1].datetime if (f | count) > 1 else '' }}
+          temp_high: >-
+            {% set f = daily_weather.get('weather.marco_e_licia_home', {}).get('forecast', []) %}
+            {{ f[1].temperature | float(0) if (f | count) > 1 else 0 }}
+          temp_low: >-
+            {% set f = daily_weather.get('weather.marco_e_licia_home', {}).get('forecast', []) %}
+            {{ f[1].templow | default(f[1].temperature) | float(0) if (f | count) > 1 else 0 }}
+          precipitation: >-
+            {% set f = daily_weather.get('weather.marco_e_licia_home', {}).get('forecast', []) %}
+            {{ f[1].precipitation | default(0) | float(0) if (f | count) > 1 else 0 }}
+          precipitation_probability: >-
+            {% set f = daily_weather.get('weather.marco_e_licia_home', {}).get('forecast', []) %}
+            {{ f[1].precipitation_probability | default(0) | float(0) if (f | count) > 1 else 0 }}
+
+      - name: "Display Meteo Giorno 2"
+        unique_id: display_meteo_giorno_2
+        state: >-
+          {% set f = daily_weather.get('weather.marco_e_licia_home', {}).get('forecast', []) %}
+          {{ f[2].condition if (f | count) > 2 else 'unknown' }}
+        attributes:
+          datetime: >-
+            {% set f = daily_weather.get('weather.marco_e_licia_home', {}).get('forecast', []) %}
+            {{ f[2].datetime if (f | count) > 2 else '' }}
+          temp_high: >-
+            {% set f = daily_weather.get('weather.marco_e_licia_home', {}).get('forecast', []) %}
+            {{ f[2].temperature | float(0) if (f | count) > 2 else 0 }}
+          temp_low: >-
+            {% set f = daily_weather.get('weather.marco_e_licia_home', {}).get('forecast', []) %}
+            {{ f[2].templow | default(f[2].temperature) | float(0) if (f | count) > 2 else 0 }}
+          precipitation: >-
+            {% set f = daily_weather.get('weather.marco_e_licia_home', {}).get('forecast', []) %}
+            {{ f[2].precipitation | default(0) | float(0) if (f | count) > 2 else 0 }}
+          precipitation_probability: >-
+            {% set f = daily_weather.get('weather.marco_e_licia_home', {}).get('forecast', []) %}
+            {{ f[2].precipitation_probability | default(0) | float(0) if (f | count) > 2 else 0 }}
+
+      - name: "Display Meteo Giorno 3"
+        unique_id: display_meteo_giorno_3
+        state: >-
+          {% set f = daily_weather.get('weather.marco_e_licia_home', {}).get('forecast', []) %}
+          {{ f[3].condition if (f | count) > 3 else 'unknown' }}
+        attributes:
+          datetime: >-
+            {% set f = daily_weather.get('weather.marco_e_licia_home', {}).get('forecast', []) %}
+            {{ f[3].datetime if (f | count) > 3 else '' }}
+          temp_high: >-
+            {% set f = daily_weather.get('weather.marco_e_licia_home', {}).get('forecast', []) %}
+            {{ f[3].temperature | float(0) if (f | count) > 3 else 0 }}
+          temp_low: >-
+            {% set f = daily_weather.get('weather.marco_e_licia_home', {}).get('forecast', []) %}
+            {{ f[3].templow | default(f[3].temperature) | float(0) if (f | count) > 3 else 0 }}
+          precipitation: >-
+            {% set f = daily_weather.get('weather.marco_e_licia_home', {}).get('forecast', []) %}
+            {{ f[3].precipitation | default(0) | float(0) if (f | count) > 3 else 0 }}
+          precipitation_probability: >-
+            {% set f = daily_weather.get('weather.marco_e_licia_home', {}).get('forecast', []) %}
+            {{ f[3].precipitation_probability | default(0) | float(0) if (f | count) > 3 else 0 }}
+
+      - name: "Display Meteo Giorno 4"
+        unique_id: display_meteo_giorno_4
+        state: >-
+          {% set f = daily_weather.get('weather.marco_e_licia_home', {}).get('forecast', []) %}
+          {{ f[4].condition if (f | count) > 4 else 'unknown' }}
+        attributes:
+          datetime: >-
+            {% set f = daily_weather.get('weather.marco_e_licia_home', {}).get('forecast', []) %}
+            {{ f[4].datetime if (f | count) > 4 else '' }}
+          temp_high: >-
+            {% set f = daily_weather.get('weather.marco_e_licia_home', {}).get('forecast', []) %}
+            {{ f[4].temperature | float(0) if (f | count) > 4 else 0 }}
+          temp_low: >-
+            {% set f = daily_weather.get('weather.marco_e_licia_home', {}).get('forecast', []) %}
+            {{ f[4].templow | default(f[4].temperature) | float(0) if (f | count) > 4 else 0 }}
+          precipitation: >-
+            {% set f = daily_weather.get('weather.marco_e_licia_home', {}).get('forecast', []) %}
+            {{ f[4].precipitation | default(0) | float(0) if (f | count) > 4 else 0 }}
+          precipitation_probability: >-
+            {% set f = daily_weather.get('weather.marco_e_licia_home', {}).get('forecast', []) %}
+            {{ f[4].precipitation_probability | default(0) | float(0) if (f | count) > 4 else 0 }}
+
+      - name: "Display Meteo Giorno 5"
+        unique_id: display_meteo_giorno_5
+        state: >-
+          {% set f = daily_weather.get('weather.marco_e_licia_home', {}).get('forecast', []) %}
+          {{ f[5].condition if (f | count) > 5 else 'unknown' }}
+        attributes:
+          datetime: >-
+            {% set f = daily_weather.get('weather.marco_e_licia_home', {}).get('forecast', []) %}
+            {{ f[5].datetime if (f | count) > 5 else '' }}
+          temp_high: >-
+            {% set f = daily_weather.get('weather.marco_e_licia_home', {}).get('forecast', []) %}
+            {{ f[5].temperature | float(0) if (f | count) > 5 else 0 }}
+          temp_low: >-
+            {% set f = daily_weather.get('weather.marco_e_licia_home', {}).get('forecast', []) %}
+            {{ f[5].templow | default(f[5].temperature) | float(0) if (f | count) > 5 else 0 }}
+          precipitation: >-
+            {% set f = daily_weather.get('weather.marco_e_licia_home', {}).get('forecast', []) %}
+            {{ f[5].precipitation | default(0) | float(0) if (f | count) > 5 else 0 }}
+          precipitation_probability: >-
+            {% set f = daily_weather.get('weather.marco_e_licia_home', {}).get('forecast', []) %}
+            {{ f[5].precipitation_probability | default(0) | float(0) if (f | count) > 5 else 0 }}
+
+      - name: "Display Meteo Giorno 6"
+        unique_id: display_meteo_giorno_6
+        state: >-
+          {% set f = daily_weather.get('weather.marco_e_licia_home', {}).get('forecast', []) %}
+          {{ f[6].condition if (f | count) > 6 else 'unknown' }}
+        attributes:
+          datetime: >-
+            {% set f = daily_weather.get('weather.marco_e_licia_home', {}).get('forecast', []) %}
+            {{ f[6].datetime if (f | count) > 6 else '' }}
+          temp_high: >-
+            {% set f = daily_weather.get('weather.marco_e_licia_home', {}).get('forecast', []) %}
+            {{ f[6].temperature | float(0) if (f | count) > 6 else 0 }}
+          temp_low: >-
+            {% set f = daily_weather.get('weather.marco_e_licia_home', {}).get('forecast', []) %}
+            {{ f[6].templow | default(f[6].temperature) | float(0) if (f | count) > 6 else 0 }}
+          precipitation: >-
+            {% set f = daily_weather.get('weather.marco_e_licia_home', {}).get('forecast', []) %}
+            {{ f[6].precipitation | default(0) | float(0) if (f | count) > 6 else 0 }}
+          precipitation_probability: >-
+            {% set f = daily_weather.get('weather.marco_e_licia_home', {}).get('forecast', []) %}
+            {{ f[6].precipitation_probability | default(0) | float(0) if (f | count) > 6 else 0 }}
+
+      - name: "Display Pioggia Giorno 0"
+        unique_id: display_pioggia_giorno_0
+        unit_of_measurement: "mm"
+        state: >-
+          {% set rows = rain_stats.get('statistics', {}).get('sensor.sensore_pioggia_aqara_2', []) %}
+          {{ (rows[0].max | default(0) | float(0)) if (rows | count) > 0 else 0 }}
+
+      - name: "Display Pioggia Giorno 1"
+        unique_id: display_pioggia_giorno_1
+        unit_of_measurement: "mm"
+        state: >-
+          {% set rows = rain_stats.get('statistics', {}).get('sensor.sensore_pioggia_aqara_2', []) %}
+          {{ (rows[1].max | default(0) | float(0)) if (rows | count) > 1 else 0 }}
+
+      - name: "Display Pioggia Giorno 2"
+        unique_id: display_pioggia_giorno_2
+        unit_of_measurement: "mm"
+        state: >-
+          {% set rows = rain_stats.get('statistics', {}).get('sensor.sensore_pioggia_aqara_2', []) %}
+          {{ (rows[2].max | default(0) | float(0)) if (rows | count) > 2 else 0 }}
+
+      - name: "Display Pioggia Giorno 3"
+        unique_id: display_pioggia_giorno_3
+        unit_of_measurement: "mm"
+        state: >-
+          {% set rows = rain_stats.get('statistics', {}).get('sensor.sensore_pioggia_aqara_2', []) %}
+          {{ (rows[3].max | default(0) | float(0)) if (rows | count) > 3 else 0 }}
+
+      - name: "Display Pioggia Giorno 4"
+        unique_id: display_pioggia_giorno_4
+        unit_of_measurement: "mm"
+        state: >-
+          {% set rows = rain_stats.get('statistics', {}).get('sensor.sensore_pioggia_aqara_2', []) %}
+          {{ (rows[4].max | default(0) | float(0)) if (rows | count) > 4 else 0 }}
+
+      - name: "Display Pioggia Giorno 5"
+        unique_id: display_pioggia_giorno_5
+        unit_of_measurement: "mm"
+        state: >-
+          {% set rows = rain_stats.get('statistics', {}).get('sensor.sensore_pioggia_aqara_2', []) %}
+          {{ (rows[5].max | default(0) | float(0)) if (rows | count) > 5 else 0 }}
+
+      - name: "Display Pioggia Giorno 6"
+        unique_id: display_pioggia_giorno_6
+        unit_of_measurement: "mm"
+        state: >-
+          {% set rows = rain_stats.get('statistics', {}).get('sensor.sensore_pioggia_aqara_2', []) %}
+          {{ (rows[6].max | default(0) | float(0)) if (rows | count) > 6 else 0 }}
+
+      - name: "Display Pioggia Giorno 7"
+        unique_id: display_pioggia_giorno_7
+        unit_of_measurement: "mm"
+        state: >-
+          {% set rows = rain_stats.get('statistics', {}).get('sensor.sensore_pioggia_aqara_2', []) %}
+          {{ (rows[7].max | default(0) | float(0)) if (rows | count) > 7 else 0 }}
+
+      - name: "Display Pioggia Giorno 8"
+        unique_id: display_pioggia_giorno_8
+        unit_of_measurement: "mm"
+        state: >-
+          {% set rows = rain_stats.get('statistics', {}).get('sensor.sensore_pioggia_aqara_2', []) %}
+          {{ (rows[8].max | default(0) | float(0)) if (rows | count) > 8 else 0 }}
+
+      - name: "Display Pioggia Giorno 9"
+        unique_id: display_pioggia_giorno_9
+        unit_of_measurement: "mm"
+        state: >-
+          {% set rows = rain_stats.get('statistics', {}).get('sensor.sensore_pioggia_aqara_2', []) %}
+          {{ (rows[9].max | default(0) | float(0)) if (rows | count) > 9 else 0 }}
+
+      - name: "Display Pioggia Giorno 10"
+        unique_id: display_pioggia_giorno_10
+        unit_of_measurement: "mm"
+        state: >-
+          {% set rows = rain_stats.get('statistics', {}).get('sensor.sensore_pioggia_aqara_2', []) %}
+          {{ (rows[10].max | default(0) | float(0)) if (rows | count) > 10 else 0 }}
+
+      - name: "Display Pioggia Giorno 11"
+        unique_id: display_pioggia_giorno_11
+        unit_of_measurement: "mm"
+        state: >-
+          {% set rows = rain_stats.get('statistics', {}).get('sensor.sensore_pioggia_aqara_2', []) %}
+          {{ (rows[11].max | default(0) | float(0)) if (rows | count) > 11 else 0 }}
+
+      - name: "Display Pioggia Giorno 12"
+        unique_id: display_pioggia_giorno_12
+        unit_of_measurement: "mm"
+        state: >-
+          {% set rows = rain_stats.get('statistics', {}).get('sensor.sensore_pioggia_aqara_2', []) %}
+          {{ (rows[12].max | default(0) | float(0)) if (rows | count) > 12 else 0 }}
+
+      - name: "Display Pioggia Giorno 13"
+        unique_id: display_pioggia_giorno_13
+        unit_of_measurement: "mm"
+        state: >-
+          {% set rows = rain_stats.get('statistics', {}).get('sensor.sensore_pioggia_aqara_2', []) %}
+          {{ (rows[13].max | default(0) | float(0)) if (rows | count) > 13 else 0 }}
+
+      - name: "Display Pioggia Giorno 14"
+        unique_id: display_pioggia_giorno_14
+        unit_of_measurement: "mm"
+        state: >-
+          {% set rows = rain_stats.get('statistics', {}).get('sensor.sensore_pioggia_aqara_2', []) %}
+          {{ (rows[14].max | default(0) | float(0)) if (rows | count) > 14 else 0 }}
+
+      - name: "Display Pioggia Giorno 15"
+        unique_id: display_pioggia_giorno_15
+        unit_of_measurement: "mm"
+        state: >-
+          {% set rows = rain_stats.get('statistics', {}).get('sensor.sensore_pioggia_aqara_2', []) %}
+          {{ (rows[15].max | default(0) | float(0)) if (rows | count) > 15 else 0 }}
+
+      - name: "Display Pioggia Giorno 16"
+        unique_id: display_pioggia_giorno_16
+        unit_of_measurement: "mm"
+        state: >-
+          {% set rows = rain_stats.get('statistics', {}).get('sensor.sensore_pioggia_aqara_2', []) %}
+          {{ (rows[16].max | default(0) | float(0)) if (rows | count) > 16 else 0 }}
+
+      - name: "Display Pioggia Giorno 17"
+        unique_id: display_pioggia_giorno_17
+        unit_of_measurement: "mm"
+        state: >-
+          {% set rows = rain_stats.get('statistics', {}).get('sensor.sensore_pioggia_aqara_2', []) %}
+          {{ (rows[17].max | default(0) | float(0)) if (rows | count) > 17 else 0 }}
+
+      - name: "Display Pioggia Giorno 18"
+        unique_id: display_pioggia_giorno_18
+        unit_of_measurement: "mm"
+        state: >-
+          {% set rows = rain_stats.get('statistics', {}).get('sensor.sensore_pioggia_aqara_2', []) %}
+          {{ (rows[18].max | default(0) | float(0)) if (rows | count) > 18 else 0 }}
+
+      - name: "Display Pioggia Giorno 19"
+        unique_id: display_pioggia_giorno_19
+        unit_of_measurement: "mm"
+        state: >-
+          {% set rows = rain_stats.get('statistics', {}).get('sensor.sensore_pioggia_aqara_2', []) %}
+          {{ (rows[19].max | default(0) | float(0)) if (rows | count) > 19 else 0 }}
+
+      - name: "Display Pioggia Giorno 20"
+        unique_id: display_pioggia_giorno_20
+        unit_of_measurement: "mm"
+        state: >-
+          {% set rows = rain_stats.get('statistics', {}).get('sensor.sensore_pioggia_aqara_2', []) %}
+          {{ (rows[20].max | default(0) | float(0)) if (rows | count) > 20 else 0 }}
+
+      - name: "Display Pioggia Giorno 21"
+        unique_id: display_pioggia_giorno_21
+        unit_of_measurement: "mm"
+        state: >-
+          {% set rows = rain_stats.get('statistics', {}).get('sensor.sensore_pioggia_aqara_2', []) %}
+          {{ (rows[21].max | default(0) | float(0)) if (rows | count) > 21 else 0 }}
+
+      - name: "Display Pioggia Giorno 22"
+        unique_id: display_pioggia_giorno_22
+        unit_of_measurement: "mm"
+        state: >-
+          {% set rows = rain_stats.get('statistics', {}).get('sensor.sensore_pioggia_aqara_2', []) %}
+          {{ (rows[22].max | default(0) | float(0)) if (rows | count) > 22 else 0 }}
+
+      - name: "Display Pioggia Giorno 23"
+        unique_id: display_pioggia_giorno_23
+        unit_of_measurement: "mm"
+        state: >-
+          {% set rows = rain_stats.get('statistics', {}).get('sensor.sensore_pioggia_aqara_2', []) %}
+          {{ (rows[23].max | default(0) | float(0)) if (rows | count) > 23 else 0 }}
+
+      - name: "Display Pioggia Giorno 24"
+        unique_id: display_pioggia_giorno_24
+        unit_of_measurement: "mm"
+        state: >-
+          {% set rows = rain_stats.get('statistics', {}).get('sensor.sensore_pioggia_aqara_2', []) %}
+          {{ (rows[24].max | default(0) | float(0)) if (rows | count) > 24 else 0 }}
+
+      - name: "Display Pioggia Giorno 25"
+        unique_id: display_pioggia_giorno_25
+        unit_of_measurement: "mm"
+        state: >-
+          {% set rows = rain_stats.get('statistics', {}).get('sensor.sensore_pioggia_aqara_2', []) %}
+          {{ (rows[25].max | default(0) | float(0)) if (rows | count) > 25 else 0 }}
+
+      - name: "Display Pioggia Giorno 26"
+        unique_id: display_pioggia_giorno_26
+        unit_of_measurement: "mm"
+        state: >-
+          {% set rows = rain_stats.get('statistics', {}).get('sensor.sensore_pioggia_aqara_2', []) %}
+          {{ (rows[26].max | default(0) | float(0)) if (rows | count) > 26 else 0 }}
+
+      - name: "Display Pioggia Giorno 27"
+        unique_id: display_pioggia_giorno_27
+        unit_of_measurement: "mm"
+        state: >-
+          {% set rows = rain_stats.get('statistics', {}).get('sensor.sensore_pioggia_aqara_2', []) %}
+          {{ (rows[27].max | default(0) | float(0)) if (rows | count) > 27 else 0 }}
+
+      - name: "Display Pioggia Giorno 28"
+        unique_id: display_pioggia_giorno_28
+        unit_of_measurement: "mm"
+        state: >-
+          {% set rows = rain_stats.get('statistics', {}).get('sensor.sensore_pioggia_aqara_2', []) %}
+          {{ (rows[28].max | default(0) | float(0)) if (rows | count) > 28 else 0 }}
+
+      - name: "Display Pioggia Giorno 29"
+        unique_id: display_pioggia_giorno_29
+        unit_of_measurement: "mm"
+        state: >-
+          {% set rows = rain_stats.get('statistics', {}).get('sensor.sensore_pioggia_aqara_2', []) %}
+          {{ (rows[29].max | default(0) | float(0)) if (rows | count) > 29 else 0 }}
+
+      - name: "Display Pioggia Giorno 30"
+        unique_id: display_pioggia_giorno_30
+        unit_of_measurement: "mm"
+        state: >-
+          {% set rows = rain_stats.get('statistics', {}).get('sensor.sensore_pioggia_aqara_2', []) %}
+          {{ (rows[30].max | default(0) | float(0)) if (rows | count) > 30 else 0 }}

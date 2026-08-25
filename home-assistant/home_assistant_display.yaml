@@ -1,0 +1,465 @@
+# ============================================================
+# HOME ASSISTANT - DATI ENERGIA PER DISPLAY ESP32
+# Settimana corrente: LUNEDI -> DOMENICA
+# ============================================================
+#
+# SORGENTI ENERGIA CASA
+#
+#   Rete prelevata   : sensor.power_meter_consumo
+#   Rete esportata   : sensor.power_meter_esportata
+#   FV prodotto      : sensor.inverter_rendimento_totale
+#   Batteria carica  : sensor.battery_carica_giornaliera
+#   Batteria scarica : sensor.battery_scarica_giornaliera
+#
+# ------------------------------------------------------------
+# CONSUMO CASA
+# ------------------------------------------------------------
+#
+# Il consumo giornaliero della casa viene calcolato come:
+#
+#   FV prodotto
+#   + rete prelevata
+#   + batteria scaricata
+#   - rete esportata
+#   - batteria caricata
+#
+# I risultati vengono suddivisi da lunedi a domenica e inviati
+# al display ESP32 per il grafico settimanale dei consumi.
+#
+# ============================================================
+# WALLBOX
+# ============================================================
+#
+# Vengono utilizzati DUE sensori differenti:
+#
+#   Energia singola sessione:
+#     sensor.wallbox_energy_session_2
+#
+#   Contatore totale energia Wallbox:
+#     sensor.wallbox_energy_active_import_register_2
+#
+# ------------------------------------------------------------
+# GRAFICO "RICARICHE CAPTURE"
+# ------------------------------------------------------------
+#
+# Utilizza:
+#   sensor.wallbox_energy_session_2
+#
+# Questo sensore rappresenta i kWh della singola sessione
+# di ricarica.
+#
+# Il valore finale della sessione viene letto direttamente
+# dall'ESP32 e memorizzato al termine della ricarica.
+#
+# Ogni colonna del grafico rappresenta quindi UNA RICARICA
+# COMPLETA e non un giorno della settimana.
+#
+# Il grafico mantiene lo storico delle ultime 7 ricariche.
+#
+# ------------------------------------------------------------
+# GRAFICO "RICARICA SETTIMANALE"
+# ------------------------------------------------------------
+#
+# Utilizza:
+#   sensor.wallbox_energy_active_import_register_2
+#
+# Questo sensore rappresenta il contatore cumulativo totale
+# dell'energia erogata dalla Wallbox.
+#
+# Home Assistant utilizza le statistiche Recorder e la
+# variazione giornaliera ("change") del contatore per ricavare
+# i kWh effettivamente utilizzati dalla Wallbox ogni giorno.
+#
+# Vengono generati:
+#
+#   sensor.display_ev_lun
+#   sensor.display_ev_mar
+#   sensor.display_ev_mer
+#   sensor.display_ev_gio
+#   sensor.display_ev_ven
+#   sensor.display_ev_sab
+#   sensor.display_ev_dom
+#
+# Questi sensori alimentano il grafico settimanale sul display:
+#
+#   LUN - MAR - MER - GIO - VEN - SAB - DOM
+#
+# ============================================================
+# RECORDER / STATISTICHE
+# ============================================================
+#
+# recorder.get_statistics viene utilizzato per ricavare le
+# variazioni giornaliere delle sorgenti cumulative.
+#
+# Le statistiche energetiche utilizzate sono espresse in kWh.
+#
+# NOTA:
+# sensor.wallbox_energy_session_2 NON viene utilizzato dal
+# package per calcolare il consumo giornaliero della Wallbox.
+# Viene letto direttamente da ESPHome per costruire lo storico
+# delle singole sessioni di ricarica.
+#
+# sensor.wallbox_energy_active_import_register_2 viene invece
+# elaborato da Home Assistant per ottenere il consumo Wallbox
+# giornaliero e il relativo grafico settimanale.
+#
+# ============================================================
+
+template:
+  - trigger:
+      - platform: homeassistant
+        event: start
+
+      # Aggiorna anche il giorno corrente durante la giornata.
+      - platform: time_pattern
+        minutes: "/5"
+
+    action:
+      - action: recorder.get_statistics
+        data:
+          statistic_ids:
+            - sensor.inverter_rendimento_totale
+            - sensor.power_meter_consumo
+            - sensor.power_meter_esportata
+            - sensor.battery_carica_giornaliera
+            - sensor.battery_scarica_giornaliera
+            - sensor.wallbox_energy_active_import_register_2
+
+          # Inizio della settimana corrente, lunedì 00:00 locale.
+          start_time: >-
+            {{ (now().replace(hour=0, minute=0, second=0, microsecond=0)
+                - timedelta(days=now().weekday())).isoformat() }}
+
+          end_time: "{{ now().isoformat() }}"
+          period: day
+          types:
+            - change
+          units:
+            energy: kWh
+
+        response_variable: week_stats
+
+    sensor:
+      - name: "Display FV Lun"
+        unique_id: display_fv_lun
+        unit_of_measurement: "kWh"
+        device_class: energy
+        state_class: measurement
+        availability: >-
+          {{ week_stats is defined }}
+        state: >-
+          {% set rows = week_stats.get('statistics', {}).get('sensor.inverter_rendimento_totale', []) %}
+          {{ ((rows[0].change | float(0)) if (rows | count) > 0 else 0) | round(3) }}
+
+      - name: "Display Casa Lun"
+        unique_id: display_casa_lun
+        unit_of_measurement: "kWh"
+        device_class: energy
+        state_class: measurement
+        availability: >-
+          {{ week_stats is defined }}
+        state: >-
+          {% set stats = week_stats.get('statistics', {}) %}
+          {% set pv = stats.get('sensor.inverter_rendimento_totale', []) %}
+          {% set gi = stats.get('sensor.power_meter_consumo', []) %}
+          {% set ge = stats.get('sensor.power_meter_esportata', []) %}
+          {% set bc = stats.get('sensor.battery_carica_giornaliera', []) %}
+          {% set bd = stats.get('sensor.battery_scarica_giornaliera', []) %}
+
+          {% set v_pv = (pv[0].change | float(0)) if (pv | count) > 0 else 0 %}
+          {% set v_gi = (gi[0].change | float(0)) if (gi | count) > 0 else 0 %}
+          {% set v_ge = (ge[0].change | float(0)) if (ge | count) > 0 else 0 %}
+          {% set v_bc = (bc[0].change | float(0)) if (bc | count) > 0 else 0 %}
+          {% set v_bd = (bd[0].change | float(0)) if (bd | count) > 0 else 0 %}
+
+          {% set home = v_pv + v_gi + v_bd - v_ge - v_bc %}
+          {{ ([0, home] | max) | round(3) }}
+
+      - name: "Display FV Mar"
+        unique_id: display_fv_mar
+        unit_of_measurement: "kWh"
+        device_class: energy
+        state_class: measurement
+        availability: >-
+          {{ week_stats is defined }}
+        state: >-
+          {% set rows = week_stats.get('statistics', {}).get('sensor.inverter_rendimento_totale', []) %}
+          {{ ((rows[1].change | float(0)) if (rows | count) > 1 else 0) | round(3) }}
+
+      - name: "Display Casa Mar"
+        unique_id: display_casa_mar
+        unit_of_measurement: "kWh"
+        device_class: energy
+        state_class: measurement
+        availability: >-
+          {{ week_stats is defined }}
+        state: >-
+          {% set stats = week_stats.get('statistics', {}) %}
+          {% set pv = stats.get('sensor.inverter_rendimento_totale', []) %}
+          {% set gi = stats.get('sensor.power_meter_consumo', []) %}
+          {% set ge = stats.get('sensor.power_meter_esportata', []) %}
+          {% set bc = stats.get('sensor.battery_carica_giornaliera', []) %}
+          {% set bd = stats.get('sensor.battery_scarica_giornaliera', []) %}
+
+          {% set v_pv = (pv[1].change | float(0)) if (pv | count) > 1 else 0 %}
+          {% set v_gi = (gi[1].change | float(0)) if (gi | count) > 1 else 0 %}
+          {% set v_ge = (ge[1].change | float(0)) if (ge | count) > 1 else 0 %}
+          {% set v_bc = (bc[1].change | float(0)) if (bc | count) > 1 else 0 %}
+          {% set v_bd = (bd[1].change | float(0)) if (bd | count) > 1 else 0 %}
+
+          {% set home = v_pv + v_gi + v_bd - v_ge - v_bc %}
+          {{ ([0, home] | max) | round(3) }}
+
+      - name: "Display FV Mer"
+        unique_id: display_fv_mer
+        unit_of_measurement: "kWh"
+        device_class: energy
+        state_class: measurement
+        availability: >-
+          {{ week_stats is defined }}
+        state: >-
+          {% set rows = week_stats.get('statistics', {}).get('sensor.inverter_rendimento_totale', []) %}
+          {{ ((rows[2].change | float(0)) if (rows | count) > 2 else 0) | round(3) }}
+
+      - name: "Display Casa Mer"
+        unique_id: display_casa_mer
+        unit_of_measurement: "kWh"
+        device_class: energy
+        state_class: measurement
+        availability: >-
+          {{ week_stats is defined }}
+        state: >-
+          {% set stats = week_stats.get('statistics', {}) %}
+          {% set pv = stats.get('sensor.inverter_rendimento_totale', []) %}
+          {% set gi = stats.get('sensor.power_meter_consumo', []) %}
+          {% set ge = stats.get('sensor.power_meter_esportata', []) %}
+          {% set bc = stats.get('sensor.battery_carica_giornaliera', []) %}
+          {% set bd = stats.get('sensor.battery_scarica_giornaliera', []) %}
+
+          {% set v_pv = (pv[2].change | float(0)) if (pv | count) > 2 else 0 %}
+          {% set v_gi = (gi[2].change | float(0)) if (gi | count) > 2 else 0 %}
+          {% set v_ge = (ge[2].change | float(0)) if (ge | count) > 2 else 0 %}
+          {% set v_bc = (bc[2].change | float(0)) if (bc | count) > 2 else 0 %}
+          {% set v_bd = (bd[2].change | float(0)) if (bd | count) > 2 else 0 %}
+
+          {% set home = v_pv + v_gi + v_bd - v_ge - v_bc %}
+          {{ ([0, home] | max) | round(3) }}
+
+      - name: "Display FV Gio"
+        unique_id: display_fv_gio
+        unit_of_measurement: "kWh"
+        device_class: energy
+        state_class: measurement
+        availability: >-
+          {{ week_stats is defined }}
+        state: >-
+          {% set rows = week_stats.get('statistics', {}).get('sensor.inverter_rendimento_totale', []) %}
+          {{ ((rows[3].change | float(0)) if (rows | count) > 3 else 0) | round(3) }}
+
+      - name: "Display Casa Gio"
+        unique_id: display_casa_gio
+        unit_of_measurement: "kWh"
+        device_class: energy
+        state_class: measurement
+        availability: >-
+          {{ week_stats is defined }}
+        state: >-
+          {% set stats = week_stats.get('statistics', {}) %}
+          {% set pv = stats.get('sensor.inverter_rendimento_totale', []) %}
+          {% set gi = stats.get('sensor.power_meter_consumo', []) %}
+          {% set ge = stats.get('sensor.power_meter_esportata', []) %}
+          {% set bc = stats.get('sensor.battery_carica_giornaliera', []) %}
+          {% set bd = stats.get('sensor.battery_scarica_giornaliera', []) %}
+
+          {% set v_pv = (pv[3].change | float(0)) if (pv | count) > 3 else 0 %}
+          {% set v_gi = (gi[3].change | float(0)) if (gi | count) > 3 else 0 %}
+          {% set v_ge = (ge[3].change | float(0)) if (ge | count) > 3 else 0 %}
+          {% set v_bc = (bc[3].change | float(0)) if (bc | count) > 3 else 0 %}
+          {% set v_bd = (bd[3].change | float(0)) if (bd | count) > 3 else 0 %}
+
+          {% set home = v_pv + v_gi + v_bd - v_ge - v_bc %}
+          {{ ([0, home] | max) | round(3) }}
+
+      - name: "Display FV Ven"
+        unique_id: display_fv_ven
+        unit_of_measurement: "kWh"
+        device_class: energy
+        state_class: measurement
+        availability: >-
+          {{ week_stats is defined }}
+        state: >-
+          {% set rows = week_stats.get('statistics', {}).get('sensor.inverter_rendimento_totale', []) %}
+          {{ ((rows[4].change | float(0)) if (rows | count) > 4 else 0) | round(3) }}
+
+      - name: "Display Casa Ven"
+        unique_id: display_casa_ven
+        unit_of_measurement: "kWh"
+        device_class: energy
+        state_class: measurement
+        availability: >-
+          {{ week_stats is defined }}
+        state: >-
+          {% set stats = week_stats.get('statistics', {}) %}
+          {% set pv = stats.get('sensor.inverter_rendimento_totale', []) %}
+          {% set gi = stats.get('sensor.power_meter_consumo', []) %}
+          {% set ge = stats.get('sensor.power_meter_esportata', []) %}
+          {% set bc = stats.get('sensor.battery_carica_giornaliera', []) %}
+          {% set bd = stats.get('sensor.battery_scarica_giornaliera', []) %}
+
+          {% set v_pv = (pv[4].change | float(0)) if (pv | count) > 4 else 0 %}
+          {% set v_gi = (gi[4].change | float(0)) if (gi | count) > 4 else 0 %}
+          {% set v_ge = (ge[4].change | float(0)) if (ge | count) > 4 else 0 %}
+          {% set v_bc = (bc[4].change | float(0)) if (bc | count) > 4 else 0 %}
+          {% set v_bd = (bd[4].change | float(0)) if (bd | count) > 4 else 0 %}
+
+          {% set home = v_pv + v_gi + v_bd - v_ge - v_bc %}
+          {{ ([0, home] | max) | round(3) }}
+
+      - name: "Display FV Sab"
+        unique_id: display_fv_sab
+        unit_of_measurement: "kWh"
+        device_class: energy
+        state_class: measurement
+        availability: >-
+          {{ week_stats is defined }}
+        state: >-
+          {% set rows = week_stats.get('statistics', {}).get('sensor.inverter_rendimento_totale', []) %}
+          {{ ((rows[5].change | float(0)) if (rows | count) > 5 else 0) | round(3) }}
+
+      - name: "Display Casa Sab"
+        unique_id: display_casa_sab
+        unit_of_measurement: "kWh"
+        device_class: energy
+        state_class: measurement
+        availability: >-
+          {{ week_stats is defined }}
+        state: >-
+          {% set stats = week_stats.get('statistics', {}) %}
+          {% set pv = stats.get('sensor.inverter_rendimento_totale', []) %}
+          {% set gi = stats.get('sensor.power_meter_consumo', []) %}
+          {% set ge = stats.get('sensor.power_meter_esportata', []) %}
+          {% set bc = stats.get('sensor.battery_carica_giornaliera', []) %}
+          {% set bd = stats.get('sensor.battery_scarica_giornaliera', []) %}
+
+          {% set v_pv = (pv[5].change | float(0)) if (pv | count) > 5 else 0 %}
+          {% set v_gi = (gi[5].change | float(0)) if (gi | count) > 5 else 0 %}
+          {% set v_ge = (ge[5].change | float(0)) if (ge | count) > 5 else 0 %}
+          {% set v_bc = (bc[5].change | float(0)) if (bc | count) > 5 else 0 %}
+          {% set v_bd = (bd[5].change | float(0)) if (bd | count) > 5 else 0 %}
+
+          {% set home = v_pv + v_gi + v_bd - v_ge - v_bc %}
+          {{ ([0, home] | max) | round(3) }}
+
+      - name: "Display FV Dom"
+        unique_id: display_fv_dom
+        unit_of_measurement: "kWh"
+        device_class: energy
+        state_class: measurement
+        availability: >-
+          {{ week_stats is defined }}
+        state: >-
+          {% set rows = week_stats.get('statistics', {}).get('sensor.inverter_rendimento_totale', []) %}
+          {{ ((rows[6].change | float(0)) if (rows | count) > 6 else 0) | round(3) }}
+
+      - name: "Display Casa Dom"
+        unique_id: display_casa_dom
+        unit_of_measurement: "kWh"
+        device_class: energy
+        state_class: measurement
+        availability: >-
+          {{ week_stats is defined }}
+        state: >-
+          {% set stats = week_stats.get('statistics', {}) %}
+          {% set pv = stats.get('sensor.inverter_rendimento_totale', []) %}
+          {% set gi = stats.get('sensor.power_meter_consumo', []) %}
+          {% set ge = stats.get('sensor.power_meter_esportata', []) %}
+          {% set bc = stats.get('sensor.battery_carica_giornaliera', []) %}
+          {% set bd = stats.get('sensor.battery_scarica_giornaliera', []) %}
+
+          {% set v_pv = (pv[6].change | float(0)) if (pv | count) > 6 else 0 %}
+          {% set v_gi = (gi[6].change | float(0)) if (gi | count) > 6 else 0 %}
+          {% set v_ge = (ge[6].change | float(0)) if (ge | count) > 6 else 0 %}
+          {% set v_bc = (bc[6].change | float(0)) if (bc | count) > 6 else 0 %}
+          {% set v_bd = (bd[6].change | float(0)) if (bd | count) > 6 else 0 %}
+
+          {% set home = v_pv + v_gi + v_bd - v_ge - v_bc %}
+          {{ ([0, home] | max) | round(3) }}
+
+# ===== Wallbox: energia giornaliera Lunedì -> Domenica =====
+
+      - name: "Display EV Lun"
+        unique_id: display_ev_lun
+        unit_of_measurement: "kWh"
+        device_class: energy
+        state_class: measurement
+        availability: >-
+          {{ week_stats is defined }}
+        state: >-
+          {% set rows = week_stats.get('statistics', {}).get('sensor.wallbox_energy_active_import_register_2', []) %}
+          {{ ((rows[0].change | float(0)) if (rows | count) > 0 else 0) | round(3) }}
+
+      - name: "Display EV Mar"
+        unique_id: display_ev_mar
+        unit_of_measurement: "kWh"
+        device_class: energy
+        state_class: measurement
+        availability: >-
+          {{ week_stats is defined }}
+        state: >-
+          {% set rows = week_stats.get('statistics', {}).get('sensor.wallbox_energy_active_import_register_2', []) %}
+          {{ ((rows[1].change | float(0)) if (rows | count) > 1 else 0) | round(3) }}
+
+      - name: "Display EV Mer"
+        unique_id: display_ev_mer
+        unit_of_measurement: "kWh"
+        device_class: energy
+        state_class: measurement
+        availability: >-
+          {{ week_stats is defined }}
+        state: >-
+          {% set rows = week_stats.get('statistics', {}).get('sensor.wallbox_energy_active_import_register_2', []) %}
+          {{ ((rows[2].change | float(0)) if (rows | count) > 2 else 0) | round(3) }}
+
+      - name: "Display EV Gio"
+        unique_id: display_ev_gio
+        unit_of_measurement: "kWh"
+        device_class: energy
+        state_class: measurement
+        availability: >-
+          {{ week_stats is defined }}
+        state: >-
+          {% set rows = week_stats.get('statistics', {}).get('sensor.wallbox_energy_active_import_register_2', []) %}
+          {{ ((rows[3].change | float(0)) if (rows | count) > 3 else 0) | round(3) }}
+
+      - name: "Display EV Ven"
+        unique_id: display_ev_ven
+        unit_of_measurement: "kWh"
+        device_class: energy
+        state_class: measurement
+        availability: >-
+          {{ week_stats is defined }}
+        state: >-
+          {% set rows = week_stats.get('statistics', {}).get('sensor.wallbox_energy_active_import_register_2', []) %}
+          {{ ((rows[4].change | float(0)) if (rows | count) > 4 else 0) | round(3) }}
+
+      - name: "Display EV Sab"
+        unique_id: display_ev_sab
+        unit_of_measurement: "kWh"
+        device_class: energy
+        state_class: measurement
+        availability: >-
+          {{ week_stats is defined }}
+        state: >-
+          {% set rows = week_stats.get('statistics', {}).get('sensor.wallbox_energy_active_import_register_2', []) %}
+          {{ ((rows[5].change | float(0)) if (rows | count) > 5 else 0) | round(3) }}
+
+      - name: "Display EV Dom"
+        unique_id: display_ev_dom
+        unit_of_measurement: "kWh"
+        device_class: energy
+        state_class: measurement
+        availability: >-
+          {{ week_stats is defined }}
+        state: >-
+          {% set rows = week_stats.get('statistics', {}).get('sensor.wallbox_energy_active_import_register_2', []) %}
+          {{ ((rows[6].change | float(0)) if (rows | count) > 6 else 0) | round(3) }}
