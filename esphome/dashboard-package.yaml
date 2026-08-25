@@ -557,7 +557,7 @@ image:
 
   # Copiare capture_card.png nella cartella /config/esphome/
   - platform: file
-    file: "${ev_image_file}"
+    file: "${capture_card_png}"
     id: capture_photo
     type: RGB565
     resize: 455x303
@@ -565,7 +565,7 @@ image:
   # Foto reale usata nella card Home Assistant.
   # Copiare Robot.jpg nella cartella /config/esphome/
   - platform: file
-    file: "${robot_image_file}"
+    file: "${Robot_jpg}"
     id: robot_photo
     type: RGB565
     # Foto a tutta superficie del riquadro robot.
@@ -646,25 +646,25 @@ binary_sensor:
 
   - platform: homeassistant
     id: heat_salotto_power
-    entity_id: ${binary_sensor_salotto_potenza_entity}
+    entity_id: ${heating_living_enabled}
     internal: true
     trigger_on_initial_state: true
 
   - platform: homeassistant
     id: heat_salotto_link
-    entity_id: ${binary_sensor_salotto_connettivita_entity}
+    entity_id: ${heating_living_connectivity}
     internal: true
     trigger_on_initial_state: true
 
   - platform: homeassistant
     id: heat_salotto_window
-    entity_id: ${binary_sensor_salotto_finestra_entity}
+    entity_id: ${heating_living_window}
     internal: true
     trigger_on_initial_state: true
 
   - platform: homeassistant
     id: heat_salotto_overlay
-    entity_id: ${binary_sensor_salotto_sovrapponi_entity}
+    entity_id: ${heating_living_overlay}
     internal: true
     trigger_on_initial_state: true
     on_state:
@@ -717,25 +717,25 @@ binary_sensor:
 
   - platform: homeassistant
     id: heat_studio_power
-    entity_id: ${binary_sensor_studio_potenza_entity}
+    entity_id: ${heating_study_enabled}
     internal: true
     trigger_on_initial_state: true
 
   - platform: homeassistant
     id: heat_studio_link
-    entity_id: ${binary_sensor_studio_connettivita_entity}
+    entity_id: ${heating_study_connectivity}
     internal: true
     trigger_on_initial_state: true
 
   - platform: homeassistant
     id: heat_studio_window
-    entity_id: ${binary_sensor_studio_finestra_entity}
+    entity_id: ${heating_study_window}
     internal: true
     trigger_on_initial_state: true
 
   - platform: homeassistant
     id: heat_studio_overlay
-    entity_id: ${binary_sensor_studio_sovrapponi_entity}
+    entity_id: ${heating_study_overlay}
     internal: true
     trigger_on_initial_state: true
     on_state:
@@ -788,25 +788,25 @@ binary_sensor:
 
   - platform: homeassistant
     id: heat_camera_matrimoniale_power
-    entity_id: ${binary_sensor_camera_matrimoniale_potenza_entity}
+    entity_id: ${heating_main_bedroom_enabled}
     internal: true
     trigger_on_initial_state: true
 
   - platform: homeassistant
     id: heat_camera_matrimoniale_link
-    entity_id: ${binary_sensor_camera_matrimoniale_connettivita_entity}
+    entity_id: ${heating_main_bedroom_connectivity}
     internal: true
     trigger_on_initial_state: true
 
   - platform: homeassistant
     id: heat_camera_matrimoniale_window
-    entity_id: ${binary_sensor_camera_matrimoniale_finestra_entity}
+    entity_id: ${heating_main_bedroom_window}
     internal: true
     trigger_on_initial_state: true
 
   - platform: homeassistant
     id: heat_camera_matrimoniale_overlay
-    entity_id: ${binary_sensor_camera_matrimoniale_sovrapponi_entity}
+    entity_id: ${heating_main_bedroom_overlay}
     internal: true
     trigger_on_initial_state: true
     on_state:
@@ -859,25 +859,25 @@ binary_sensor:
 
   - platform: homeassistant
     id: heat_camera_da_letto_power
-    entity_id: ${binary_sensor_camera_da_letto_potenza_entity}
+    entity_id: ${heating_bedroom_enabled}
     internal: true
     trigger_on_initial_state: true
 
   - platform: homeassistant
     id: heat_camera_da_letto_link
-    entity_id: ${binary_sensor_camera_da_letto_connettivita_entity}
+    entity_id: ${heating_bedroom_connectivity}
     internal: true
     trigger_on_initial_state: true
 
   - platform: homeassistant
     id: heat_camera_da_letto_window
-    entity_id: ${binary_sensor_camera_da_letto_finestra_entity}
+    entity_id: ${heating_bedroom_window}
     internal: true
     trigger_on_initial_state: true
 
   - platform: homeassistant
     id: heat_camera_da_letto_overlay
-    entity_id: ${binary_sensor_camera_da_letto_sovrapponi_entity}
+    entity_id: ${heating_bedroom_overlay}
     internal: true
     trigger_on_initial_state: true
     on_state:
@@ -930,7 +930,7 @@ binary_sensor:
 
   - platform: homeassistant
     id: weather_pluviometer_contact
-    entity_id: ${binary_sensor_pluviometro_contact_entity}
+    entity_id: ${weather_rain_contact}
     internal: true
     on_state:
       then:
@@ -942,37 +942,37 @@ binary_sensor:
   - platform: homeassistant
     trigger_on_initial_state: true
     id: wallbox_available
-    entity_id: ${switch_wallbox_availability_entity}
+    entity_id: ${ev_wallbox_available}
     internal: true
 
   - platform: homeassistant
     trigger_on_initial_state: true
     id: wallbox_charge_control
-    entity_id: ${switch_wallbox_charge_control_entity}
+    entity_id: ${ev_wallbox_charge_control}
     internal: true
 
   - platform: homeassistant
     trigger_on_initial_state: true
     id: wallbox_mode_solar
-    entity_id: ${input_boolean_wallbox_modo_solo_fv_entity}
+    entity_id: ${ev_mode_solar_only}
     internal: true
 
   - platform: homeassistant
     trigger_on_initial_state: true
     id: wallbox_mode_mixed
-    entity_id: ${input_boolean_wallbox_modo_misto_entity}
+    entity_id: ${ev_mode_mixed}
     internal: true
 
   - platform: homeassistant
     trigger_on_initial_state: true
     id: wallbox_mode_manual
-    entity_id: ${input_boolean_wallbox_modo_manuale_entity}
+    entity_id: ${ev_mode_manual}
     internal: true
 
   - platform: homeassistant
     trigger_on_initial_state: true
     id: wallbox_mode_boost
-    entity_id: ${input_boolean_wallbox_modo_boost_entity}
+    entity_id: ${ev_mode_boost}
     internal: true
 
   - platform: template
@@ -984,7 +984,7 @@ binary_sensor:
   - platform: homeassistant
     trigger_on_initial_state: true
     id: light_vialetto_state
-    entity_id: ${switch_shelly_pro2_entity}
+    entity_id: ${light_path}
     internal: true
     on_state:
       - if:
@@ -1024,7 +1024,7 @@ binary_sensor:
   - platform: homeassistant
     trigger_on_initial_state: true
     id: light_cancello_state
-    entity_id: ${switch_shelly_pro2_2_entity}
+    entity_id: ${light_gate}
     internal: true
     on_state:
       - if:
@@ -1064,7 +1064,7 @@ binary_sensor:
   - platform: homeassistant
     trigger_on_initial_state: true
     id: light_entrata_state
-    entity_id: ${switch_luce_entrata_2_entity}
+    entity_id: ${light_entrance}
     internal: true
     on_state:
       - if:
@@ -1104,7 +1104,7 @@ binary_sensor:
   - platform: homeassistant
     trigger_on_initial_state: true
     id: light_punti_entrata_state
-    entity_id: ${switch_punti_luce_entrata_2_entity}
+    entity_id: ${light_entrance_group}
     internal: true
     on_state:
       - if:
@@ -1144,7 +1144,7 @@ binary_sensor:
   - platform: homeassistant
     trigger_on_initial_state: true
     id: light_punti_salotto_state
-    entity_id: ${switch_punti_luce_salotto_2_entity}
+    entity_id: ${light_living_group}
     internal: true
     on_state:
       - if:
@@ -1184,7 +1184,7 @@ binary_sensor:
   - platform: homeassistant
     trigger_on_initial_state: true
     id: light_garage_state
-    entity_id: ${switch_luce_garage_2_entity}
+    entity_id: ${light_garage}
     internal: true
     on_state:
       - if:
@@ -1224,7 +1224,7 @@ binary_sensor:
   - platform: homeassistant
     trigger_on_initial_state: true
     id: light_corridoio_state
-    entity_id: ${switch_luce_corridoio_2_entity}
+    entity_id: ${light_corridor}
     internal: true
     on_state:
       - if:
@@ -1264,7 +1264,7 @@ binary_sensor:
   - platform: homeassistant
     trigger_on_initial_state: true
     id: light_cucina_state
-    entity_id: ${switch_luce_cucina_2_entity}
+    entity_id: ${light_kitchen}
     internal: true
     on_state:
       - if:
@@ -1304,7 +1304,7 @@ binary_sensor:
   - platform: homeassistant
     trigger_on_initial_state: true
     id: light_camera_piccola_state
-    entity_id: ${switch_luce_camera_piccola_2_entity}
+    entity_id: ${light_small_bedroom}
     internal: true
     on_state:
       - if:
@@ -1344,7 +1344,7 @@ binary_sensor:
   - platform: homeassistant
     trigger_on_initial_state: true
     id: light_bagno_notte_state
-    entity_id: ${switch_luce_bagno_notte_2_entity}
+    entity_id: ${light_night_bathroom}
     internal: true
     on_state:
       - if:
@@ -1384,7 +1384,7 @@ binary_sensor:
   - platform: homeassistant
     trigger_on_initial_state: true
     id: light_camera_matrimoniale_state
-    entity_id: ${switch_luce_camera_matrimoniale_2_entity}
+    entity_id: ${light_main_bedroom}
     internal: true
     on_state:
       - if:
@@ -1424,7 +1424,7 @@ binary_sensor:
   - platform: homeassistant
     trigger_on_initial_state: true
     id: light_lavanderia_state
-    entity_id: ${switch_luce_lavanderia_2_entity}
+    entity_id: ${light_laundry}
     internal: true
     on_state:
       - if:
@@ -1464,7 +1464,7 @@ binary_sensor:
   - platform: homeassistant
     trigger_on_initial_state: true
     id: light_mansarda_state
-    entity_id: ${switch_luce_mansarda_entity}
+    entity_id: ${light_attic}
     internal: true
     on_state:
       - if:
@@ -1504,7 +1504,7 @@ binary_sensor:
   - platform: homeassistant
     trigger_on_initial_state: true
     id: light_studio_state
-    entity_id: ${switch_luce_studio_2_entity}
+    entity_id: ${light_study}
     internal: true
     on_state:
       - if:
@@ -1544,7 +1544,7 @@ binary_sensor:
   - platform: homeassistant
     trigger_on_initial_state: true
     id: light_antibagno_state
-    entity_id: ${switch_luce_antibagno_2_entity}
+    entity_id: ${light_anteroom}
     internal: true
     on_state:
       - if:
@@ -1585,7 +1585,7 @@ binary_sensor:
   - platform: homeassistant
     trigger_on_initial_state: true
     id: light_camino_state
-    entity_id: ${switch_sonoff_100053a831_entity}
+    entity_id: ${light_fireplace}
     internal: true
     on_state:
       - if:
@@ -1625,7 +1625,7 @@ binary_sensor:
   - platform: homeassistant
     trigger_on_initial_state: true
     id: light_grande_salotto_state
-    entity_id: ${switch_sonoff_100053959c_entity}
+    entity_id: ${light_living_main}
     internal: true
     on_state:
       - if:
@@ -1665,7 +1665,7 @@ binary_sensor:
   - platform: homeassistant
     trigger_on_initial_state: true
     id: gate_pulse_state
-    entity_id: ${switch_sonoff_10005f5047_entity}
+    entity_id: ${gate_control}
     internal: true
 
 sensor:
@@ -1677,7 +1677,7 @@ sensor:
 
   - platform: homeassistant
     id: heat_salotto_temp
-    entity_id: ${sensor_salotto_temperatura_entity}
+    entity_id: ${heating_living_temperature}
     internal: true
     on_value:
       - lvgl.label.update:
@@ -1688,7 +1688,7 @@ sensor:
 
   - platform: homeassistant
     id: heat_salotto_hum
-    entity_id: ${sensor_salotto_umidita_entity}
+    entity_id: ${heating_living_humidity}
     internal: true
     on_value:
       - lvgl.label.update:
@@ -1697,7 +1697,7 @@ sensor:
 
   - platform: homeassistant
     id: heat_salotto_heating
-    entity_id: ${sensor_salotto_riscaldamento_entity}
+    entity_id: ${heating_living_power}
     internal: true
     on_value:
       - lvgl.label.update:
@@ -1708,7 +1708,7 @@ sensor:
 
   - platform: homeassistant
     id: heat_salotto_target
-    entity_id: ${climate_salotto_entity}
+    entity_id: ${heating_living_climate}
     attribute: temperature
     internal: true
     on_value:
@@ -1736,7 +1736,7 @@ sensor:
 
   - platform: homeassistant
     id: heat_studio_temp
-    entity_id: ${sensor_studio_temperatura_entity}
+    entity_id: ${heating_study_temperature}
     internal: true
     on_value:
       - lvgl.label.update:
@@ -1747,7 +1747,7 @@ sensor:
 
   - platform: homeassistant
     id: heat_studio_hum
-    entity_id: ${sensor_studio_umidita_entity}
+    entity_id: ${heating_study_humidity}
     internal: true
     on_value:
       - lvgl.label.update:
@@ -1756,7 +1756,7 @@ sensor:
 
   - platform: homeassistant
     id: heat_studio_heating
-    entity_id: ${sensor_studio_riscaldamento_entity}
+    entity_id: ${heating_study_power}
     internal: true
     on_value:
       - lvgl.label.update:
@@ -1767,7 +1767,7 @@ sensor:
 
   - platform: homeassistant
     id: heat_studio_target
-    entity_id: ${climate_studio_entity}
+    entity_id: ${heating_study_climate}
     attribute: temperature
     internal: true
     on_value:
@@ -1795,7 +1795,7 @@ sensor:
 
   - platform: homeassistant
     id: heat_camera_matrimoniale_temp
-    entity_id: ${sensor_camera_matrimoniale_temperatura_entity}
+    entity_id: ${heating_main_bedroom_temperature}
     internal: true
     on_value:
       - lvgl.label.update:
@@ -1806,7 +1806,7 @@ sensor:
 
   - platform: homeassistant
     id: heat_camera_matrimoniale_hum
-    entity_id: ${sensor_camera_matrimoniale_umidita_entity}
+    entity_id: ${heating_main_bedroom_humidity}
     internal: true
     on_value:
       - lvgl.label.update:
@@ -1815,7 +1815,7 @@ sensor:
 
   - platform: homeassistant
     id: heat_camera_matrimoniale_heating
-    entity_id: ${sensor_camera_matrimoniale_riscaldamento_entity}
+    entity_id: ${heating_main_bedroom_power}
     internal: true
     on_value:
       - lvgl.label.update:
@@ -1826,7 +1826,7 @@ sensor:
 
   - platform: homeassistant
     id: heat_camera_matrimoniale_target
-    entity_id: ${climate_camera_matrimoniale_entity}
+    entity_id: ${heating_main_bedroom_climate}
     attribute: temperature
     internal: true
     on_value:
@@ -1854,7 +1854,7 @@ sensor:
 
   - platform: homeassistant
     id: heat_camera_da_letto_temp
-    entity_id: ${sensor_camera_da_letto_temperatura_entity}
+    entity_id: ${heating_bedroom_temperature}
     internal: true
     on_value:
       - lvgl.label.update:
@@ -1865,7 +1865,7 @@ sensor:
 
   - platform: homeassistant
     id: heat_camera_da_letto_hum
-    entity_id: ${sensor_camera_da_letto_umidita_entity}
+    entity_id: ${heating_bedroom_humidity}
     internal: true
     on_value:
       - lvgl.label.update:
@@ -1874,7 +1874,7 @@ sensor:
 
   - platform: homeassistant
     id: heat_camera_da_letto_heating
-    entity_id: ${sensor_camera_da_letto_riscaldamento_entity}
+    entity_id: ${heating_bedroom_power}
     internal: true
     on_value:
       - lvgl.label.update:
@@ -1885,7 +1885,7 @@ sensor:
 
   - platform: homeassistant
     id: heat_camera_da_letto_target
-    entity_id: ${climate_camera_da_letto_entity}
+    entity_id: ${heating_bedroom_climate}
     attribute: temperature
     internal: true
     on_value:
@@ -1914,378 +1914,378 @@ sensor:
   # ===== HOME / RENDIMENTO / METEO =====
   - platform: homeassistant
     id: pv_daily_yield
-    entity_id: ${sensor_inverter_rendimento_giornaliero_entity}
+    entity_id: ${energy_solar_daily}
     internal: true
 
   # ===== SETTIMANA ENERGIA - helper creati dal package Home Assistant =====
   - platform: homeassistant
     id: week_pv_mon
-    entity_id: ${sensor_display_fv_lun_entity}
+    entity_id: sensor.display_fv_lun
     internal: true
   - platform: homeassistant
     id: week_pv_tue
-    entity_id: ${sensor_display_fv_mar_entity}
+    entity_id: sensor.display_fv_mar
     internal: true
   - platform: homeassistant
     id: week_pv_wed
-    entity_id: ${sensor_display_fv_mer_entity}
+    entity_id: sensor.display_fv_mer
     internal: true
   - platform: homeassistant
     id: week_pv_thu
-    entity_id: ${sensor_display_fv_gio_entity}
+    entity_id: sensor.display_fv_gio
     internal: true
   - platform: homeassistant
     id: week_pv_fri
-    entity_id: ${sensor_display_fv_ven_entity}
+    entity_id: sensor.display_fv_ven
     internal: true
   - platform: homeassistant
     id: week_pv_sat
-    entity_id: ${sensor_display_fv_sab_entity}
+    entity_id: sensor.display_fv_sab
     internal: true
   - platform: homeassistant
     id: week_pv_sun
-    entity_id: ${sensor_display_fv_dom_entity}
+    entity_id: sensor.display_fv_dom
     internal: true
 
   - platform: homeassistant
     id: week_home_mon
-    entity_id: ${sensor_display_casa_lun_entity}
+    entity_id: sensor.display_casa_lun
     internal: true
   - platform: homeassistant
     id: week_home_tue
-    entity_id: ${sensor_display_casa_mar_entity}
+    entity_id: sensor.display_casa_mar
     internal: true
   - platform: homeassistant
     id: week_home_wed
-    entity_id: ${sensor_display_casa_mer_entity}
+    entity_id: sensor.display_casa_mer
     internal: true
   - platform: homeassistant
     id: week_home_thu
-    entity_id: ${sensor_display_casa_gio_entity}
+    entity_id: sensor.display_casa_gio
     internal: true
   - platform: homeassistant
     id: week_home_fri
-    entity_id: ${sensor_display_casa_ven_entity}
+    entity_id: sensor.display_casa_ven
     internal: true
   - platform: homeassistant
     id: week_home_sat
-    entity_id: ${sensor_display_casa_sab_entity}
+    entity_id: sensor.display_casa_sab
     internal: true
   - platform: homeassistant
     id: week_home_sun
-    entity_id: ${sensor_display_casa_dom_entity}
+    entity_id: sensor.display_casa_dom
     internal: true
 
   # ===== WALLBOX - energia giornaliera settimana corrente =====
   - platform: homeassistant
     id: week_ev_mon
-    entity_id: ${sensor_display_ev_lun_entity}
+    entity_id: sensor.display_ev_lun
     internal: true
   - platform: homeassistant
     id: week_ev_tue
-    entity_id: ${sensor_display_ev_mar_entity}
+    entity_id: sensor.display_ev_mar
     internal: true
   - platform: homeassistant
     id: week_ev_wed
-    entity_id: ${sensor_display_ev_mer_entity}
+    entity_id: sensor.display_ev_mer
     internal: true
   - platform: homeassistant
     id: week_ev_thu
-    entity_id: ${sensor_display_ev_gio_entity}
+    entity_id: sensor.display_ev_gio
     internal: true
   - platform: homeassistant
     id: week_ev_fri
-    entity_id: ${sensor_display_ev_ven_entity}
+    entity_id: sensor.display_ev_ven
     internal: true
   - platform: homeassistant
     id: week_ev_sat
-    entity_id: ${sensor_display_ev_sab_entity}
+    entity_id: sensor.display_ev_sab
     internal: true
   - platform: homeassistant
     id: week_ev_sun
-    entity_id: ${sensor_display_ev_dom_entity}
+    entity_id: sensor.display_ev_dom
     internal: true
 
   - platform: homeassistant
     id: weather_temp
-    entity_id: ${sensor_sensore_temperatura_esterno_temperature_entity}
+    entity_id: ${weather_outdoor_temperature}
     internal: true
 
   - platform: homeassistant
     id: weather_humidity
-    entity_id: ${sensor_sensore_temperatura_esterno_humidity_entity}
+    entity_id: ${weather_outdoor_humidity}
     internal: true
 
   - platform: homeassistant
     id: weather_apparent
-    entity_id: ${sensor_real_feel_temperature_entity}
+    entity_id: ${weather_real_feel}
     internal: true
 
   - platform: homeassistant
     id: weather_aqi
-    entity_id: ${sensor_air_quality_index_entity}
+    entity_id: ${weather_air_quality_index}
     internal: true
 
 
   # ===== METEO - sensori pagina dedicata =====
   - platform: homeassistant
     id: weather_rain
-    entity_id: ${sensor_sensore_pioggia_aqara_2_entity}
+    entity_id: ${weather_rain_sensor}
     internal: true
 
   - platform: homeassistant
     id: weather_soil_1
-    entity_id: ${sensor_umidita_terreno_umidit_del_suolo_entity}
+    entity_id: ${weather_soil_moisture_1}
     internal: true
 
   - platform: homeassistant
     id: weather_soil_2
-    entity_id: ${sensor_umidita_terreno_2_umidit_del_suolo_2_entity}
+    entity_id: ${weather_soil_moisture_2}
     internal: true
 
   - platform: homeassistant
     id: weather_fc_high_0
-    entity_id: ${sensor_display_meteo_giorno_0_entity}
+    entity_id: sensor.display_meteo_giorno_0
     attribute: temp_high
     internal: true
 
   - platform: homeassistant
     id: weather_fc_low_0
-    entity_id: ${sensor_display_meteo_giorno_0_entity}
+    entity_id: sensor.display_meteo_giorno_0
     attribute: temp_low
     internal: true
 
   - platform: homeassistant
     id: weather_fc_high_1
-    entity_id: ${sensor_display_meteo_giorno_1_entity}
+    entity_id: sensor.display_meteo_giorno_1
     attribute: temp_high
     internal: true
 
   - platform: homeassistant
     id: weather_fc_low_1
-    entity_id: ${sensor_display_meteo_giorno_1_entity}
+    entity_id: sensor.display_meteo_giorno_1
     attribute: temp_low
     internal: true
 
   - platform: homeassistant
     id: weather_fc_high_2
-    entity_id: ${sensor_display_meteo_giorno_2_entity}
+    entity_id: sensor.display_meteo_giorno_2
     attribute: temp_high
     internal: true
 
   - platform: homeassistant
     id: weather_fc_low_2
-    entity_id: ${sensor_display_meteo_giorno_2_entity}
+    entity_id: sensor.display_meteo_giorno_2
     attribute: temp_low
     internal: true
 
   - platform: homeassistant
     id: weather_fc_high_3
-    entity_id: ${sensor_display_meteo_giorno_3_entity}
+    entity_id: sensor.display_meteo_giorno_3
     attribute: temp_high
     internal: true
 
   - platform: homeassistant
     id: weather_fc_low_3
-    entity_id: ${sensor_display_meteo_giorno_3_entity}
+    entity_id: sensor.display_meteo_giorno_3
     attribute: temp_low
     internal: true
 
   - platform: homeassistant
     id: weather_fc_high_4
-    entity_id: ${sensor_display_meteo_giorno_4_entity}
+    entity_id: sensor.display_meteo_giorno_4
     attribute: temp_high
     internal: true
 
   - platform: homeassistant
     id: weather_fc_low_4
-    entity_id: ${sensor_display_meteo_giorno_4_entity}
+    entity_id: sensor.display_meteo_giorno_4
     attribute: temp_low
     internal: true
 
   - platform: homeassistant
     id: weather_fc_high_5
-    entity_id: ${sensor_display_meteo_giorno_5_entity}
+    entity_id: sensor.display_meteo_giorno_5
     attribute: temp_high
     internal: true
 
   - platform: homeassistant
     id: weather_fc_low_5
-    entity_id: ${sensor_display_meteo_giorno_5_entity}
+    entity_id: sensor.display_meteo_giorno_5
     attribute: temp_low
     internal: true
 
   - platform: homeassistant
     id: weather_fc_high_6
-    entity_id: ${sensor_display_meteo_giorno_6_entity}
+    entity_id: sensor.display_meteo_giorno_6
     attribute: temp_high
     internal: true
 
   - platform: homeassistant
     id: weather_fc_low_6
-    entity_id: ${sensor_display_meteo_giorno_6_entity}
+    entity_id: sensor.display_meteo_giorno_6
     attribute: temp_low
     internal: true
 
   - platform: homeassistant
     id: weather_rain_day_0
-    entity_id: ${sensor_display_pioggia_giorno_0_entity}
+    entity_id: sensor.display_pioggia_giorno_0
     internal: true
 
   - platform: homeassistant
     id: weather_rain_day_1
-    entity_id: ${sensor_display_pioggia_giorno_1_entity}
+    entity_id: sensor.display_pioggia_giorno_1
     internal: true
 
   - platform: homeassistant
     id: weather_rain_day_2
-    entity_id: ${sensor_display_pioggia_giorno_2_entity}
+    entity_id: sensor.display_pioggia_giorno_2
     internal: true
 
   - platform: homeassistant
     id: weather_rain_day_3
-    entity_id: ${sensor_display_pioggia_giorno_3_entity}
+    entity_id: sensor.display_pioggia_giorno_3
     internal: true
 
   - platform: homeassistant
     id: weather_rain_day_4
-    entity_id: ${sensor_display_pioggia_giorno_4_entity}
+    entity_id: sensor.display_pioggia_giorno_4
     internal: true
 
   - platform: homeassistant
     id: weather_rain_day_5
-    entity_id: ${sensor_display_pioggia_giorno_5_entity}
+    entity_id: sensor.display_pioggia_giorno_5
     internal: true
 
   - platform: homeassistant
     id: weather_rain_day_6
-    entity_id: ${sensor_display_pioggia_giorno_6_entity}
+    entity_id: sensor.display_pioggia_giorno_6
     internal: true
 
   - platform: homeassistant
     id: weather_rain_day_7
-    entity_id: ${sensor_display_pioggia_giorno_7_entity}
+    entity_id: sensor.display_pioggia_giorno_7
     internal: true
 
   - platform: homeassistant
     id: weather_rain_day_8
-    entity_id: ${sensor_display_pioggia_giorno_8_entity}
+    entity_id: sensor.display_pioggia_giorno_8
     internal: true
 
   - platform: homeassistant
     id: weather_rain_day_9
-    entity_id: ${sensor_display_pioggia_giorno_9_entity}
+    entity_id: sensor.display_pioggia_giorno_9
     internal: true
 
   - platform: homeassistant
     id: weather_rain_day_10
-    entity_id: ${sensor_display_pioggia_giorno_10_entity}
+    entity_id: sensor.display_pioggia_giorno_10
     internal: true
 
   - platform: homeassistant
     id: weather_rain_day_11
-    entity_id: ${sensor_display_pioggia_giorno_11_entity}
+    entity_id: sensor.display_pioggia_giorno_11
     internal: true
 
   - platform: homeassistant
     id: weather_rain_day_12
-    entity_id: ${sensor_display_pioggia_giorno_12_entity}
+    entity_id: sensor.display_pioggia_giorno_12
     internal: true
 
   - platform: homeassistant
     id: weather_rain_day_13
-    entity_id: ${sensor_display_pioggia_giorno_13_entity}
+    entity_id: sensor.display_pioggia_giorno_13
     internal: true
 
   - platform: homeassistant
     id: weather_rain_day_14
-    entity_id: ${sensor_display_pioggia_giorno_14_entity}
+    entity_id: sensor.display_pioggia_giorno_14
     internal: true
 
   - platform: homeassistant
     id: weather_rain_day_15
-    entity_id: ${sensor_display_pioggia_giorno_15_entity}
+    entity_id: sensor.display_pioggia_giorno_15
     internal: true
 
   - platform: homeassistant
     id: weather_rain_day_16
-    entity_id: ${sensor_display_pioggia_giorno_16_entity}
+    entity_id: sensor.display_pioggia_giorno_16
     internal: true
 
   - platform: homeassistant
     id: weather_rain_day_17
-    entity_id: ${sensor_display_pioggia_giorno_17_entity}
+    entity_id: sensor.display_pioggia_giorno_17
     internal: true
 
   - platform: homeassistant
     id: weather_rain_day_18
-    entity_id: ${sensor_display_pioggia_giorno_18_entity}
+    entity_id: sensor.display_pioggia_giorno_18
     internal: true
 
   - platform: homeassistant
     id: weather_rain_day_19
-    entity_id: ${sensor_display_pioggia_giorno_19_entity}
+    entity_id: sensor.display_pioggia_giorno_19
     internal: true
 
   - platform: homeassistant
     id: weather_rain_day_20
-    entity_id: ${sensor_display_pioggia_giorno_20_entity}
+    entity_id: sensor.display_pioggia_giorno_20
     internal: true
 
   - platform: homeassistant
     id: weather_rain_day_21
-    entity_id: ${sensor_display_pioggia_giorno_21_entity}
+    entity_id: sensor.display_pioggia_giorno_21
     internal: true
 
   - platform: homeassistant
     id: weather_rain_day_22
-    entity_id: ${sensor_display_pioggia_giorno_22_entity}
+    entity_id: sensor.display_pioggia_giorno_22
     internal: true
 
   - platform: homeassistant
     id: weather_rain_day_23
-    entity_id: ${sensor_display_pioggia_giorno_23_entity}
+    entity_id: sensor.display_pioggia_giorno_23
     internal: true
 
   - platform: homeassistant
     id: weather_rain_day_24
-    entity_id: ${sensor_display_pioggia_giorno_24_entity}
+    entity_id: sensor.display_pioggia_giorno_24
     internal: true
 
   - platform: homeassistant
     id: weather_rain_day_25
-    entity_id: ${sensor_display_pioggia_giorno_25_entity}
+    entity_id: sensor.display_pioggia_giorno_25
     internal: true
 
   - platform: homeassistant
     id: weather_rain_day_26
-    entity_id: ${sensor_display_pioggia_giorno_26_entity}
+    entity_id: sensor.display_pioggia_giorno_26
     internal: true
 
   - platform: homeassistant
     id: weather_rain_day_27
-    entity_id: ${sensor_display_pioggia_giorno_27_entity}
+    entity_id: sensor.display_pioggia_giorno_27
     internal: true
 
   - platform: homeassistant
     id: weather_rain_day_28
-    entity_id: ${sensor_display_pioggia_giorno_28_entity}
+    entity_id: sensor.display_pioggia_giorno_28
     internal: true
 
   - platform: homeassistant
     id: weather_rain_day_29
-    entity_id: ${sensor_display_pioggia_giorno_29_entity}
+    entity_id: sensor.display_pioggia_giorno_29
     internal: true
 
   - platform: homeassistant
     id: weather_rain_day_30
-    entity_id: ${sensor_display_pioggia_giorno_30_entity}
+    entity_id: sensor.display_pioggia_giorno_30
     internal: true
 
   # ===== RICARICA AUTO =====
   - platform: homeassistant
     id: wallbox_current
-    entity_id: ${number_wallbox_maximum_current_entity}
+    entity_id: ${ev_wallbox_max_current}
     internal: true
     on_value:
       - lambda: 'id(wallbox_slider_value) = x;'
@@ -2298,7 +2298,7 @@ sensor:
 
   - platform: homeassistant
     id: wallbox_session_energy
-    entity_id: ${sensor_wallbox_energy_session_2_entity}
+    entity_id: ${ev_wallbox_session_energy}
     internal: true
     on_value:
       - lambda: |-
@@ -2307,33 +2307,33 @@ sensor:
 
   - platform: homeassistant
     id: wallbox_session_time
-    entity_id: ${sensor_wallbox_time_session_2_entity}
+    entity_id: ${ev_wallbox_session_time}
     internal: true
 
   - platform: homeassistant
     id: wallbox_total_energy
-    entity_id: ${sensor_wallbox_energy_active_import_register_2_entity}
+    entity_id: ${ev_wallbox_total_energy}
     internal: true
 
   - platform: homeassistant
     id: car_battery
-    entity_id: ${sensor_gm352cx_batteria_entity}
+    entity_id: ${ev_vehicle_battery}
     internal: true
 
   - platform: homeassistant
     id: car_fuel_l
-    entity_id: ${sensor_gm352cx_quantita_di_carburante_entity}
+    entity_id: ${ev_vehicle_fuel_level}
     internal: true
 
   - platform: homeassistant
     id: car_odometer
-    entity_id: ${sensor_gm352cx_chilometraggio_entity}
+    entity_id: ${ev_vehicle_odometer}
     internal: true
 
   # Consumo luci esterne mostrato direttamente nei pulsanti
   - platform: homeassistant
     id: light_vialetto_power
-    entity_id: ${sensor_shelly_pro2_power_entity}
+    entity_id: ${sensor_shelly_pro2_power}
     internal: true
     on_value:
       - lvgl.label.update:
@@ -2345,7 +2345,7 @@ sensor:
 
   - platform: homeassistant
     id: light_cancello_power
-    entity_id: ${sensor_shelly_pro2_power_2_entity}
+    entity_id: ${sensor_shelly_pro2_power_2}
     internal: true
     on_value:
       - lvgl.label.update:
@@ -2357,7 +2357,7 @@ sensor:
 
   - platform: homeassistant
     id: ha_solar_power
-    entity_id: ${sensor_inverter_potenza_in_ingresso_entity}
+    entity_id: ${energy_solar_power}
     internal: true
     on_value:
       - lvgl.label.update:
@@ -2415,7 +2415,7 @@ sensor:
 
   - platform: homeassistant
     id: ha_grid_power
-    entity_id: ${sensor_power_meter_potenza_attiva_entity}
+    entity_id: ${energy_grid_power}
     internal: true
     on_value:
       - lambda: |-
@@ -2449,7 +2449,7 @@ sensor:
 
   - platform: homeassistant
     id: ha_battery_power
-    entity_id: ${sensor_battery_potenza_di_carica_scarica_entity}
+    entity_id: ${energy_battery_power}
     internal: true
     on_value:
       - lambda: |-
@@ -2483,7 +2483,7 @@ sensor:
 
   - platform: homeassistant
     id: ha_battery_soc
-    entity_id: ${sensor_battery_stato_della_capacita_entity}
+    entity_id: ${energy_battery_soc}
     internal: true
     on_value:
       - lvgl.label.update:
@@ -2494,7 +2494,7 @@ sensor:
 
   - platform: homeassistant
     id: ha_pdc_power
-    entity_id: ${sensor_consumo_istantaneo_pdc_2_entity}
+    entity_id: ${heatpump_power}
     internal: true
     on_value:
       - lvgl.label.update:
@@ -2512,7 +2512,7 @@ sensor:
 
   - platform: homeassistant
     id: mower_battery_voltage
-    entity_id: ${sensor_mower_battery_entity}
+    entity_id: ${robot_battery_voltage}
     internal: true
     on_value:
       # La percentuale usa gli stessi estremi della card HA:
@@ -2570,7 +2570,7 @@ sensor:
 
   - platform: homeassistant
     id: mower_battery_amps
-    entity_id: ${sensor_robotmowerbatteryamps_entity}
+    entity_id: ${robot_battery_current}
     internal: true
     on_value:
       - lvgl.label.update:
@@ -2581,7 +2581,7 @@ sensor:
 
   - platform: homeassistant
     id: mower_loop
-    entity_id: ${sensor_mower_loop_entity}
+    entity_id: ${robot_loop_counter}
     internal: true
     on_value:
       - lvgl.label.update:
@@ -2603,71 +2603,71 @@ text_sensor:
 
   - platform: homeassistant
     id: heat_salotto_hvac_mode
-    entity_id: ${climate_salotto_entity}
+    entity_id: ${heating_living_climate}
     internal: true
 
   - platform: homeassistant
     id: heat_salotto_preset
-    entity_id: ${climate_salotto_entity}
+    entity_id: ${heating_living_climate}
     attribute: preset_mode
     internal: true
 
   - platform: homeassistant
     id: heat_salotto_tado_mode
-    entity_id: ${sensor_salotto_modalita_tado_entity}
+    entity_id: ${heating_living_mode}
     internal: true
 
   - platform: homeassistant
     id: heat_studio_hvac_mode
-    entity_id: ${climate_studio_entity}
+    entity_id: ${heating_study_climate}
     internal: true
 
   - platform: homeassistant
     id: heat_studio_preset
-    entity_id: ${climate_studio_entity}
+    entity_id: ${heating_study_climate}
     attribute: preset_mode
     internal: true
 
   - platform: homeassistant
     id: heat_studio_tado_mode
-    entity_id: ${sensor_studio_modalita_tado_entity}
+    entity_id: ${heating_study_mode}
     internal: true
 
   - platform: homeassistant
     id: heat_camera_matrimoniale_hvac_mode
-    entity_id: ${climate_camera_matrimoniale_entity}
+    entity_id: ${heating_main_bedroom_climate}
     internal: true
 
   - platform: homeassistant
     id: heat_camera_matrimoniale_preset
-    entity_id: ${climate_camera_matrimoniale_entity}
+    entity_id: ${heating_main_bedroom_climate}
     attribute: preset_mode
     internal: true
 
   - platform: homeassistant
     id: heat_camera_matrimoniale_tado_mode
-    entity_id: ${sensor_camera_matrimoniale_modalita_tado_entity}
+    entity_id: ${heating_main_bedroom_mode}
     internal: true
 
   - platform: homeassistant
     id: heat_camera_da_letto_hvac_mode
-    entity_id: ${climate_camera_da_letto_entity}
+    entity_id: ${heating_bedroom_climate}
     internal: true
 
   - platform: homeassistant
     id: heat_camera_da_letto_preset
-    entity_id: ${climate_camera_da_letto_entity}
+    entity_id: ${heating_bedroom_climate}
     attribute: preset_mode
     internal: true
 
   - platform: homeassistant
     id: heat_camera_da_letto_tado_mode
-    entity_id: ${sensor_camera_da_letto_modalita_tado_entity}
+    entity_id: ${heating_bedroom_mode}
     internal: true
 
   - platform: homeassistant
     id: weather_state
-    entity_id: ${weather_marco_e_licia_home_entity}
+    entity_id: ${weather_home}
     internal: true
     on_value:
       - if:
@@ -2865,17 +2865,17 @@ text_sensor:
 
   - platform: homeassistant
     id: weather_next_dawn
-    entity_id: ${sensor_sun_next_dawn_entity}
+    entity_id: ${weather_next_dawn}
     internal: true
 
   - platform: homeassistant
     id: weather_next_setting
-    entity_id: ${sensor_sun_next_setting_entity}
+    entity_id: ${weather_next_sunset}
     internal: true
 
   - platform: homeassistant
     id: weather_fc_condition_0
-    entity_id: ${sensor_display_meteo_giorno_0_entity}
+    entity_id: sensor.display_meteo_giorno_0
     internal: true
     on_value:
       - if:
@@ -2979,7 +2979,7 @@ text_sensor:
 
   - platform: homeassistant
     id: weather_fc_condition_1
-    entity_id: ${sensor_display_meteo_giorno_1_entity}
+    entity_id: sensor.display_meteo_giorno_1
     internal: true
     on_value:
       - if:
@@ -3083,7 +3083,7 @@ text_sensor:
 
   - platform: homeassistant
     id: weather_fc_condition_2
-    entity_id: ${sensor_display_meteo_giorno_2_entity}
+    entity_id: sensor.display_meteo_giorno_2
     internal: true
     on_value:
       - if:
@@ -3187,7 +3187,7 @@ text_sensor:
 
   - platform: homeassistant
     id: weather_fc_condition_3
-    entity_id: ${sensor_display_meteo_giorno_3_entity}
+    entity_id: sensor.display_meteo_giorno_3
     internal: true
     on_value:
       - if:
@@ -3291,7 +3291,7 @@ text_sensor:
 
   - platform: homeassistant
     id: weather_fc_condition_4
-    entity_id: ${sensor_display_meteo_giorno_4_entity}
+    entity_id: sensor.display_meteo_giorno_4
     internal: true
     on_value:
       - if:
@@ -3395,7 +3395,7 @@ text_sensor:
 
   - platform: homeassistant
     id: weather_fc_condition_5
-    entity_id: ${sensor_display_meteo_giorno_5_entity}
+    entity_id: sensor.display_meteo_giorno_5
     internal: true
     on_value:
       - if:
@@ -3499,7 +3499,7 @@ text_sensor:
 
   - platform: homeassistant
     id: weather_fc_condition_6
-    entity_id: ${sensor_display_meteo_giorno_6_entity}
+    entity_id: sensor.display_meteo_giorno_6
     internal: true
     on_value:
       - if:
@@ -3603,12 +3603,12 @@ text_sensor:
 
   - platform: homeassistant
     id: car_position
-    entity_id: ${device_tracker_gm352cx_posizione_entity}
+    entity_id: ${ev_vehicle_location}
     internal: true
 
   - platform: homeassistant
     id: wallbox_status
-    entity_id: ${sensor_wallbox_status_connector_2_entity}
+    entity_id: ${ev_wallbox_connector_status}
     internal: true
     on_value:
       - lambda: |-
@@ -3634,37 +3634,37 @@ text_sensor:
 
   - platform: homeassistant
     id: wallbox_text_state
-    entity_id: ${input_text_wallbox_stato_entity}
+    entity_id: ${ev_wallbox_logic_status}
     internal: true
 
   - platform: homeassistant
     id: mower_charge
-    entity_id: ${sensor_mower_charge_entity}
+    entity_id: ${robot_charge_state}
     internal: true
 
   - platform: homeassistant
     id: mower_running
-    entity_id: ${sensor_mower_running_entity}
+    entity_id: ${robot_running}
     internal: true
 
   - platform: homeassistant
     id: mower_parked
-    entity_id: ${sensor_mower_parked_entity}
+    entity_id: ${robot_parked}
     internal: true
 
   - platform: homeassistant
     id: mower_docked
-    entity_id: ${sensor_mower_docked_entity}
+    entity_id: ${robot_docked}
     internal: true
 
   - platform: homeassistant
     id: mower_tracking
-    entity_id: ${sensor_mower_tracking_entity}
+    entity_id: ${robot_tracking}
     internal: true
 
   - platform: homeassistant
     id: mower_error
-    entity_id: ${sensor_mower_error_entity}
+    entity_id: ${robot_error}
     internal: true
 
 # ============================================================
@@ -3929,10 +3929,10 @@ script:
           action: climate.set_temperature
           data:
             entity_id: !lambda |-
-              return id(heating_selected_room)==0 ? std::string("${climate_salotto_entity}") :
-                     id(heating_selected_room)==1 ? std::string("${climate_studio_entity}") :
-                     id(heating_selected_room)==2 ? std::string("${climate_camera_matrimoniale_entity}") :
-                                                    std::string("${climate_camera_da_letto_entity}");
+              return id(heating_selected_room)==0 ? std::string("${heating_living_climate}") :
+                     id(heating_selected_room)==1 ? std::string("${heating_study_climate}") :
+                     id(heating_selected_room)==2 ? std::string("${heating_main_bedroom_climate}") :
+                                                    std::string("${heating_bedroom_climate}");
             temperature: !lambda 'return str_sprintf("%.1f", id(heating_popup_target));'
 
   - id: heating_popup_open
@@ -3969,10 +3969,10 @@ script:
           action: climate.set_hvac_mode
           data:
             entity_id: !lambda |-
-              return id(heating_selected_room)==0 ? std::string("${climate_salotto_entity}") :
-                     id(heating_selected_room)==1 ? std::string("${climate_studio_entity}") :
-                     id(heating_selected_room)==2 ? std::string("${climate_camera_matrimoniale_entity}") :
-                                                    std::string("${climate_camera_da_letto_entity}");
+              return id(heating_selected_room)==0 ? std::string("${heating_living_climate}") :
+                     id(heating_selected_room)==1 ? std::string("${heating_study_climate}") :
+                     id(heating_selected_room)==2 ? std::string("${heating_main_bedroom_climate}") :
+                                                    std::string("${heating_bedroom_climate}");
             hvac_mode: "auto"
 
   - id: heating_mode_heat
@@ -3981,10 +3981,10 @@ script:
           action: climate.set_hvac_mode
           data:
             entity_id: !lambda |-
-              return id(heating_selected_room)==0 ? std::string("${climate_salotto_entity}") :
-                     id(heating_selected_room)==1 ? std::string("${climate_studio_entity}") :
-                     id(heating_selected_room)==2 ? std::string("${climate_camera_matrimoniale_entity}") :
-                                                    std::string("${climate_camera_da_letto_entity}");
+              return id(heating_selected_room)==0 ? std::string("${heating_living_climate}") :
+                     id(heating_selected_room)==1 ? std::string("${heating_study_climate}") :
+                     id(heating_selected_room)==2 ? std::string("${heating_main_bedroom_climate}") :
+                                                    std::string("${heating_bedroom_climate}");
             hvac_mode: "heat"
 
   - id: heating_mode_off
@@ -3993,10 +3993,10 @@ script:
           action: climate.set_hvac_mode
           data:
             entity_id: !lambda |-
-              return id(heating_selected_room)==0 ? std::string("${climate_salotto_entity}") :
-                     id(heating_selected_room)==1 ? std::string("${climate_studio_entity}") :
-                     id(heating_selected_room)==2 ? std::string("${climate_camera_matrimoniale_entity}") :
-                                                    std::string("${climate_camera_da_letto_entity}");
+              return id(heating_selected_room)==0 ? std::string("${heating_living_climate}") :
+                     id(heating_selected_room)==1 ? std::string("${heating_study_climate}") :
+                     id(heating_selected_room)==2 ? std::string("${heating_main_bedroom_climate}") :
+                                                    std::string("${heating_bedroom_climate}");
             hvac_mode: "off"
 
   - id: heating_preset_away
@@ -4005,10 +4005,10 @@ script:
           action: climate.set_preset_mode
           data:
             entity_id: !lambda |-
-              return id(heating_selected_room)==0 ? std::string("${climate_salotto_entity}") :
-                     id(heating_selected_room)==1 ? std::string("${climate_studio_entity}") :
-                     id(heating_selected_room)==2 ? std::string("${climate_camera_matrimoniale_entity}") :
-                                                    std::string("${climate_camera_da_letto_entity}");
+              return id(heating_selected_room)==0 ? std::string("${heating_living_climate}") :
+                     id(heating_selected_room)==1 ? std::string("${heating_study_climate}") :
+                     id(heating_selected_room)==2 ? std::string("${heating_main_bedroom_climate}") :
+                                                    std::string("${heating_bedroom_climate}");
             preset_mode: "away"
 
   - id: heating_preset_home
@@ -4017,10 +4017,10 @@ script:
           action: climate.set_preset_mode
           data:
             entity_id: !lambda |-
-              return id(heating_selected_room)==0 ? std::string("${climate_salotto_entity}") :
-                     id(heating_selected_room)==1 ? std::string("${climate_studio_entity}") :
-                     id(heating_selected_room)==2 ? std::string("${climate_camera_matrimoniale_entity}") :
-                                                    std::string("${climate_camera_da_letto_entity}");
+              return id(heating_selected_room)==0 ? std::string("${heating_living_climate}") :
+                     id(heating_selected_room)==1 ? std::string("${heating_study_climate}") :
+                     id(heating_selected_room)==2 ? std::string("${heating_main_bedroom_climate}") :
+                                                    std::string("${heating_bedroom_climate}");
             preset_mode: "home"
 
   - id: heating_preset_auto
@@ -4029,14 +4029,14 @@ script:
           action: climate.set_preset_mode
           data:
             entity_id: !lambda |-
-              return id(heating_selected_room)==0 ? std::string("${climate_salotto_entity}") :
-                     id(heating_selected_room)==1 ? std::string("${climate_studio_entity}") :
-                     id(heating_selected_room)==2 ? std::string("${climate_camera_matrimoniale_entity}") :
-                                                    std::string("${climate_camera_da_letto_entity}");
+              return id(heating_selected_room)==0 ? std::string("${heating_living_climate}") :
+                     id(heating_selected_room)==1 ? std::string("${heating_study_climate}") :
+                     id(heating_selected_room)==2 ? std::string("${heating_main_bedroom_climate}") :
+                                                    std::string("${heating_bedroom_climate}");
             preset_mode: "auto"
 
   # Recupera dal Recorder Home Assistant il massimo giornaliero
-  # di ${sensor_inverter_rendimento_giornaliero_entity} per gli ultimi 7 giorni.
+  # di ${energy_solar_daily} per gli ultimi 7 giorni.
 
   - id: wallbox_set_current
     mode: restart
@@ -4044,36 +4044,36 @@ script:
       - homeassistant.action:
           action: number.set_value
           data:
-            entity_id: "${number_wallbox_maximum_current_entity}"
+            entity_id: "${ev_wallbox_max_current}"
             value: !lambda 'return str_sprintf("%.0f", id(wallbox_slider_value));'
 
   - id: wallbox_mode_solar_script
     then:
-      - homeassistant.action: {action: input_boolean.turn_on, data: {entity_id: "${input_boolean_wallbox_modo_solo_fv_entity}"}}
-      - homeassistant.action: {action: input_boolean.turn_off, data: {entity_id: "${input_boolean_wallbox_modo_misto_entity}"}}
-      - homeassistant.action: {action: input_boolean.turn_off, data: {entity_id: "${input_boolean_wallbox_modo_manuale_entity}"}}
-      - homeassistant.action: {action: input_boolean.turn_off, data: {entity_id: "${input_boolean_wallbox_modo_boost_entity}"}}
+      - homeassistant.action: {action: input_boolean.turn_on, data: {entity_id: "${ev_mode_solar_only}"}}
+      - homeassistant.action: {action: input_boolean.turn_off, data: {entity_id: "${ev_mode_mixed}"}}
+      - homeassistant.action: {action: input_boolean.turn_off, data: {entity_id: "${ev_mode_manual}"}}
+      - homeassistant.action: {action: input_boolean.turn_off, data: {entity_id: "${ev_mode_boost}"}}
 
   - id: wallbox_mode_mixed_script
     then:
-      - homeassistant.action: {action: input_boolean.turn_off, data: {entity_id: "${input_boolean_wallbox_modo_solo_fv_entity}"}}
-      - homeassistant.action: {action: input_boolean.turn_on, data: {entity_id: "${input_boolean_wallbox_modo_misto_entity}"}}
-      - homeassistant.action: {action: input_boolean.turn_off, data: {entity_id: "${input_boolean_wallbox_modo_manuale_entity}"}}
-      - homeassistant.action: {action: input_boolean.turn_off, data: {entity_id: "${input_boolean_wallbox_modo_boost_entity}"}}
+      - homeassistant.action: {action: input_boolean.turn_off, data: {entity_id: "${ev_mode_solar_only}"}}
+      - homeassistant.action: {action: input_boolean.turn_on, data: {entity_id: "${ev_mode_mixed}"}}
+      - homeassistant.action: {action: input_boolean.turn_off, data: {entity_id: "${ev_mode_manual}"}}
+      - homeassistant.action: {action: input_boolean.turn_off, data: {entity_id: "${ev_mode_boost}"}}
 
   - id: wallbox_mode_manual_script
     then:
-      - homeassistant.action: {action: input_boolean.turn_off, data: {entity_id: "${input_boolean_wallbox_modo_solo_fv_entity}"}}
-      - homeassistant.action: {action: input_boolean.turn_off, data: {entity_id: "${input_boolean_wallbox_modo_misto_entity}"}}
-      - homeassistant.action: {action: input_boolean.turn_on, data: {entity_id: "${input_boolean_wallbox_modo_manuale_entity}"}}
-      - homeassistant.action: {action: input_boolean.turn_off, data: {entity_id: "${input_boolean_wallbox_modo_boost_entity}"}}
+      - homeassistant.action: {action: input_boolean.turn_off, data: {entity_id: "${ev_mode_solar_only}"}}
+      - homeassistant.action: {action: input_boolean.turn_off, data: {entity_id: "${ev_mode_mixed}"}}
+      - homeassistant.action: {action: input_boolean.turn_on, data: {entity_id: "${ev_mode_manual}"}}
+      - homeassistant.action: {action: input_boolean.turn_off, data: {entity_id: "${ev_mode_boost}"}}
 
   - id: wallbox_mode_boost_script
     then:
-      - homeassistant.action: {action: input_boolean.turn_off, data: {entity_id: "${input_boolean_wallbox_modo_solo_fv_entity}"}}
-      - homeassistant.action: {action: input_boolean.turn_off, data: {entity_id: "${input_boolean_wallbox_modo_misto_entity}"}}
-      - homeassistant.action: {action: input_boolean.turn_off, data: {entity_id: "${input_boolean_wallbox_modo_manuale_entity}"}}
-      - homeassistant.action: {action: input_boolean.turn_on, data: {entity_id: "${input_boolean_wallbox_modo_boost_entity}"}}
+      - homeassistant.action: {action: input_boolean.turn_off, data: {entity_id: "${ev_mode_solar_only}"}}
+      - homeassistant.action: {action: input_boolean.turn_off, data: {entity_id: "${ev_mode_mixed}"}}
+      - homeassistant.action: {action: input_boolean.turn_off, data: {entity_id: "${ev_mode_manual}"}}
+      - homeassistant.action: {action: input_boolean.turn_on, data: {entity_id: "${ev_mode_boost}"}}
 
   - id: cmd_start
     then:
@@ -6842,7 +6842,7 @@ lvgl:
             on_click:
               - homeassistant.action:
                   action: switch.turn_on
-                  data: {entity_id: "${switch_sonoff_10005f5047_entity}"}
+                  data: {entity_id: "${gate_control}"}
             widgets:
               - image: {src: img_gate, align: TOP_MID, y: 8, image_recolor: 0x4B83B7, image_recolor_opa: COVER}
               - label: {x: 4, y: 63, width: 180, text_align: CENTER, text: "Apri/Chiudi
@@ -6871,7 +6871,7 @@ Cancello", text_font: roboto_bold_14, text_color: 0xFFFFFF}
               - homeassistant.action:
                   action: switch.toggle
                   data:
-                    entity_id: "${switch_shelly_pro2_2_entity}"
+                    entity_id: "${light_gate}"
             widgets:
               - image:
                   id: icon_light_cancello_off
@@ -6930,7 +6930,7 @@ Cancello", text_font: roboto_bold_14, text_color: 0xFFFFFF}
               - homeassistant.action:
                   action: switch.toggle
                   data:
-                    entity_id: "${switch_shelly_pro2_entity}"
+                    entity_id: "${light_path}"
             widgets:
               - image:
                   id: icon_light_vialetto_off
@@ -6989,7 +6989,7 @@ Cancello", text_font: roboto_bold_14, text_color: 0xFFFFFF}
               - homeassistant.action:
                   action: switch.toggle
                   data:
-                    entity_id: "${switch_sonoff_100053959c_entity}"
+                    entity_id: "${light_living_main}"
             widgets:
               - image:
                   id: icon_light_grande_salotto_off
@@ -7040,7 +7040,7 @@ Salotto"
               - homeassistant.action:
                   action: switch.toggle
                   data:
-                    entity_id: "${switch_luce_entrata_2_entity}"
+                    entity_id: "${light_entrance}"
             widgets:
               - image:
                   id: icon_light_entrata_off
@@ -7090,7 +7090,7 @@ Salotto"
               - homeassistant.action:
                   action: switch.toggle
                   data:
-                    entity_id: "${switch_punti_luce_entrata_2_entity}"
+                    entity_id: "${light_entrance_group}"
             widgets:
               - image:
                   id: icon_light_punti_entrata_off
@@ -7141,7 +7141,7 @@ Entrata"
               - homeassistant.action:
                   action: switch.toggle
                   data:
-                    entity_id: "${switch_punti_luce_salotto_2_entity}"
+                    entity_id: "${light_living_group}"
             widgets:
               - image:
                   id: icon_light_punti_salotto_off
@@ -7192,7 +7192,7 @@ Salotto"
               - homeassistant.action:
                   action: switch.toggle
                   data:
-                    entity_id: "${switch_sonoff_100053a831_entity}"
+                    entity_id: "${light_fireplace}"
             widgets:
               - image:
                   id: icon_light_camino_off
@@ -7242,7 +7242,7 @@ Salotto"
               - homeassistant.action:
                   action: switch.toggle
                   data:
-                    entity_id: "${switch_luce_cucina_2_entity}"
+                    entity_id: "${light_kitchen}"
             widgets:
               - image:
                   id: icon_light_cucina_off
@@ -7292,7 +7292,7 @@ Salotto"
               - homeassistant.action:
                   action: switch.toggle
                   data:
-                    entity_id: "${switch_luce_camera_matrimoniale_2_entity}"
+                    entity_id: "${light_main_bedroom}"
             widgets:
               - image:
                   id: icon_light_camera_matrimoniale_off
@@ -7343,7 +7343,7 @@ Matrimoniale"
               - homeassistant.action:
                   action: switch.toggle
                   data:
-                    entity_id: "${switch_luce_camera_piccola_2_entity}"
+                    entity_id: "${light_small_bedroom}"
             widgets:
               - image:
                   id: icon_light_camera_piccola_off
@@ -7394,7 +7394,7 @@ Piccola"
               - homeassistant.action:
                   action: switch.toggle
                   data:
-                    entity_id: "${switch_luce_studio_2_entity}"
+                    entity_id: "${light_study}"
             widgets:
               - image:
                   id: icon_light_studio_off
@@ -7444,7 +7444,7 @@ Piccola"
               - homeassistant.action:
                   action: switch.toggle
                   data:
-                    entity_id: "${switch_luce_bagno_notte_2_entity}"
+                    entity_id: "${light_night_bathroom}"
             widgets:
               - image:
                   id: icon_light_bagno_notte_off
@@ -7511,7 +7511,7 @@ Giorno", text_font: roboto_bold_14, text_color: 0xFFFFFF}
               - homeassistant.action:
                   action: switch.toggle
                   data:
-                    entity_id: "${switch_luce_antibagno_2_entity}"
+                    entity_id: "${light_anteroom}"
             widgets:
               - image:
                   id: icon_light_antibagno_off
@@ -7561,7 +7561,7 @@ Giorno", text_font: roboto_bold_14, text_color: 0xFFFFFF}
               - homeassistant.action:
                   action: switch.toggle
                   data:
-                    entity_id: "${switch_luce_lavanderia_2_entity}"
+                    entity_id: "${light_laundry}"
             widgets:
               - image:
                   id: icon_light_lavanderia_off
@@ -7611,7 +7611,7 @@ Giorno", text_font: roboto_bold_14, text_color: 0xFFFFFF}
               - homeassistant.action:
                   action: switch.toggle
                   data:
-                    entity_id: "${switch_luce_corridoio_2_entity}"
+                    entity_id: "${light_corridor}"
             widgets:
               - image:
                   id: icon_light_corridoio_off
@@ -7661,7 +7661,7 @@ Giorno", text_font: roboto_bold_14, text_color: 0xFFFFFF}
               - homeassistant.action:
                   action: switch.toggle
                   data:
-                    entity_id: "${switch_luce_garage_2_entity}"
+                    entity_id: "${light_garage}"
             widgets:
               - image:
                   id: icon_light_garage_off
@@ -7711,7 +7711,7 @@ Giorno", text_font: roboto_bold_14, text_color: 0xFFFFFF}
               - homeassistant.action:
                   action: switch.toggle
                   data:
-                    entity_id: "${switch_luce_mansarda_entity}"
+                    entity_id: "${light_attic}"
             widgets:
               - image:
                   id: icon_light_mansarda_off
@@ -7826,7 +7826,7 @@ Giorno", text_font: roboto_bold_14, text_color: 0xFFFFFF}
                     - homeassistant.action:
                         action: climate.set_temperature
                         data:
-                          entity_id: "${climate_salotto_entity}"
+                          entity_id: "${heating_living_climate}"
                           temperature: !lambda 'return str_sprintf("%.1f", x / 10.0f);'
 
               - label:
@@ -7945,7 +7945,7 @@ Giorno", text_font: roboto_bold_14, text_color: 0xFFFFFF}
                     - homeassistant.action:
                         action: climate.set_temperature
                         data:
-                          entity_id: "${climate_studio_entity}"
+                          entity_id: "${heating_study_climate}"
                           temperature: !lambda 'return str_sprintf("%.1f", x / 10.0f);'
 
               - label:
@@ -8064,7 +8064,7 @@ Giorno", text_font: roboto_bold_14, text_color: 0xFFFFFF}
                     - homeassistant.action:
                         action: climate.set_temperature
                         data:
-                          entity_id: "${climate_camera_matrimoniale_entity}"
+                          entity_id: "${heating_main_bedroom_climate}"
                           temperature: !lambda 'return str_sprintf("%.1f", x / 10.0f);'
 
               - label:
@@ -8183,7 +8183,7 @@ Giorno", text_font: roboto_bold_14, text_color: 0xFFFFFF}
                     - homeassistant.action:
                         action: climate.set_temperature
                         data:
-                          entity_id: "${climate_camera_da_letto_entity}"
+                          entity_id: "${heating_bedroom_climate}"
                           temperature: !lambda 'return str_sprintf("%.1f", x / 10.0f);'
 
               - label:
@@ -10227,7 +10227,7 @@ Giorno", text_font: roboto_bold_14, text_color: 0xFFFFFF}
                   on_click:
                     - homeassistant.action:
                         action: switch.toggle
-                        data: {entity_id: "${switch_wallbox_availability_entity}"}
+                        data: {entity_id: "${ev_wallbox_available}"}
                   widgets:
                     - label:
                         align: CENTER
@@ -10251,7 +10251,7 @@ Giorno", text_font: roboto_bold_14, text_color: 0xFFFFFF}
                   on_click:
                     - homeassistant.action:
                         action: switch.toggle
-                        data: {entity_id: "${switch_wallbox_charge_control_entity}"}
+                        data: {entity_id: "${ev_wallbox_charge_control}"}
                   widgets:
                     - label:
                         align: CENTER
