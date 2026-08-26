@@ -28,6 +28,16 @@ All notable changes to this project will be documented in this file.
 
 - Updated the configuration model for v1.2.0 so the dashboard version has a single source of truth.
 - Documented that a full Home Assistant restart is required after adding the REST update-checker package for the first time.
+- Updated the README quick-start, repository structure and update-checker instructions.
+
+### Validation
+
+- Validated the updated ESPHome configuration successfully.
+- Installed the updated configuration OTA on the real Waveshare ESP32-S3 Touch LCD 7B.
+- Confirmed `Waveshare Dashboard Version` appears on the Home Assistant ESPHome device page.
+- Confirmed the GitHub REST sensor reads the latest stable release correctly.
+- Confirmed the update comparison changes to `on` when a newer release is simulated.
+- Confirmed the persistent Home Assistant update notification is generated with the expected installed version, latest version and release link.
 
 ## [1.1.1] - 2026-08-26
 
