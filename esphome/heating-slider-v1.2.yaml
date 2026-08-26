@@ -1,0 +1,492 @@
+# ============================================================
+# WAVESHARE DASHBOARD - HEATING SLIDER UI OVERRIDE
+# v1.2.0
+#
+# Replaces the visible circular thermostat controls with compact
+# horizontal sliders while keeping the original arcs hidden for
+# backwards-compatible internal updates.
+#
+# Temperature mapping:
+#   slider 10..60  <=>  5.0..30.0 C in 0.5 C steps
+# ============================================================
+
+# Keep the new sliders synchronized with target temperatures coming
+# from Home Assistant. Existing actions in dashboard-package.yaml are
+# preserved and these updates are appended by package merging.
+sensor:
+  - id: !extend heat_salotto_target
+    on_value:
+      - lvgl.slider.update:
+          id: heat_salotto_slider
+          value: !lambda 'return (int) lroundf(x * 2.0f);'
+
+  - id: !extend heat_studio_target
+    on_value:
+      - lvgl.slider.update:
+          id: heat_studio_slider
+          value: !lambda 'return (int) lroundf(x * 2.0f);'
+
+  - id: !extend heat_camera_matrimoniale_target
+    on_value:
+      - lvgl.slider.update:
+          id: heat_camera_matrimoniale_slider
+          value: !lambda 'return (int) lroundf(x * 2.0f);'
+
+  - id: !extend heat_camera_da_letto_target
+    on_value:
+      - lvgl.slider.update:
+          id: heat_camera_da_letto_slider
+          value: !lambda 'return (int) lroundf(x * 2.0f);'
+
+# Preserve the same active/inactive thermostat colors already used by
+# the original circular controls.
+binary_sensor:
+  - id: !extend heat_salotto_power
+    on_state:
+      - if:
+          condition:
+            lambda: 'return x;'
+          then:
+            - lvgl.slider.update:
+                id: heat_salotto_slider
+                indicator: {bg_color: 0x9A4314}
+                knob: {bg_color: 0xFFFFFF, border_color: 0xD85A18}
+            - if:
+                condition:
+                  lambda: 'return id(heating_selected_room) == 0;'
+                then:
+                  - lvgl.slider.update:
+                      id: heating_popup_slider
+                      indicator: {bg_color: 0x9A4314}
+                      knob: {bg_color: 0xFFFFFF, border_color: 0xD85A18}
+          else:
+            - lvgl.slider.update:
+                id: heat_salotto_slider
+                indicator: {bg_color: 0x2E6B36}
+                knob: {bg_color: 0xFFFFFF, border_color: 0x43B853}
+            - if:
+                condition:
+                  lambda: 'return id(heating_selected_room) == 0;'
+                then:
+                  - lvgl.slider.update:
+                      id: heating_popup_slider
+                      indicator: {bg_color: 0x2E6B36}
+                      knob: {bg_color: 0xFFFFFF, border_color: 0x43B853}
+
+  - id: !extend heat_studio_power
+    on_state:
+      - if:
+          condition:
+            lambda: 'return x;'
+          then:
+            - lvgl.slider.update:
+                id: heat_studio_slider
+                indicator: {bg_color: 0x9A4314}
+                knob: {bg_color: 0xFFFFFF, border_color: 0xD85A18}
+            - if:
+                condition:
+                  lambda: 'return id(heating_selected_room) == 1;'
+                then:
+                  - lvgl.slider.update:
+                      id: heating_popup_slider
+                      indicator: {bg_color: 0x9A4314}
+                      knob: {bg_color: 0xFFFFFF, border_color: 0xD85A18}
+          else:
+            - lvgl.slider.update:
+                id: heat_studio_slider
+                indicator: {bg_color: 0x2E6B36}
+                knob: {bg_color: 0xFFFFFF, border_color: 0x43B853}
+            - if:
+                condition:
+                  lambda: 'return id(heating_selected_room) == 1;'
+                then:
+                  - lvgl.slider.update:
+                      id: heating_popup_slider
+                      indicator: {bg_color: 0x2E6B36}
+                      knob: {bg_color: 0xFFFFFF, border_color: 0x43B853}
+
+  - id: !extend heat_camera_matrimoniale_power
+    on_state:
+      - if:
+          condition:
+            lambda: 'return x;'
+          then:
+            - lvgl.slider.update:
+                id: heat_camera_matrimoniale_slider
+                indicator: {bg_color: 0x9A4314}
+                knob: {bg_color: 0xFFFFFF, border_color: 0xD85A18}
+            - if:
+                condition:
+                  lambda: 'return id(heating_selected_room) == 2;'
+                then:
+                  - lvgl.slider.update:
+                      id: heating_popup_slider
+                      indicator: {bg_color: 0x9A4314}
+                      knob: {bg_color: 0xFFFFFF, border_color: 0xD85A18}
+          else:
+            - lvgl.slider.update:
+                id: heat_camera_matrimoniale_slider
+                indicator: {bg_color: 0x2E6B36}
+                knob: {bg_color: 0xFFFFFF, border_color: 0x43B853}
+            - if:
+                condition:
+                  lambda: 'return id(heating_selected_room) == 2;'
+                then:
+                  - lvgl.slider.update:
+                      id: heating_popup_slider
+                      indicator: {bg_color: 0x2E6B36}
+                      knob: {bg_color: 0xFFFFFF, border_color: 0x43B853}
+
+  - id: !extend heat_camera_da_letto_power
+    on_state:
+      - if:
+          condition:
+            lambda: 'return x;'
+          then:
+            - lvgl.slider.update:
+                id: heat_camera_da_letto_slider
+                indicator: {bg_color: 0x9A4314}
+                knob: {bg_color: 0xFFFFFF, border_color: 0xD85A18}
+            - if:
+                condition:
+                  lambda: 'return id(heating_selected_room) == 3;'
+                then:
+                  - lvgl.slider.update:
+                      id: heating_popup_slider
+                      indicator: {bg_color: 0x9A4314}
+                      knob: {bg_color: 0xFFFFFF, border_color: 0xD85A18}
+          else:
+            - lvgl.slider.update:
+                id: heat_camera_da_letto_slider
+                indicator: {bg_color: 0x2E6B36}
+                knob: {bg_color: 0xFFFFFF, border_color: 0x43B853}
+            - if:
+                condition:
+                  lambda: 'return id(heating_selected_room) == 3;'
+                then:
+                  - lvgl.slider.update:
+                      id: heating_popup_slider
+                      indicator: {bg_color: 0x2E6B36}
+                      knob: {bg_color: 0xFFFFFF, border_color: 0x43B853}
+
+# Synchronize the popup slider each time the shared thermostat popup
+# is opened. The base script already loads heating_popup_target.
+script:
+  - id: !extend heating_popup_open
+    then:
+      - lvgl.slider.update:
+          id: heating_popup_slider
+          value: !lambda 'return (int) lroundf(id(heating_popup_target) * 2.0f);'
+      - if:
+          condition:
+            lambda: |-
+              switch (id(heating_selected_room)) {
+                case 0: return id(heat_salotto_power).state;
+                case 1: return id(heat_studio_power).state;
+                case 2: return id(heat_camera_matrimoniale_power).state;
+                default: return id(heat_camera_da_letto_power).state;
+              }
+          then:
+            - lvgl.slider.update:
+                id: heating_popup_slider
+                indicator: {bg_color: 0x9A4314}
+                knob: {bg_color: 0xFFFFFF, border_color: 0xD85A18}
+          else:
+            - lvgl.slider.update:
+                id: heating_popup_slider
+                indicator: {bg_color: 0x2E6B36}
+                knob: {bg_color: 0xFFFFFF, border_color: 0x43B853}
+
+lvgl:
+  pages:
+    - id: !extend page_heating
+      widgets:
+        # ------------------------------------------------------
+        # SALOTTO
+        # ------------------------------------------------------
+        - arc:
+            id: !extend heat_salotto_arc
+            hidden: true
+        - label:
+            id: !extend heat_salotto_state
+            x: 164
+            y: 48
+            width: 170
+        - label:
+            id: !extend heat_salotto_current
+            x: 149
+            y: 72
+            width: 200
+        - label:
+            id: !extend heat_salotto_target_lbl
+            x: 174
+            y: 112
+            width: 150
+        - label:
+            id: !extend heat_salotto_humidity_lbl
+            x: 164
+            y: 137
+            width: 170
+        - slider:
+            id: heat_salotto_slider
+            x: 60
+            y: 174
+            width: 368
+            height: 12
+            min_value: 10
+            max_value: 60
+            value: 40
+            radius: 6
+            bg_color: 0x303236
+            bg_opa: COVER
+            border_width: 0
+            ext_click_area: 10
+            indicator:
+              bg_color: 0x2E6B36
+              bg_opa: COVER
+              radius: 6
+            knob:
+              bg_color: 0xFFFFFF
+              border_width: 2
+              border_color: 0x43B853
+              radius: 9
+              pad_all: 3
+            on_value:
+              - lvgl.label.update:
+                  id: heat_salotto_target_lbl
+                  text: !lambda 'return str_sprintf("%.1f C", x / 2.0f);'
+            on_release:
+              - homeassistant.action:
+                  action: climate.set_temperature
+                  data:
+                    entity_id: "${heating_living_climate}"
+                    temperature: !lambda 'return str_sprintf("%.1f", x / 2.0f);'
+        - label: {x: 58, y: 190, width: 60, text: "5 C", text_font: roboto_12, text_color: 0x7F8790}
+        - label: {x: 365, y: 190, width: 64, text_align: RIGHT, text: "30 C", text_font: roboto_12, text_color: 0x7F8790}
+
+        # ------------------------------------------------------
+        # STUDIO
+        # ------------------------------------------------------
+        - arc:
+            id: !extend heat_studio_arc
+            hidden: true
+        - label:
+            id: !extend heat_studio_state
+            x: 164
+            y: 48
+            width: 170
+        - label:
+            id: !extend heat_studio_current
+            x: 149
+            y: 72
+            width: 200
+        - label:
+            id: !extend heat_studio_target_lbl
+            x: 174
+            y: 112
+            width: 150
+        - label:
+            id: !extend heat_studio_humidity_lbl
+            x: 164
+            y: 137
+            width: 170
+        - slider:
+            id: heat_studio_slider
+            x: 60
+            y: 174
+            width: 368
+            height: 12
+            min_value: 10
+            max_value: 60
+            value: 40
+            radius: 6
+            bg_color: 0x303236
+            bg_opa: COVER
+            border_width: 0
+            ext_click_area: 10
+            indicator: {bg_color: 0x2E6B36, bg_opa: COVER, radius: 6}
+            knob: {bg_color: 0xFFFFFF, border_width: 2, border_color: 0x43B853, radius: 9, pad_all: 3}
+            on_value:
+              - lvgl.label.update:
+                  id: heat_studio_target_lbl
+                  text: !lambda 'return str_sprintf("%.1f C", x / 2.0f);'
+            on_release:
+              - homeassistant.action:
+                  action: climate.set_temperature
+                  data:
+                    entity_id: "${heating_study_climate}"
+                    temperature: !lambda 'return str_sprintf("%.1f", x / 2.0f);'
+        - label: {x: 58, y: 190, width: 60, text: "5 C", text_font: roboto_12, text_color: 0x7F8790}
+        - label: {x: 365, y: 190, width: 64, text_align: RIGHT, text: "30 C", text_font: roboto_12, text_color: 0x7F8790}
+
+        # ------------------------------------------------------
+        # CAMERA MATRIMONIALE
+        # ------------------------------------------------------
+        - arc:
+            id: !extend heat_camera_matrimoniale_arc
+            hidden: true
+        - label:
+            id: !extend heat_camera_matrimoniale_state
+            x: 164
+            y: 48
+            width: 170
+        - label:
+            id: !extend heat_camera_matrimoniale_current
+            x: 149
+            y: 72
+            width: 200
+        - label:
+            id: !extend heat_camera_matrimoniale_target_lbl
+            x: 174
+            y: 112
+            width: 150
+        - label:
+            id: !extend heat_camera_matrimoniale_humidity_lbl
+            x: 164
+            y: 137
+            width: 170
+        - slider:
+            id: heat_camera_matrimoniale_slider
+            x: 60
+            y: 174
+            width: 368
+            height: 12
+            min_value: 10
+            max_value: 60
+            value: 40
+            radius: 6
+            bg_color: 0x303236
+            bg_opa: COVER
+            border_width: 0
+            ext_click_area: 10
+            indicator: {bg_color: 0x2E6B36, bg_opa: COVER, radius: 6}
+            knob: {bg_color: 0xFFFFFF, border_width: 2, border_color: 0x43B853, radius: 9, pad_all: 3}
+            on_value:
+              - lvgl.label.update:
+                  id: heat_camera_matrimoniale_target_lbl
+                  text: !lambda 'return str_sprintf("%.1f C", x / 2.0f);'
+            on_release:
+              - homeassistant.action:
+                  action: climate.set_temperature
+                  data:
+                    entity_id: "${heating_main_bedroom_climate}"
+                    temperature: !lambda 'return str_sprintf("%.1f", x / 2.0f);'
+        - label: {x: 58, y: 190, width: 60, text: "5 C", text_font: roboto_12, text_color: 0x7F8790}
+        - label: {x: 365, y: 190, width: 64, text_align: RIGHT, text: "30 C", text_font: roboto_12, text_color: 0x7F8790}
+
+        # ------------------------------------------------------
+        # CAMERA DA LETTO
+        # ------------------------------------------------------
+        - arc:
+            id: !extend heat_camera_da_letto_arc
+            hidden: true
+        - label:
+            id: !extend heat_camera_da_letto_state
+            x: 164
+            y: 48
+            width: 170
+        - label:
+            id: !extend heat_camera_da_letto_current
+            x: 149
+            y: 72
+            width: 200
+        - label:
+            id: !extend heat_camera_da_letto_target_lbl
+            x: 174
+            y: 112
+            width: 150
+        - label:
+            id: !extend heat_camera_da_letto_humidity_lbl
+            x: 164
+            y: 137
+            width: 170
+        - slider:
+            id: heat_camera_da_letto_slider
+            x: 60
+            y: 174
+            width: 368
+            height: 12
+            min_value: 10
+            max_value: 60
+            value: 40
+            radius: 6
+            bg_color: 0x303236
+            bg_opa: COVER
+            border_width: 0
+            ext_click_area: 10
+            indicator: {bg_color: 0x2E6B36, bg_opa: COVER, radius: 6}
+            knob: {bg_color: 0xFFFFFF, border_width: 2, border_color: 0x43B853, radius: 9, pad_all: 3}
+            on_value:
+              - lvgl.label.update:
+                  id: heat_camera_da_letto_target_lbl
+                  text: !lambda 'return str_sprintf("%.1f C", x / 2.0f);'
+            on_release:
+              - homeassistant.action:
+                  action: climate.set_temperature
+                  data:
+                    entity_id: "${heating_bedroom_climate}"
+                    temperature: !lambda 'return str_sprintf("%.1f", x / 2.0f);'
+        - label: {x: 58, y: 190, width: 60, text: "5 C", text_font: roboto_12, text_color: 0x7F8790}
+        - label: {x: 365, y: 190, width: 64, text_align: RIGHT, text: "30 C", text_font: roboto_12, text_color: 0x7F8790}
+
+        # ------------------------------------------------------
+        # SHARED POPUP
+        # ------------------------------------------------------
+        - obj:
+            id: !extend heating_popup
+            widgets:
+              - arc:
+                  id: !extend heating_popup_arc
+                  hidden: true
+              - label:
+                  id: !extend heating_popup_state
+                  x: 95
+                  y: 88
+                  width: 150
+                  text_align: CENTER
+              - label:
+                  id: !extend heating_popup_target_lbl
+                  x: 238
+                  y: 80
+                  width: 190
+                  text_align: CENTER
+                  text_font: roboto_bold_28
+              - label:
+                  id: !extend heating_popup_current
+                  x: 236
+                  y: 122
+                  width: 195
+                  text_align: CENTER
+              - slider:
+                  id: heating_popup_slider
+                  x: 70
+                  y: 205
+                  width: 460
+                  height: 14
+                  min_value: 10
+                  max_value: 60
+                  value: 40
+                  radius: 7
+                  bg_color: 0x303236
+                  bg_opa: COVER
+                  border_width: 0
+                  ext_click_area: 12
+                  indicator:
+                    bg_color: 0x2E6B36
+                    bg_opa: COVER
+                    radius: 7
+                  knob:
+                    bg_color: 0xFFFFFF
+                    border_width: 2
+                    border_color: 0x43B853
+                    radius: 10
+                    pad_all: 3
+                  on_value:
+                    - lambda: 'id(heating_popup_target) = x / 2.0f;'
+                    - lvgl.label.update:
+                        id: heating_popup_target_lbl
+                        text: !lambda 'return str_sprintf("%.1f C", id(heating_popup_target));'
+                  on_release:
+                    - script.execute: heating_popup_set_temperature
+              - label: {x: 68, y: 226, width: 70, text: "5 C", text_font: roboto_12, text_color: 0x7F8790}
+              - label: {x: 462, y: 226, width: 70, text_align: RIGHT, text: "30 C", text_font: roboto_12, text_color: 0x7F8790}
