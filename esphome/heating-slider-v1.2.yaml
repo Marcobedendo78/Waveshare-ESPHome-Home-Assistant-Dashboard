@@ -4,60 +4,189 @@
 # ============================================================
 
 sensor:
+  # ----------------------------------------------------------
+  # TARGET TEMPERATURE -> slider position + horizontal labels
+  # ----------------------------------------------------------
   - id: !extend heat_salotto_target
     on_value:
       - lvgl.slider.update:
           id: heat_salotto_slider
           value: !lambda 'return (int) lroundf(x * 2.0f);'
+      - lvgl.label.update:
+          id: heat_salotto_target_v12
+          text: !lambda 'return str_sprintf("%.1f C", x);'
+
   - id: !extend heat_studio_target
     on_value:
       - lvgl.slider.update:
           id: heat_studio_slider
           value: !lambda 'return (int) lroundf(x * 2.0f);'
+      - lvgl.label.update:
+          id: heat_studio_target_v12
+          text: !lambda 'return str_sprintf("%.1f C", x);'
+
   - id: !extend heat_camera_matrimoniale_target
     on_value:
       - lvgl.slider.update:
           id: heat_camera_matrimoniale_slider
           value: !lambda 'return (int) lroundf(x * 2.0f);'
+      - lvgl.label.update:
+          id: heat_camera_matrimoniale_target_v12
+          text: !lambda 'return str_sprintf("%.1f C", x);'
+
   - id: !extend heat_camera_da_letto_target
     on_value:
       - lvgl.slider.update:
           id: heat_camera_da_letto_slider
           value: !lambda 'return (int) lroundf(x * 2.0f);'
+      - lvgl.label.update:
+          id: heat_camera_da_letto_target_v12
+          text: !lambda 'return str_sprintf("%.1f C", x);'
 
-binary_sensor:
-  - id: !extend heat_salotto_power
-    on_state:
+  # ----------------------------------------------------------
+  # CURRENT TEMPERATURE -> horizontal labels
+  # ----------------------------------------------------------
+  - id: !extend heat_salotto_temp
+    on_value:
+      - lvgl.label.update:
+          id: heat_salotto_current_v12
+          text: !lambda 'return str_sprintf("%.1f C", x);'
+
+  - id: !extend heat_studio_temp
+    on_value:
+      - lvgl.label.update:
+          id: heat_studio_current_v12
+          text: !lambda 'return str_sprintf("%.1f C", x);'
+
+  - id: !extend heat_camera_matrimoniale_temp
+    on_value:
+      - lvgl.label.update:
+          id: heat_camera_matrimoniale_current_v12
+          text: !lambda 'return str_sprintf("%.1f C", x);'
+
+  - id: !extend heat_camera_da_letto_temp
+    on_value:
+      - lvgl.label.update:
+          id: heat_camera_da_letto_current_v12
+          text: !lambda 'return str_sprintf("%.1f C", x);'
+
+  # ----------------------------------------------------------
+  # HUMIDITY -> horizontal labels
+  # ----------------------------------------------------------
+  - id: !extend heat_salotto_hum
+    on_value:
+      - lvgl.label.update:
+          id: heat_salotto_humidity_v12
+          text: !lambda 'return isnan(x) ? std::string("--%") : str_sprintf("%.0f%%", x);'
+
+  - id: !extend heat_studio_hum
+    on_value:
+      - lvgl.label.update:
+          id: heat_studio_humidity_v12
+          text: !lambda 'return isnan(x) ? std::string("--%") : str_sprintf("%.0f%%", x);'
+
+  - id: !extend heat_camera_matrimoniale_hum
+    on_value:
+      - lvgl.label.update:
+          id: heat_camera_matrimoniale_humidity_v12
+          text: !lambda 'return isnan(x) ? std::string("--%") : str_sprintf("%.0f%%", x);'
+
+  - id: !extend heat_camera_da_letto_hum
+    on_value:
+      - lvgl.label.update:
+          id: heat_camera_da_letto_humidity_v12
+          text: !lambda 'return isnan(x) ? std::string("--%") : str_sprintf("%.0f%%", x);'
+
+  # ----------------------------------------------------------
+  # HEATING OUTPUT -> state text + slider color
+  # IMPORTANT: color follows actual heating percentage, NOT power ON.
+  # ----------------------------------------------------------
+  - id: !extend heat_salotto_heating
+    on_value:
+      - lvgl.label.update:
+          id: heat_salotto_state_v12
+          text: !lambda 'return (isnan(x) || x <= 0.1f) ? std::string("Inattivo") : str_sprintf("Risc. %.0f%%", x);'
       - if:
-          condition: {lambda: 'return x;'}
+          condition:
+            lambda: 'return !isnan(x) && x > 0.1f;'
           then:
             - lvgl.slider.update: {id: heat_salotto_slider, indicator: {bg_color: 0x9A4314}, knob: {bg_color: 0xFFFFFF, border_color: 0xD85A18}}
           else:
             - lvgl.slider.update: {id: heat_salotto_slider, indicator: {bg_color: 0x2E6B36}, knob: {bg_color: 0xFFFFFF, border_color: 0x43B853}}
-  - id: !extend heat_studio_power
-    on_state:
       - if:
-          condition: {lambda: 'return x;'}
+          condition:
+            lambda: 'return id(heating_selected_room) == 0;'
+          then:
+            - if:
+                condition:
+                  lambda: 'return !isnan(x) && x > 0.1f;'
+                then:
+                  - lvgl.slider.update: {id: heating_popup_slider, indicator: {bg_color: 0x9A4314}, knob: {bg_color: 0xFFFFFF, border_color: 0xD85A18}}
+                else:
+                  - lvgl.slider.update: {id: heating_popup_slider, indicator: {bg_color: 0x2E6B36}, knob: {bg_color: 0xFFFFFF, border_color: 0x43B853}}
+
+  - id: !extend heat_studio_heating
+    on_value:
+      - lvgl.label.update:
+          id: heat_studio_state_v12
+          text: !lambda 'return (isnan(x) || x <= 0.1f) ? std::string("Inattivo") : str_sprintf("Risc. %.0f%%", x);'
+      - if:
+          condition: {lambda: 'return !isnan(x) && x > 0.1f;'}
           then:
             - lvgl.slider.update: {id: heat_studio_slider, indicator: {bg_color: 0x9A4314}, knob: {bg_color: 0xFFFFFF, border_color: 0xD85A18}}
           else:
             - lvgl.slider.update: {id: heat_studio_slider, indicator: {bg_color: 0x2E6B36}, knob: {bg_color: 0xFFFFFF, border_color: 0x43B853}}
-  - id: !extend heat_camera_matrimoniale_power
-    on_state:
       - if:
-          condition: {lambda: 'return x;'}
+          condition: {lambda: 'return id(heating_selected_room) == 1;'}
+          then:
+            - if:
+                condition: {lambda: 'return !isnan(x) && x > 0.1f;'}
+                then:
+                  - lvgl.slider.update: {id: heating_popup_slider, indicator: {bg_color: 0x9A4314}, knob: {bg_color: 0xFFFFFF, border_color: 0xD85A18}}
+                else:
+                  - lvgl.slider.update: {id: heating_popup_slider, indicator: {bg_color: 0x2E6B36}, knob: {bg_color: 0xFFFFFF, border_color: 0x43B853}}
+
+  - id: !extend heat_camera_matrimoniale_heating
+    on_value:
+      - lvgl.label.update:
+          id: heat_camera_matrimoniale_state_v12
+          text: !lambda 'return (isnan(x) || x <= 0.1f) ? std::string("Inattivo") : str_sprintf("Risc. %.0f%%", x);'
+      - if:
+          condition: {lambda: 'return !isnan(x) && x > 0.1f;'}
           then:
             - lvgl.slider.update: {id: heat_camera_matrimoniale_slider, indicator: {bg_color: 0x9A4314}, knob: {bg_color: 0xFFFFFF, border_color: 0xD85A18}}
           else:
             - lvgl.slider.update: {id: heat_camera_matrimoniale_slider, indicator: {bg_color: 0x2E6B36}, knob: {bg_color: 0xFFFFFF, border_color: 0x43B853}}
-  - id: !extend heat_camera_da_letto_power
-    on_state:
       - if:
-          condition: {lambda: 'return x;'}
+          condition: {lambda: 'return id(heating_selected_room) == 2;'}
+          then:
+            - if:
+                condition: {lambda: 'return !isnan(x) && x > 0.1f;'}
+                then:
+                  - lvgl.slider.update: {id: heating_popup_slider, indicator: {bg_color: 0x9A4314}, knob: {bg_color: 0xFFFFFF, border_color: 0xD85A18}}
+                else:
+                  - lvgl.slider.update: {id: heating_popup_slider, indicator: {bg_color: 0x2E6B36}, knob: {bg_color: 0xFFFFFF, border_color: 0x43B853}}
+
+  - id: !extend heat_camera_da_letto_heating
+    on_value:
+      - lvgl.label.update:
+          id: heat_camera_da_letto_state_v12
+          text: !lambda 'return (isnan(x) || x <= 0.1f) ? std::string("Inattivo") : str_sprintf("Risc. %.0f%%", x);'
+      - if:
+          condition: {lambda: 'return !isnan(x) && x > 0.1f;'}
           then:
             - lvgl.slider.update: {id: heat_camera_da_letto_slider, indicator: {bg_color: 0x9A4314}, knob: {bg_color: 0xFFFFFF, border_color: 0xD85A18}}
           else:
             - lvgl.slider.update: {id: heat_camera_da_letto_slider, indicator: {bg_color: 0x2E6B36}, knob: {bg_color: 0xFFFFFF, border_color: 0x43B853}}
+      - if:
+          condition: {lambda: 'return id(heating_selected_room) == 3;'}
+          then:
+            - if:
+                condition: {lambda: 'return !isnan(x) && x > 0.1f;'}
+                then:
+                  - lvgl.slider.update: {id: heating_popup_slider, indicator: {bg_color: 0x9A4314}, knob: {bg_color: 0xFFFFFF, border_color: 0xD85A18}}
+                else:
+                  - lvgl.slider.update: {id: heating_popup_slider, indicator: {bg_color: 0x2E6B36}, knob: {bg_color: 0xFFFFFF, border_color: 0x43B853}}
 
 script:
   - id: !extend heating_popup_open
@@ -67,9 +196,38 @@ script:
       - lvgl.widget.hide: heat_studio_slider
       - lvgl.widget.hide: heat_camera_matrimoniale_slider
       - lvgl.widget.hide: heat_camera_da_letto_slider
+      - lvgl.widget.hide: heat_salotto_state_v12
+      - lvgl.widget.hide: heat_salotto_current_v12
+      - lvgl.widget.hide: heat_salotto_target_v12
+      - lvgl.widget.hide: heat_salotto_humidity_v12
+      - lvgl.widget.hide: heat_studio_state_v12
+      - lvgl.widget.hide: heat_studio_current_v12
+      - lvgl.widget.hide: heat_studio_target_v12
+      - lvgl.widget.hide: heat_studio_humidity_v12
+      - lvgl.widget.hide: heat_camera_matrimoniale_state_v12
+      - lvgl.widget.hide: heat_camera_matrimoniale_current_v12
+      - lvgl.widget.hide: heat_camera_matrimoniale_target_v12
+      - lvgl.widget.hide: heat_camera_matrimoniale_humidity_v12
+      - lvgl.widget.hide: heat_camera_da_letto_state_v12
+      - lvgl.widget.hide: heat_camera_da_letto_current_v12
+      - lvgl.widget.hide: heat_camera_da_letto_target_v12
+      - lvgl.widget.hide: heat_camera_da_letto_humidity_v12
       - lvgl.slider.update:
           id: heating_popup_slider
           value: !lambda 'return (int) lroundf(id(heating_popup_target) * 2.0f);'
+      - if:
+          condition:
+            lambda: |-
+              switch (id(heating_selected_room)) {
+                case 0: return id(heat_salotto_heating).state > 0.1f;
+                case 1: return id(heat_studio_heating).state > 0.1f;
+                case 2: return id(heat_camera_matrimoniale_heating).state > 0.1f;
+                default: return id(heat_camera_da_letto_heating).state > 0.1f;
+              }
+          then:
+            - lvgl.slider.update: {id: heating_popup_slider, indicator: {bg_color: 0x9A4314}, knob: {bg_color: 0xFFFFFF, border_color: 0xD85A18}}
+          else:
+            - lvgl.slider.update: {id: heating_popup_slider, indicator: {bg_color: 0x2E6B36}, knob: {bg_color: 0xFFFFFF, border_color: 0x43B853}}
       - lvgl.widget.show: heating_popup_slider
       - lvgl.widget.show: heating_popup_min_lbl_v12
       - lvgl.widget.show: heating_popup_max_lbl_v12
@@ -83,144 +241,196 @@ interval:
       - lvgl.widget.hide: heat_studio_arc
       - lvgl.widget.hide: heat_camera_matrimoniale_arc
       - lvgl.widget.hide: heat_camera_da_letto_arc
+      # Hide old centered card labels; v1.2 uses horizontal rows.
+      - lvgl.widget.hide: heat_salotto_state
+      - lvgl.widget.hide: heat_salotto_current
+      - lvgl.widget.hide: heat_salotto_target_lbl
+      - lvgl.widget.hide: heat_salotto_humidity_lbl
+      - lvgl.widget.hide: heat_studio_state
+      - lvgl.widget.hide: heat_studio_current
+      - lvgl.widget.hide: heat_studio_target_lbl
+      - lvgl.widget.hide: heat_studio_humidity_lbl
+      - lvgl.widget.hide: heat_camera_matrimoniale_state
+      - lvgl.widget.hide: heat_camera_matrimoniale_current
+      - lvgl.widget.hide: heat_camera_matrimoniale_target_lbl
+      - lvgl.widget.hide: heat_camera_matrimoniale_humidity_lbl
+      - lvgl.widget.hide: heat_camera_da_letto_state
+      - lvgl.widget.hide: heat_camera_da_letto_current
+      - lvgl.widget.hide: heat_camera_da_letto_target_lbl
+      - lvgl.widget.hide: heat_camera_da_letto_humidity_lbl
 
 lvgl:
   pages:
     - id: !extend page_heating
       widgets:
+        # ======================================================
+        # HORIZONTAL INFO ROWS - top cards
+        # ======================================================
+        - label: {id: heat_salotto_state_v12, x: 52, y: 118, width: 92, text_align: CENTER, text: "Inattivo", text_font: roboto_bold_14, text_color: 0xEAEAEA}
+        - label: {id: heat_salotto_current_v12, x: 148, y: 114, width: 92, text_align: CENTER, text: "--.- C", text_font: roboto_bold_18, text_color: 0xFFFFFF}
+        - label: {id: heat_salotto_target_v12, x: 244, y: 118, width: 92, text_align: CENTER, text: "--.- C", text_font: roboto_bold_14, text_color: 0xD8D8D8}
+        - label: {id: heat_salotto_humidity_v12, x: 340, y: 118, width: 92, text_align: CENTER, text: "--%", text_font: roboto_bold_14, text_color: 0xD8D8D8}
+
+        - label: {id: heat_studio_state_v12, x: 560, y: 118, width: 92, text_align: CENTER, text: "Inattivo", text_font: roboto_bold_14, text_color: 0xEAEAEA}
+        - label: {id: heat_studio_current_v12, x: 656, y: 114, width: 92, text_align: CENTER, text: "--.- C", text_font: roboto_bold_18, text_color: 0xFFFFFF}
+        - label: {id: heat_studio_target_v12, x: 752, y: 118, width: 92, text_align: CENTER, text: "--.- C", text_font: roboto_bold_14, text_color: 0xD8D8D8}
+        - label: {id: heat_studio_humidity_v12, x: 848, y: 118, width: 92, text_align: CENTER, text: "--%", text_font: roboto_bold_14, text_color: 0xD8D8D8}
+
+        # ======================================================
+        # HORIZONTAL INFO ROWS - bottom cards
+        # ======================================================
+        - label: {id: heat_camera_matrimoniale_state_v12, x: 52, y: 350, width: 92, text_align: CENTER, text: "Inattivo", text_font: roboto_bold_14, text_color: 0xEAEAEA}
+        - label: {id: heat_camera_matrimoniale_current_v12, x: 148, y: 346, width: 92, text_align: CENTER, text: "--.- C", text_font: roboto_bold_18, text_color: 0xFFFFFF}
+        - label: {id: heat_camera_matrimoniale_target_v12, x: 244, y: 350, width: 92, text_align: CENTER, text: "--.- C", text_font: roboto_bold_14, text_color: 0xD8D8D8}
+        - label: {id: heat_camera_matrimoniale_humidity_v12, x: 340, y: 350, width: 92, text_align: CENTER, text: "--%", text_font: roboto_bold_14, text_color: 0xD8D8D8}
+
+        - label: {id: heat_camera_da_letto_state_v12, x: 560, y: 350, width: 92, text_align: CENTER, text: "Inattivo", text_font: roboto_bold_14, text_color: 0xEAEAEA}
+        - label: {id: heat_camera_da_letto_current_v12, x: 656, y: 346, width: 92, text_align: CENTER, text: "--.- C", text_font: roboto_bold_18, text_color: 0xFFFFFF}
+        - label: {id: heat_camera_da_letto_target_v12, x: 752, y: 350, width: 92, text_align: CENTER, text: "--.- C", text_font: roboto_bold_14, text_color: 0xD8D8D8}
+        - label: {id: heat_camera_da_letto_humidity_v12, x: 848, y: 350, width: 92, text_align: CENTER, text: "--%", text_font: roboto_bold_14, text_color: 0xD8D8D8}
+
+        # ======================================================
+        # CARD SLIDERS - double thickness
+        # ======================================================
         - slider:
             id: heat_salotto_slider
             x: 74
-            y: 232
+            y: 202
             width: 368
-            height: 16
+            height: 32
             min_value: 10
             max_value: 60
             value: 40
-            radius: 8
+            radius: 16
             bg_color: 0x303236
             bg_opa: COVER
             border_width: 0
             ext_click_area: 10
-            indicator: {bg_color: 0x2E6B36, bg_opa: COVER, radius: 8}
-            knob: {bg_color: 0xFFFFFF, border_width: 2, border_color: 0x43B853, radius: 11, pad_all: 4}
+            indicator: {bg_color: 0x2E6B36, bg_opa: COVER, radius: 16}
+            knob: {bg_color: 0xFFFFFF, border_width: 2, border_color: 0x43B853, radius: 12, pad_all: 2}
             on_value:
-              - lvgl.label.update:
-                  id: heat_salotto_target_lbl
-                  text: !lambda 'return str_sprintf("%.1f C", x / 2.0f);'
+              - lvgl.label.update: {id: heat_salotto_target_v12, text: !lambda 'return str_sprintf("%.1f C", x / 2.0f);'}
             on_release:
               - homeassistant.action:
                   action: climate.set_temperature
-                  data:
-                    entity_id: "${heating_living_climate}"
-                    temperature: !lambda 'return str_sprintf("%.1f", x / 2.0f);'
+                  data: {entity_id: "${heating_living_climate}", temperature: !lambda 'return str_sprintf("%.1f", x / 2.0f);'}
+
         - slider:
             id: heat_studio_slider
             x: 582
-            y: 232
+            y: 202
             width: 368
-            height: 16
+            height: 32
             min_value: 10
             max_value: 60
             value: 40
-            radius: 8
+            radius: 16
             bg_color: 0x303236
             bg_opa: COVER
             border_width: 0
             ext_click_area: 10
-            indicator: {bg_color: 0x2E6B36, bg_opa: COVER, radius: 8}
-            knob: {bg_color: 0xFFFFFF, border_width: 2, border_color: 0x43B853, radius: 11, pad_all: 4}
+            indicator: {bg_color: 0x2E6B36, bg_opa: COVER, radius: 16}
+            knob: {bg_color: 0xFFFFFF, border_width: 2, border_color: 0x43B853, radius: 12, pad_all: 2}
             on_value:
-              - lvgl.label.update: {id: heat_studio_target_lbl, text: !lambda 'return str_sprintf("%.1f C", x / 2.0f);'}
+              - lvgl.label.update: {id: heat_studio_target_v12, text: !lambda 'return str_sprintf("%.1f C", x / 2.0f);'}
             on_release:
               - homeassistant.action:
                   action: climate.set_temperature
                   data: {entity_id: "${heating_study_climate}", temperature: !lambda 'return str_sprintf("%.1f", x / 2.0f);'}
+
         - slider:
             id: heat_camera_matrimoniale_slider
             x: 74
-            y: 464
+            y: 434
             width: 368
-            height: 16
+            height: 32
             min_value: 10
             max_value: 60
             value: 40
-            radius: 8
+            radius: 16
             bg_color: 0x303236
             bg_opa: COVER
             border_width: 0
             ext_click_area: 10
-            indicator: {bg_color: 0x2E6B36, bg_opa: COVER, radius: 8}
-            knob: {bg_color: 0xFFFFFF, border_width: 2, border_color: 0x43B853, radius: 11, pad_all: 4}
+            indicator: {bg_color: 0x2E6B36, bg_opa: COVER, radius: 16}
+            knob: {bg_color: 0xFFFFFF, border_width: 2, border_color: 0x43B853, radius: 12, pad_all: 2}
             on_value:
-              - lvgl.label.update: {id: heat_camera_matrimoniale_target_lbl, text: !lambda 'return str_sprintf("%.1f C", x / 2.0f);'}
+              - lvgl.label.update: {id: heat_camera_matrimoniale_target_v12, text: !lambda 'return str_sprintf("%.1f C", x / 2.0f);'}
             on_release:
               - homeassistant.action:
                   action: climate.set_temperature
                   data: {entity_id: "${heating_main_bedroom_climate}", temperature: !lambda 'return str_sprintf("%.1f", x / 2.0f);'}
+
         - slider:
             id: heat_camera_da_letto_slider
             x: 582
-            y: 464
+            y: 434
             width: 368
-            height: 16
+            height: 32
             min_value: 10
             max_value: 60
             value: 40
-            radius: 8
+            radius: 16
             bg_color: 0x303236
             bg_opa: COVER
             border_width: 0
             ext_click_area: 10
-            indicator: {bg_color: 0x2E6B36, bg_opa: COVER, radius: 8}
-            knob: {bg_color: 0xFFFFFF, border_width: 2, border_color: 0x43B853, radius: 11, pad_all: 4}
+            indicator: {bg_color: 0x2E6B36, bg_opa: COVER, radius: 16}
+            knob: {bg_color: 0xFFFFFF, border_width: 2, border_color: 0x43B853, radius: 12, pad_all: 2}
             on_value:
-              - lvgl.label.update: {id: heat_camera_da_letto_target_lbl, text: !lambda 'return str_sprintf("%.1f C", x / 2.0f);'}
+              - lvgl.label.update: {id: heat_camera_da_letto_target_v12, text: !lambda 'return str_sprintf("%.1f C", x / 2.0f);'}
             on_release:
               - homeassistant.action:
                   action: climate.set_temperature
                   data: {entity_id: "${heating_bedroom_climate}", temperature: !lambda 'return str_sprintf("%.1f", x / 2.0f);'}
+
+        # ======================================================
+        # POPUP SLIDER - moved up and double thickness
+        # ======================================================
         - slider:
             id: heating_popup_slider
             x: 272
-            y: 338
+            y: 286
             width: 460
-            height: 18
+            height: 36
             hidden: true
             min_value: 10
             max_value: 60
             value: 40
-            radius: 9
+            radius: 18
             bg_color: 0x303236
             bg_opa: COVER
             border_width: 0
             ext_click_area: 12
-            indicator: {bg_color: 0x2E6B36, bg_opa: COVER, radius: 9}
-            knob: {bg_color: 0xFFFFFF, border_width: 2, border_color: 0x43B853, radius: 12, pad_all: 4}
+            indicator: {bg_color: 0x2E6B36, bg_opa: COVER, radius: 18}
+            knob: {bg_color: 0xFFFFFF, border_width: 2, border_color: 0x43B853, radius: 13, pad_all: 2}
             on_value:
               - lambda: 'id(heating_popup_target) = x / 2.0f;'
               - lvgl.label.update: {id: heating_popup_target_lbl, text: !lambda 'return str_sprintf("%.1f C", id(heating_popup_target));'}
             on_release:
               - script.execute: heating_popup_set_temperature
+
         - label:
             id: heating_popup_min_lbl_v12
             x: 270
-            y: 362
+            y: 326
             width: 70
             hidden: true
             text: "5 C"
             text_font: roboto_14
             text_color: 0x7F8790
+
         - label:
             id: heating_popup_max_lbl_v12
             x: 662
-            y: 362
+            y: 326
             width: 70
             hidden: true
             text_align: RIGHT
             text: "30 C"
             text_font: roboto_14
             text_color: 0x7F8790
+
         - button:
             id: heating_popup_close_v12
             x: 214
@@ -242,3 +452,19 @@ lvgl:
               - lvgl.widget.show: heat_studio_slider
               - lvgl.widget.show: heat_camera_matrimoniale_slider
               - lvgl.widget.show: heat_camera_da_letto_slider
+              - lvgl.widget.show: heat_salotto_state_v12
+              - lvgl.widget.show: heat_salotto_current_v12
+              - lvgl.widget.show: heat_salotto_target_v12
+              - lvgl.widget.show: heat_salotto_humidity_v12
+              - lvgl.widget.show: heat_studio_state_v12
+              - lvgl.widget.show: heat_studio_current_v12
+              - lvgl.widget.show: heat_studio_target_v12
+              - lvgl.widget.show: heat_studio_humidity_v12
+              - lvgl.widget.show: heat_camera_matrimoniale_state_v12
+              - lvgl.widget.show: heat_camera_matrimoniale_current_v12
+              - lvgl.widget.show: heat_camera_matrimoniale_target_v12
+              - lvgl.widget.show: heat_camera_matrimoniale_humidity_v12
+              - lvgl.widget.show: heat_camera_da_letto_state_v12
+              - lvgl.widget.show: heat_camera_da_letto_current_v12
+              - lvgl.widget.show: heat_camera_da_letto_target_v12
+              - lvgl.widget.show: heat_camera_da_letto_humidity_v12
