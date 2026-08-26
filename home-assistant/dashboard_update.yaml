@@ -11,23 +11,23 @@
 # release currently installed in ESPHome.
 # ============================================================
 
-rest:
-  - resource: "https://api.github.com/repos/Marcobedendo78/Waveshare-ESPHome-Home-Assistant-Dashboard/releases/latest"
+sensor:
+  - platform: rest
+    name: "Waveshare Dashboard Latest Version"
+    unique_id: waveshare_dashboard_latest_version
+    resource: "https://api.github.com/repos/Marcobedendo78/Waveshare-ESPHome-Home-Assistant-Dashboard/releases/latest"
+    method: GET
     scan_interval: 21600  # 6 hours
     timeout: 15
     headers:
       Accept: "application/vnd.github+json"
       User-Agent: "Home-Assistant-Waveshare-Dashboard"
-    sensor:
-      - name: "Waveshare Dashboard Latest Version"
-        unique_id: waveshare_dashboard_latest_version
-        icon: mdi:github
-        value_template: >-
-          {{ value_json.tag_name | default('unknown', true) }}
-        json_attributes:
-          - html_url
-          - name
-          - published_at
+    value_template: >-
+      {{ value_json.tag_name | default('unknown', true) }}
+    json_attributes:
+      - html_url
+      - name
+      - published_at
 
 # Installed release. Update this value when installing a new
 # dashboard release. The release package shipped with v1.2.0
