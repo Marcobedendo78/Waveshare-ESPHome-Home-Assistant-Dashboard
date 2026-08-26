@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [1.1.0] - In development
+## [1.1.0] - 2026-08-26
 
 ### Configuration and installation
 
@@ -25,11 +25,14 @@ All notable changes to this project will be documented in this file.
 - Reworked the README with a v1.1 quick-start procedure.
 - Documented the distinction between the remote reusable package and the required local ESPHome files.
 - Documented the Home Assistant action permission required by dashboard controls.
-- Retained `waveshare-dashboard.yaml` as a legacy/reference v1.0 configuration while v1.1 is validated.
+- Retained `waveshare-dashboard.yaml` as a legacy/reference v1.0 configuration.
 
-### Status
+### Validation
 
-v1.1.0 is still under development on `dev-v1.1.0` and should be validated on the real Waveshare display before merging into `main` and publishing a release.
+- Validated the new ESPHome configuration with ESPHome 2026.8.1.
+- Successfully compiled the complete firmware for the Waveshare ESP32-S3 Touch LCD 7B.
+- Successfully installed the firmware OTA on the real display.
+- Confirmed the dashboard, touch navigation, Home Assistant entities and existing functions operate as before with the new package architecture.
 
 ## [1.0.0] - 2026-08-25
 
@@ -54,4 +57,4 @@ v1.1.0 is still under development on `dev-v1.1.0` and should be validated on the
 
 ### Notes
 
-The v1.0.0 ESPHome YAML is intentionally kept functionally aligned with the working installation. Entity IDs are still specific to the original Home Assistant instance. v1.1.0 progressively moves installation-specific values to documented configuration variables.
+The v1.0.0 ESPHome YAML is intentionally kept functionally aligned with the working installation. Entity IDs are still specific to the original Home Assistant instance. v1.1.0 moves installation-specific values to documented configuration variables.
