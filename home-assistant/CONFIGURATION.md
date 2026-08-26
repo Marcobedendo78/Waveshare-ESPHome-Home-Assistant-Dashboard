@@ -8,7 +8,7 @@ The ESPHome dashboard uses helper sensors created by the Home Assistant packages
 
 The weather and energy helper sensors are named `sensor.display_*` and are read by the ESP32 dashboard. You normally **do not change those generated helper entity IDs**.
 
-What must be adapted are the **source entities** used by the packages. The values below are the entities from the original installation and must be replaced when your Home Assistant uses different entity IDs.
+What must be adapted are the **source entities** used by the weather and energy packages. The values below are the entities from the original installation and must be replaced when your Home Assistant uses different entity IDs.
 
 ## 1. Weather package
 
@@ -58,20 +58,41 @@ File: `dashboard_update.yaml`
 
 Starting with v1.2.0, this optional package checks the latest **stable GitHub release** every 6 hours.
 
-The installed version is reported directly by the ESPHome display through:
+The installed dashboard version is reported by the ESPHome display through a text sensor named:
 
 ```text
-sensor.waveshare_dashboard_version
+Waveshare Dashboard Version
 ```
 
-That sensor belongs to the `waveshare-display` ESPHome device and is visible on its Home Assistant device page.
-
-The update package additionally creates:
+Home Assistant may prefix its entity ID with the device name and/or area, for example:
 
 ```text
+sensor.salotto_waveshare_display_waveshare_dashboard_version
+```
+
+For this reason, `dashboard_update.yaml` does **not** require a fixed entity ID. It automatically finds the single sensor whose entity ID ends with:
+
+```text
+waveshare_dashboard_version
+```
+
+and exposes a stable helper:
+
+```text
+sensor.waveshare_dashboard_installed_version
+```
+
+The update package therefore creates/uses:
+
+```text
+sensor.waveshare_dashboard_installed_version
 sensor.waveshare_dashboard_latest_version
 binary_sensor.waveshare_dashboard_update_available
 ```
+
+The installed-version helper includes the detected ESPHome source entity in its `source_entity` attribute.
+
+The automatic discovery expects exactly one Waveshare dashboard version sensor. If more than one dashboard is installed in the same Home Assistant instance, the installed-version helper intentionally becomes unavailable instead of selecting the wrong device. Multi-display installations can customize the package to target a specific version sensor.
 
 When a newer stable release is found, Home Assistant creates a persistent notification containing the installed version, latest version and a link to the GitHub release.
 
@@ -134,9 +155,10 @@ After adding or modifying the packages:
 2. Perform a full Home Assistant restart when adding `dashboard_update.yaml` for the first time.
 3. Confirm that the expected `sensor.display_*` helper entities are created and have valid values.
 4. Confirm `sensor.waveshare_dashboard_latest_version` is available.
-5. Confirm `sensor.waveshare_dashboard_version` appears after the updated ESPHome firmware is installed.
-6. Confirm `binary_sensor.waveshare_dashboard_update_available` has a valid state.
-7. Only then consider the update-checker installation complete.
+5. Confirm the Waveshare device page shows `Waveshare Dashboard Version`.
+6. Confirm `sensor.waveshare_dashboard_installed_version` reports the same version and its `source_entity` attribute points to the ESPHome version sensor.
+7. Confirm `binary_sensor.waveshare_dashboard_update_available` has a valid state.
+8. Only then consider the update-checker installation complete.
 
 ## Important
 
