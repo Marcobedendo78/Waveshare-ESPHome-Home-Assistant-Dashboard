@@ -1,0 +1,84 @@
+# ============================================================
+# WAVESHARE ESP32-S3 TOUCH LCD 7B
+# Local ESPHome configuration example for v1.1.0
+#
+# QUICK SETUP
+# 1) Copy this file as: waveshare-display.yaml
+# 2) Copy user_config.example.yaml as: user_config.yaml
+# 3) Keep these files in the SAME ESPHome directory:
+#      - sd_storage.h
+#      - Robot.jpg
+#      - capture_card.png
+# 4) Copy the required values from secrets.example.yaml into
+#    your normal ESPHome secrets.yaml file.
+# 5) Edit ONLY the values in user_config.yaml to match your
+#    Home Assistant entities and robot MQTT topics.
+#
+# dashboard-package.yaml is loaded remotely from GitHub.
+# ============================================================
+
+substitutions: !include user_config.yaml
+
+packages:
+  dashboard:
+    url: https://github.com/Marcobedendo78/Waveshare-ESPHome-Home-Assistant-Dashboard
+    ref: main
+    files:
+      - esphome/dashboard-package.yaml
+    refresh: 1h
+
+esphome:
+  name: ${device_name}
+  friendly_name: ${friendly_name}
+
+  # Local file: must be in the same ESPHome configuration directory.
+  includes:
+    - sd_storage.h
+
+  on_boot:
+    priority: -100
+    then:
+      - delay: 2s
+      - lambda: |-
+          if (sd_storage_mount()) {
+            ESP_LOGI("sd_storage", "microSD montata correttamente");
+            sd_storage_append_log("BOOT", "Waveshare display avviato");
+          } else {
+            ESP_LOGW("sd_storage", "microSD non disponibile: il display continua normalmente");
+          }
+
+esp32:
+  variant: esp32s3
+  flash_size: 16MB
+  framework:
+    type: esp-idf
+    advanced:
+      include_builtin_idf_components:
+        - fatfs
+        - esp_driver_sdspi
+
+psram:
+  mode: octal
+  speed: 80MHz
+
+time:
+  - platform: homeassistant
+    id: ha_time
+
+logger:
+
+api:
+  encryption:
+    key: !secret waveshare_display_encryption_key
+
+ota:
+  - platform: esphome
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  ap:
+    ssid: "${device_name} Fallback"
+    password: !secret waveshare_display_ap_password
+
+captive_portal:

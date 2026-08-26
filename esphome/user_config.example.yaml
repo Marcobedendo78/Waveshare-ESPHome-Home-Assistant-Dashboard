@@ -1,0 +1,158 @@
+# ============================================================
+# WAVESHARE DASHBOARD - USER CONFIGURATION
+#
+# Copy this file as: user_config.yaml
+# Change ONLY the values on the right.
+# Do not rename the keys on the left.
+#
+# sensor.display_* helper entities are generated automatically
+# by the Home Assistant helper packages and are not listed here.
+# ============================================================
+
+device_name: "waveshare-display"
+friendly_name: "waveshare-display"
+robot_image_file: "Robot.jpg"
+ev_image_file: "capture_card.png"
+
+# ------------------------------------------------------------
+# HOME / ENERGY
+# ------------------------------------------------------------
+energy_solar_power: "sensor.inverter_potenza_in_ingresso"
+energy_solar_daily: "sensor.inverter_rendimento_giornaliero"
+energy_grid_power: "sensor.power_meter_potenza_attiva"
+energy_battery_power: "sensor.battery_potenza_di_carica_scarica"
+energy_battery_soc: "sensor.battery_stato_della_capacita"
+
+# ------------------------------------------------------------
+# HEAT PUMP
+# ------------------------------------------------------------
+heatpump_power: "sensor.consumo_istantaneo_pdc_2"
+
+# ------------------------------------------------------------
+# LIGHTS / GATE
+# ------------------------------------------------------------
+gate_control: "switch.sonoff_10005f5047"
+light_anteroom: "switch.luce_antibagno_2"
+light_attic: "switch.luce_mansarda"
+light_corridor: "switch.luce_corridoio_2"
+light_entrance: "switch.luce_entrata_2"
+light_entrance_group: "switch.punti_luce_entrata_2"
+light_fireplace: "switch.sonoff_100053a831"
+light_garage: "switch.luce_garage_2"
+light_gate: "switch.shelly_pro2_2"
+light_kitchen: "switch.luce_cucina_2"
+light_laundry: "switch.luce_lavanderia_2"
+light_living_group: "switch.punti_luce_salotto_2"
+light_living_main: "switch.sonoff_100053959c"
+light_main_bedroom: "switch.luce_camera_matrimoniale_2"
+light_night_bathroom: "switch.luce_bagno_notte_2"
+light_path: "switch.shelly_pro2"
+light_small_bedroom: "switch.luce_camera_piccola_2"
+light_study: "switch.luce_studio_2"
+light_gate_power: "sensor.shelly_pro2_power_2"
+light_path_power: "sensor.shelly_pro2_power"
+
+# ------------------------------------------------------------
+# HEATING - LIVING ROOM
+# ------------------------------------------------------------
+heating_living_climate: "climate.salotto"
+heating_living_connectivity: "binary_sensor.salotto_connettivita"
+heating_living_enabled: "binary_sensor.salotto_potenza"
+heating_living_humidity: "sensor.salotto_umidita"
+heating_living_mode: "sensor.salotto_modalita_tado"
+heating_living_overlay: "binary_sensor.salotto_sovrapponi"
+heating_living_power: "sensor.salotto_riscaldamento"
+heating_living_temperature: "sensor.salotto_temperatura"
+heating_living_window: "binary_sensor.salotto_finestra"
+
+# ------------------------------------------------------------
+# HEATING - MAIN BEDROOM
+# ------------------------------------------------------------
+heating_main_bedroom_climate: "climate.camera_matrimoniale"
+heating_main_bedroom_connectivity: "binary_sensor.camera_matrimoniale_connettivita"
+heating_main_bedroom_enabled: "binary_sensor.camera_matrimoniale_potenza"
+heating_main_bedroom_humidity: "sensor.camera_matrimoniale_umidita"
+heating_main_bedroom_mode: "sensor.camera_matrimoniale_modalita_tado"
+heating_main_bedroom_overlay: "binary_sensor.camera_matrimoniale_sovrapponi"
+heating_main_bedroom_power: "sensor.camera_matrimoniale_riscaldamento"
+heating_main_bedroom_temperature: "sensor.camera_matrimoniale_temperatura"
+heating_main_bedroom_window: "binary_sensor.camera_matrimoniale_finestra"
+
+# ------------------------------------------------------------
+# HEATING - BEDROOM
+# ------------------------------------------------------------
+heating_bedroom_climate: "climate.camera_da_letto"
+heating_bedroom_connectivity: "binary_sensor.camera_da_letto_connettivita"
+heating_bedroom_enabled: "binary_sensor.camera_da_letto_potenza"
+heating_bedroom_humidity: "sensor.camera_da_letto_umidita"
+heating_bedroom_mode: "sensor.camera_da_letto_modalita_tado"
+heating_bedroom_overlay: "binary_sensor.camera_da_letto_sovrapponi"
+heating_bedroom_power: "sensor.camera_da_letto_riscaldamento"
+heating_bedroom_temperature: "sensor.camera_da_letto_temperatura"
+heating_bedroom_window: "binary_sensor.camera_da_letto_finestra"
+
+# ------------------------------------------------------------
+# HEATING - STUDY
+# ------------------------------------------------------------
+heating_study_climate: "climate.studio"
+heating_study_connectivity: "binary_sensor.studio_connettivita"
+heating_study_enabled: "binary_sensor.studio_potenza"
+heating_study_humidity: "sensor.studio_umidita"
+heating_study_mode: "sensor.studio_modalita_tado"
+heating_study_overlay: "binary_sensor.studio_sovrapponi"
+heating_study_power: "sensor.studio_riscaldamento"
+heating_study_temperature: "sensor.studio_temperatura"
+heating_study_window: "binary_sensor.studio_finestra"
+
+# ------------------------------------------------------------
+# WEATHER
+# ------------------------------------------------------------
+weather_air_quality_index: "sensor.air_quality_index"
+weather_home: "weather.marco_e_licia_home"
+weather_next_dawn: "sensor.sun_next_dawn"
+weather_next_sunset: "sensor.sun_next_setting"
+weather_outdoor_humidity: "sensor.sensore_temperatura_esterno_humidity"
+weather_outdoor_temperature: "sensor.sensore_temperatura_esterno_temperature"
+weather_rain_contact: "binary_sensor.pluviometro_contact"
+weather_rain_sensor: "sensor.sensore_pioggia_aqara_2"
+weather_real_feel: "sensor.real_feel_temperature"
+weather_soil_moisture_1: "sensor.umidita_terreno_umidit_del_suolo"
+weather_soil_moisture_2: "sensor.umidita_terreno_2_umidit_del_suolo_2"
+
+# ------------------------------------------------------------
+# EV CHARGING
+# ------------------------------------------------------------
+ev_mode_boost: "input_boolean.wallbox_modo_boost"
+ev_mode_manual: "input_boolean.wallbox_modo_manuale"
+ev_mode_mixed: "input_boolean.wallbox_modo_misto"
+ev_mode_solar_only: "input_boolean.wallbox_modo_solo_fv"
+ev_vehicle_battery: "sensor.gm352cx_batteria"
+ev_vehicle_fuel_level: "sensor.gm352cx_quantita_di_carburante"
+ev_vehicle_location: "device_tracker.gm352cx_posizione"
+ev_vehicle_odometer: "sensor.gm352cx_chilometraggio"
+ev_wallbox_available: "switch.wallbox_availability"
+ev_wallbox_charge_control: "switch.wallbox_charge_control"
+ev_wallbox_connector_status: "sensor.wallbox_status_connector_2"
+ev_wallbox_logic_status: "input_text.wallbox_stato"
+ev_wallbox_max_current: "number.wallbox_maximum_current"
+ev_wallbox_session_energy: "sensor.wallbox_energy_session_2"
+ev_wallbox_session_time: "sensor.wallbox_time_session_2"
+ev_wallbox_total_energy: "sensor.wallbox_energy_active_import_register_2"
+
+# ------------------------------------------------------------
+# ROBOT LAWNMOWER
+# ------------------------------------------------------------
+robot_battery_current: "sensor.robotmowerbatteryamps"
+robot_battery_voltage: "sensor.mower_battery"
+robot_charge_state: "sensor.mower_charge"
+robot_docked: "sensor.mower_docked"
+robot_error: "sensor.mower_error"
+robot_loop_counter: "sensor.mower_loop"
+robot_parked: "sensor.mower_parked"
+robot_running: "sensor.mower_running"
+robot_tracking: "sensor.mower_tracking"
+
+# MQTT topics used by the robot controls
+robot_mqtt_control_topic: "home/robot/mower/control"
+robot_mqtt_timers_topic: "home/robot/mower/control/timers"
+robot_mqtt_joystick_topic: "home/robot/mower/control/joystick"

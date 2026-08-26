@@ -2,6 +2,38 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.0] - 2026-08-26
+
+### Configuration and installation
+
+- Added a remote ESPHome dashboard package architecture.
+- Added `esphome/waveshare-display.example.yaml` as the recommended v1.1 local entry configuration.
+- Added `esphome/user_config.example.yaml` so installation-specific Home Assistant entities can be changed without editing the large dashboard package.
+- Added `esphome/secrets.example.yaml` with safe placeholder values for Wi-Fi, ESPHome API encryption and fallback AP credentials.
+- Kept `sd_storage.h`, `Robot.jpg` and `capture_card.png` as clearly documented local ESPHome assets.
+- Added `home-assistant/CONFIGURATION.md` documenting the source entities required by the Home Assistant helper packages.
+
+### Dashboard configuration
+
+- Moved robot image and EV image file names to user substitutions.
+- Moved Shelly path/gate power sensors to user substitutions.
+- Made robot MQTT control, timer and joystick topics configurable through `user_config.yaml`.
+- Kept generated `sensor.display_*` Home Assistant helper entity names stable for compatibility with the dashboard.
+
+### Documentation
+
+- Reworked the README with a v1.1 quick-start procedure.
+- Documented the distinction between the remote reusable package and the required local ESPHome files.
+- Documented the Home Assistant action permission required by dashboard controls.
+- Retained `waveshare-dashboard.yaml` as a legacy/reference v1.0 configuration.
+
+### Validation
+
+- Validated the new ESPHome configuration with ESPHome 2026.8.1.
+- Successfully compiled the complete firmware for the Waveshare ESP32-S3 Touch LCD 7B.
+- Successfully installed the firmware OTA on the real display.
+- Confirmed the dashboard, touch navigation, Home Assistant entities and existing functions operate as before with the new package architecture.
+
 ## [1.0.0] - 2026-08-25
 
 ### Initial public release
@@ -25,4 +57,4 @@ All notable changes to this project will be documented in this file.
 
 ### Notes
 
-The v1.0.0 ESPHome YAML is intentionally kept functionally aligned with the working installation. Entity IDs are still specific to the original Home Assistant instance. A later release can progressively move installation-specific entity IDs to substitutions/configuration variables.
+The v1.0.0 ESPHome YAML is intentionally kept functionally aligned with the working installation. Entity IDs are still specific to the original Home Assistant instance. v1.1.0 moves installation-specific values to documented configuration variables.
