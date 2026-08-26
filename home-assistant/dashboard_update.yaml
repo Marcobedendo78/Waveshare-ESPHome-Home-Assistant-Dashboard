@@ -7,8 +7,8 @@
 # dashboard version is available.
 #
 # IMPORTANT:
-# Keep INSTALLED_VERSION aligned with the dashboard release
-# currently installed in ESPHome.
+# Keep the installed-version value aligned with the dashboard
+# release currently installed in ESPHome.
 # ============================================================
 
 rest:
@@ -42,7 +42,6 @@ template:
   - binary_sensor:
       - name: "Waveshare Dashboard Update Available"
         unique_id: waveshare_dashboard_update_available
-        device_class: update
         icon: mdi:update
         availability: >-
           {{ states('sensor.waveshare_dashboard_latest_version') not in
