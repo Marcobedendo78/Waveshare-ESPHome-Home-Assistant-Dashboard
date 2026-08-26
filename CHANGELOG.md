@@ -8,17 +8,26 @@ All notable changes to this project will be documented in this file.
 
 - Added `home-assistant/dashboard_update.yaml` as an optional but recommended Home Assistant package.
 - Added a REST sensor that checks the latest stable GitHub release every 6 hours.
-- Added installed-version and latest-version sensors.
 - Added `binary_sensor.waveshare_dashboard_update_available` for update status.
 - Added a Home Assistant persistent notification when a newer stable dashboard release is available.
 - The notification contains the installed version, latest version and a direct link to the GitHub release.
-- Update installation remains manual by design; the checker never changes the ESPHome package reference or installs firmware automatically.
+- Update installation remains manual by design; the checker never installs firmware automatically.
 - Added automatic dismissal of the persistent notification when the installed version is current.
+- Added startup and periodic safety checks so update notifications are also created correctly after a Home Assistant restart.
+
+### ESPHome version reporting
+
+- Added `dashboard_version` to `user_config.yaml`.
+- The ESPHome package `ref` now uses `${dashboard_version}`, so the release reference and reported dashboard version cannot drift apart.
+- Added `sensor.waveshare_dashboard_version` from the ESPHome device.
+- The installed dashboard version is now visible directly on the Waveshare ESPHome device page in Home Assistant.
+- The Home Assistant update checker reads the installed version directly from the ESPHome device instead of duplicating it in `dashboard_update.yaml`.
+- Updating to a new release therefore requires changing only `dashboard_version` in the local `user_config.yaml`, followed by an ESPHome reinstall.
 
 ### Documentation
 
-- Updated `home-assistant/CONFIGURATION.md` with update-checker installation and behavior.
-- Documented that `dashboard_update.yaml` must be updated together with the ESPHome release reference when installing a newer dashboard version.
+- Updated the configuration model for v1.2.0 so the dashboard version has a single source of truth.
+- Documented that a full Home Assistant restart is required after adding the REST update-checker package for the first time.
 
 ## [1.1.1] - 2026-08-26
 
