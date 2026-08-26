@@ -56,11 +56,20 @@ The package expects the cumulative energy sources used with `recorder.get_statis
 
 File: `dashboard_update.yaml`
 
-Starting with v1.2.0, this optional package checks the latest **stable GitHub release** every 6 hours. It creates these Home Assistant entities:
+Starting with v1.2.0, this optional package checks the latest **stable GitHub release** every 6 hours.
+
+The installed version is reported directly by the ESPHome display through:
+
+```text
+sensor.waveshare_dashboard_version
+```
+
+That sensor belongs to the `waveshare-display` ESPHome device and is visible on its Home Assistant device page.
+
+The update package additionally creates:
 
 ```text
 sensor.waveshare_dashboard_latest_version
-sensor.waveshare_dashboard_installed_version
 binary_sensor.waveshare_dashboard_update_available
 ```
 
@@ -68,9 +77,19 @@ When a newer stable release is found, Home Assistant creates a persistent notifi
 
 The checker does **not** install firmware automatically. Updating remains manual so a working dashboard cannot be changed without the user's approval.
 
-The installed version is intentionally stored in `dashboard_update.yaml`. Each published release ships this file with the matching version number. When updating the dashboard, replace your local `dashboard_update.yaml` with the file from the new release (or update its installed-version value at the same time as the ESPHome `ref:`).
+From v1.2.0 the installed version has a single source of truth: `dashboard_version` in the local ESPHome `user_config.yaml`. The main `waveshare-display.yaml` uses that value both as the GitHub package `ref` and as the version exposed to Home Assistant.
+
+Example:
+
+```yaml
+dashboard_version: "v1.2.0"
+```
+
+To update to a future release, change only that value to the new release tag and reinstall the display from ESPHome. The reported installed version then updates automatically after the device reconnects.
 
 The GitHub check uses the public releases API and does not require a GitHub token. Its default 6-hour interval is deliberately conservative.
+
+**Important:** after adding `dashboard_update.yaml` for the first time, perform a full Home Assistant restart. Reloading YAML alone may not create the new REST sensor.
 
 ## 4. ESPHome entity configuration is separate
 
@@ -88,9 +107,18 @@ esphome/user_config.example.yaml
 
 Do not add the generated `sensor.display_*` helper sensors to `user_config.yaml`; they are intentionally fixed because the Home Assistant packages create them for the dashboard.
 
+Do not rename `dashboard_version`. It controls both the remote package release and the version reported by the ESPHome device.
+
 ## 5. Installing the packages
 
-Use the package-loading method already used by your Home Assistant installation. A common setup is to enable packages in `configuration.yaml` and place these YAML files under the configured packages directory.
+Use the package-loading method already used by your Home Assistant installation. A common setup is:
+
+```yaml
+homeassistant:
+  packages: !include_dir_named packages
+```
+
+and the package YAML files are placed in the configured `packages` directory.
 
 Recommended files from v1.2.0:
 
@@ -103,10 +131,12 @@ dashboard_update.yaml
 After adding or modifying the packages:
 
 1. Check the Home Assistant configuration.
-2. Restart Home Assistant.
+2. Perform a full Home Assistant restart when adding `dashboard_update.yaml` for the first time.
 3. Confirm that the expected `sensor.display_*` helper entities are created and have valid values.
-4. Confirm the update-checker entities are available if `dashboard_update.yaml` is installed.
-5. Only then validate/compile the ESPHome display configuration.
+4. Confirm `sensor.waveshare_dashboard_latest_version` is available.
+5. Confirm `sensor.waveshare_dashboard_version` appears after the updated ESPHome firmware is installed.
+6. Confirm `binary_sensor.waveshare_dashboard_update_available` has a valid state.
+7. Only then consider the update-checker installation complete.
 
 ## Important
 
