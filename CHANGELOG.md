@@ -17,13 +17,20 @@ All notable changes to this project will be documented in this file.
 
 ### ESPHome version reporting
 
-- Added `dashboard_version` to `user_config.yaml`.
+- Added `dashboard_version` to the local user configuration.
 - The ESPHome package `ref` now uses `${dashboard_version}`, so the release reference and reported dashboard version cannot drift apart.
 - Added the ESPHome `Waveshare Dashboard Version` text sensor, visible directly on the Waveshare device page in Home Assistant.
 - Added automatic discovery of the ESPHome version entity by the stable entity-ID suffix `waveshare_dashboard_version`, so Home Assistant device/area prefixes do not need to be known in advance.
 - Added `sensor.waveshare_dashboard_installed_version` as a stable helper that mirrors the detected ESPHome version sensor and exposes the detected source entity as an attribute.
 - Automatic discovery requires exactly one matching dashboard version sensor; ambiguous multi-display installations become unavailable instead of selecting the wrong device.
-- Updating to a new release therefore requires changing only `dashboard_version` in the local `user_config.yaml`, followed by an ESPHome reinstall.
+- Updating to a new release therefore requires changing only `dashboard_version` in the local user configuration, followed by an ESPHome reinstall.
+
+### ESPHome Device Builder cleanup
+
+- The recommended local configuration file is now `.user_config.yaml` instead of `user_config.yaml`.
+- ESPHome officially hides dot-prefixed YAML files from the Device Builder, so the substitutions file no longer appears as a false offline device card.
+- `waveshare-display.example.yaml` now includes `.user_config.yaml` directly.
+- `.gitignore` protects both legacy `user_config.yaml` and the new hidden `.user_config.yaml`.
 
 ### Documentation
 
