@@ -1,0 +1,119 @@
+# ============================================================
+# WAVESHARE ESPHOME HOME ASSISTANT DASHBOARD - UPDATE CHECKER
+# Development version for v1.2.0
+#
+# This Home Assistant package checks the latest stable GitHub
+# release and creates a persistent notification when a newer
+# dashboard version is available.
+#
+# IMPORTANT:
+# Keep INSTALLED_VERSION aligned with the dashboard release
+# currently installed in ESPHome.
+# ============================================================
+
+rest:
+  - resource: "https://api.github.com/repos/Marcobedendo78/Waveshare-ESPHome-Home-Assistant-Dashboard/releases/latest"
+    scan_interval: 21600  # 6 hours
+    timeout: 15
+    headers:
+      Accept: "application/vnd.github+json"
+      User-Agent: "Home-Assistant-Waveshare-Dashboard"
+    sensor:
+      - name: "Waveshare Dashboard Latest Version"
+        unique_id: waveshare_dashboard_latest_version
+        icon: mdi:github
+        value_template: >-
+          {{ value_json.tag_name | default('unknown', true) }}
+        json_attributes:
+          - html_url
+          - name
+          - published_at
+
+# Installed release. Update this value when installing a new
+# dashboard release. The release package shipped with v1.2.0
+# therefore reports v1.2.0 here.
+template:
+  - sensor:
+      - name: "Waveshare Dashboard Installed Version"
+        unique_id: waveshare_dashboard_installed_version
+        icon: mdi:package-variant-closed
+        state: "v1.2.0"
+
+  - binary_sensor:
+      - name: "Waveshare Dashboard Update Available"
+        unique_id: waveshare_dashboard_update_available
+        device_class: update
+        icon: mdi:update
+        availability: >-
+          {{ states('sensor.waveshare_dashboard_latest_version') not in
+             ['unknown', 'unavailable', 'none', ''] }}
+        state: >-
+          {% set latest = states('sensor.waveshare_dashboard_latest_version')
+             | lower | replace('v', '') %}
+          {% set installed = states('sensor.waveshare_dashboard_installed_version')
+             | lower | replace('v', '') %}
+
+          {% set lp = latest.split('.') %}
+          {% set ip = installed.split('.') %}
+
+          {% set l_major = lp[0] | int(0) if lp | count > 0 else 0 %}
+          {% set l_minor = lp[1] | int(0) if lp | count > 1 else 0 %}
+          {% set l_patch = lp[2] | regex_replace(find='[^0-9].*', replace='') | int(0)
+             if lp | count > 2 else 0 %}
+
+          {% set i_major = ip[0] | int(0) if ip | count > 0 else 0 %}
+          {% set i_minor = ip[1] | int(0) if ip | count > 1 else 0 %}
+          {% set i_patch = ip[2] | regex_replace(find='[^0-9].*', replace='') | int(0)
+             if ip | count > 2 else 0 %}
+
+          {% set latest_number = l_major * 1000000 + l_minor * 1000 + l_patch %}
+          {% set installed_number = i_major * 1000000 + i_minor * 1000 + i_patch %}
+
+          {{ latest_number > installed_number }}
+        attributes:
+          installed_version: >-
+            {{ states('sensor.waveshare_dashboard_installed_version') }}
+          latest_version: >-
+            {{ states('sensor.waveshare_dashboard_latest_version') }}
+          release_url: >-
+            {{ state_attr('sensor.waveshare_dashboard_latest_version', 'html_url') }}
+
+# Generic Home Assistant notification. A fixed notification_id
+# prevents duplicate notifications after restarts or rechecks.
+automation:
+  - id: waveshare_dashboard_update_available_notification
+    alias: "Waveshare Dashboard - Update available"
+    description: "Shows a Home Assistant notification when a newer stable dashboard release is available."
+    mode: single
+    triggers:
+      - trigger: state
+        entity_id: binary_sensor.waveshare_dashboard_update_available
+        to: "on"
+        for: "00:01:00"
+    actions:
+      - action: persistent_notification.create
+        data:
+          notification_id: waveshare_dashboard_update
+          title: "Waveshare Dashboard update available"
+          message: >-
+            A new stable version of Waveshare ESPHome Home Assistant Dashboard is available.
+
+            Installed: **{{ states('sensor.waveshare_dashboard_installed_version') }}**  
+            Latest: **{{ states('sensor.waveshare_dashboard_latest_version') }}**
+
+            [Open the GitHub release]({{ state_attr('sensor.waveshare_dashboard_latest_version', 'html_url') }})
+
+            Updating is manual: review the release notes first, then update the `ref:` in your local `waveshare-display.yaml` and reinstall from ESPHome.
+
+  - id: waveshare_dashboard_update_notification_dismiss
+    alias: "Waveshare Dashboard - Dismiss update notification"
+    description: "Dismisses the update notification when the installed version is current."
+    mode: single
+    triggers:
+      - trigger: state
+        entity_id: binary_sensor.waveshare_dashboard_update_available
+        to: "off"
+    actions:
+      - action: persistent_notification.dismiss
+        data:
+          notification_id: waveshare_dashboard_update
