@@ -2,8 +2,7 @@
 
 Touchscreen wall dashboard for **Home Assistant** based on the **Waveshare ESP32-S3 Touch LCD 7B (1024×600)** and **ESPHome**.
 
-**Stable release: v1.0.0**  
-**Development branch: v1.1.0 (`dev-v1.1.0`)**
+**Stable release: v1.1.0**
 
 ![Installed dashboard](docs/images/dashboard-home.jpg)
 
@@ -77,7 +76,7 @@ docs/
 
 ## v1.1.0 quick start
 
-The `dev-v1.1.0` branch separates the reusable dashboard code from installation-specific entity IDs.
+v1.1.0 separates the reusable dashboard code from installation-specific entity IDs.
 
 ### 1. Prepare the local ESPHome files
 
@@ -179,7 +178,7 @@ After configuring `user_config.yaml`, the secrets and the Home Assistant helper 
 esphome/dashboard-package.yaml
 ```
 
-from GitHub.
+from the repository's `main` branch.
 
 `user_config.yaml` supplies your installation-specific substitutions to the remote package. This means most users should not need to edit the large `dashboard-package.yaml` file.
 
@@ -230,7 +229,7 @@ The display continues to operate if the microSD is not available; logging is sim
 - `v1.x.0` — backward-compatible features and configuration improvements
 - `v2.0.0` — major/incompatible changes
 
-The `dev-v1.1.0` branch is currently the development version and should be validated on real hardware before it is merged into `main` and published as a release.
+v1.1.0 has been validated, compiled and tested successfully on the real Waveshare ESP32-S3 Touch LCD 7B hardware.
 
 ## Related project
 
