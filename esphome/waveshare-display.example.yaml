@@ -4,14 +4,15 @@
 #
 # QUICK SETUP
 # 1) Copy this file as: waveshare-display.yaml
-# 2) Copy user_config.example.yaml as: user_config.yaml
+# 2) Copy user_config.example.yaml as: .user_config.yaml
+#    The leading dot keeps it hidden from ESPHome Device Builder.
 # 3) Keep these files in the SAME ESPHome directory:
 #      - sd_storage.h
 #      - Robot.jpg
 #      - capture_card.png
 # 4) Copy the required values from secrets.example.yaml into
 #    your normal ESPHome secrets.yaml file.
-# 5) Edit ONLY the values in user_config.yaml to match your
+# 5) Edit ONLY the values in .user_config.yaml to match your
 #    Home Assistant entities and robot MQTT topics.
 #
 # dashboard-package.yaml is loaded remotely from GitHub.
@@ -19,7 +20,7 @@
 # version sensor exposed by the ESPHome device.
 # ============================================================
 
-substitutions: !include user_config.yaml
+substitutions: !include .user_config.yaml
 
 packages:
   dashboard:
