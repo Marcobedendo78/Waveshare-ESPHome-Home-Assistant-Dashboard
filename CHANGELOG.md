@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.2.0] - Unreleased
+
+### Update notifications
+
+- Added `home-assistant/dashboard_update.yaml` as an optional but recommended Home Assistant package.
+- Added a REST sensor that checks the latest stable GitHub release every 6 hours.
+- Added installed-version and latest-version sensors.
+- Added `binary_sensor.waveshare_dashboard_update_available` for update status.
+- Added a Home Assistant persistent notification when a newer stable dashboard release is available.
+- The notification contains the installed version, latest version and a direct link to the GitHub release.
+- Update installation remains manual by design; the checker never changes the ESPHome package reference or installs firmware automatically.
+- Added automatic dismissal of the persistent notification when the installed version is current.
+
+### Documentation
+
+- Updated `home-assistant/CONFIGURATION.md` with update-checker installation and behavior.
+- Documented that `dashboard_update.yaml` must be updated together with the ESPHome release reference when installing a newer dashboard version.
+
 ## [1.1.1] - 2026-08-26
 
 ### Fixes
