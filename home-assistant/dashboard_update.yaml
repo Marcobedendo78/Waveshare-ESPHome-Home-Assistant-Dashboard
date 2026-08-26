@@ -6,8 +6,10 @@
 # persistent Home Assistant notification when a newer
 # dashboard version is available.
 #
-# The installed version is read directly from the ESPHome
-# device entity: sensor.waveshare_dashboard_version
+# The installed version is auto-detected from the ESPHome
+# version sensor whose entity_id ends with:
+#   waveshare_dashboard_version
+# This avoids depending on Home Assistant's device/area prefix.
 # ============================================================
 
 # ------------------------------------------------------------
@@ -32,9 +34,52 @@ rest:
           - published_at
 
 # ------------------------------------------------------------
-# UPDATE STATUS
+# INSTALLED VERSION + UPDATE STATUS
 # ------------------------------------------------------------
 template:
+  # Home Assistant can prefix ESPHome entity IDs with the device
+  # and/or area name. This template finds the single sensor whose
+  # entity_id ends in "waveshare_dashboard_version" and exposes a
+  # stable helper entity for the update checker.
+  - sensor:
+      - name: "Waveshare Dashboard Installed Version"
+        unique_id: waveshare_dashboard_installed_version
+        icon: mdi:package-variant-closed
+        availability: >-
+          {% set ns = namespace(matches=[]) %}
+          {% for s in states.sensor %}
+            {% if s.entity_id.endswith('waveshare_dashboard_version') %}
+              {% set ns.matches = ns.matches + [s.entity_id] %}
+            {% endif %}
+          {% endfor %}
+          {{ ns.matches | count == 1
+             and states(ns.matches[0]) not in ['unknown', 'unavailable', 'none', ''] }}
+        state: >-
+          {% set ns = namespace(matches=[]) %}
+          {% for s in states.sensor %}
+            {% if s.entity_id.endswith('waveshare_dashboard_version') %}
+              {% set ns.matches = ns.matches + [s.entity_id] %}
+            {% endif %}
+          {% endfor %}
+          {{ states(ns.matches[0]) if ns.matches | count == 1 else 'unknown' }}
+        attributes:
+          source_entity: >-
+            {% set ns = namespace(matches=[]) %}
+            {% for s in states.sensor %}
+              {% if s.entity_id.endswith('waveshare_dashboard_version') %}
+                {% set ns.matches = ns.matches + [s.entity_id] %}
+              {% endif %}
+            {% endfor %}
+            {{ ns.matches[0] if ns.matches | count == 1 else 'not uniquely detected' }}
+          detected_entities: >-
+            {% set ns = namespace(matches=[]) %}
+            {% for s in states.sensor %}
+              {% if s.entity_id.endswith('waveshare_dashboard_version') %}
+                {% set ns.matches = ns.matches + [s.entity_id] %}
+              {% endif %}
+            {% endfor %}
+            {{ ns.matches | count }}
+
   - binary_sensor:
       - name: "Waveshare Dashboard Update Available"
         unique_id: waveshare_dashboard_update_available
@@ -42,12 +87,12 @@ template:
         availability: >-
           {{ states('sensor.waveshare_dashboard_latest_version') not in
              ['unknown', 'unavailable', 'none', '']
-             and states('sensor.waveshare_dashboard_version') not in
+             and states('sensor.waveshare_dashboard_installed_version') not in
              ['unknown', 'unavailable', 'none', ''] }}
         state: >-
           {% set latest = states('sensor.waveshare_dashboard_latest_version')
              | lower | replace('v', '') %}
-          {% set installed = states('sensor.waveshare_dashboard_version')
+          {% set installed = states('sensor.waveshare_dashboard_installed_version')
              | lower | replace('v', '') %}
 
           {% set lp = latest.split('.') %}
@@ -73,7 +118,7 @@ template:
           {{ latest_number > installed_number }}
         attributes:
           installed_version: >-
-            {{ states('sensor.waveshare_dashboard_version') }}
+            {{ states('sensor.waveshare_dashboard_installed_version') }}
           latest_version: >-
             {{ states('sensor.waveshare_dashboard_latest_version') }}
           release_url: >-
@@ -120,7 +165,7 @@ automation:
             Dashboard is available.
 
             Installed:
-            **{{ states('sensor.waveshare_dashboard_version') }}**
+            **{{ states('sensor.waveshare_dashboard_installed_version') }}**
 
             Latest:
             **{{ states('sensor.waveshare_dashboard_latest_version') }}**
