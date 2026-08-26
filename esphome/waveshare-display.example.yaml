@@ -22,7 +22,7 @@ substitutions: !include user_config.yaml
 packages:
   dashboard:
     url: https://github.com/Marcobedendo78/Waveshare-ESPHome-Home-Assistant-Dashboard
-    ref: dev-v1.1.0
+    ref: main
     files:
       - esphome/dashboard-package.yaml
     refresh: 1h
