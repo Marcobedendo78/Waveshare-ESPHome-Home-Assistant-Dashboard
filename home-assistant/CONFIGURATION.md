@@ -1,11 +1,12 @@
 # Home Assistant helper package configuration
 
-The ESPHome dashboard uses helper sensors created by the two Home Assistant packages in this directory:
+The ESPHome dashboard uses helper sensors created by the Home Assistant packages in this directory:
 
 - `display_weather.yaml`
 - `home_assistant_display.yaml`
+- `dashboard_update.yaml` (optional but recommended update checker from v1.2.0)
 
-These helper sensors are named `sensor.display_*` and are read by the ESP32 dashboard. You normally **do not change those generated helper entity IDs**.
+The weather and energy helper sensors are named `sensor.display_*` and are read by the ESP32 dashboard. You normally **do not change those generated helper entity IDs**.
 
 What must be adapted are the **source entities** used by the packages. The values below are the entities from the original installation and must be replaced when your Home Assistant uses different entity IDs.
 
@@ -51,7 +52,27 @@ PV production
 
 The package expects the cumulative energy sources used with `recorder.get_statistics` to provide suitable long-term statistics in kWh.
 
-## 3. ESPHome entity configuration is separate
+## 3. Automatic update checker
+
+File: `dashboard_update.yaml`
+
+Starting with v1.2.0, this optional package checks the latest **stable GitHub release** every 6 hours. It creates these Home Assistant entities:
+
+```text
+sensor.waveshare_dashboard_latest_version
+sensor.waveshare_dashboard_installed_version
+binary_sensor.waveshare_dashboard_update_available
+```
+
+When a newer stable release is found, Home Assistant creates a persistent notification containing the installed version, latest version and a link to the GitHub release.
+
+The checker does **not** install firmware automatically. Updating remains manual so a working dashboard cannot be changed without the user's approval.
+
+The installed version is intentionally stored in `dashboard_update.yaml`. Each published release ships this file with the matching version number. When updating the dashboard, replace your local `dashboard_update.yaml` with the file from the new release (or update its installed-version value at the same time as the ESPHome `ref:`).
+
+The GitHub check uses the public releases API and does not require a GitHub token. Its default 6-hour interval is deliberately conservative.
+
+## 4. ESPHome entity configuration is separate
 
 The entities used directly by the ESP32 are configured in:
 
@@ -67,17 +88,26 @@ esphome/user_config.example.yaml
 
 Do not add the generated `sensor.display_*` helper sensors to `user_config.yaml`; they are intentionally fixed because the Home Assistant packages create them for the dashboard.
 
-## 4. Installing the packages
+## 5. Installing the packages
 
 Use the package-loading method already used by your Home Assistant installation. A common setup is to enable packages in `configuration.yaml` and place these YAML files under the configured packages directory.
+
+Recommended files from v1.2.0:
+
+```text
+display_weather.yaml
+home_assistant_display.yaml
+dashboard_update.yaml
+```
 
 After adding or modifying the packages:
 
 1. Check the Home Assistant configuration.
 2. Restart Home Assistant.
 3. Confirm that the expected `sensor.display_*` helper entities are created and have valid values.
-4. Only then validate/compile the ESPHome display configuration.
+4. Confirm the update-checker entities are available if `dashboard_update.yaml` is installed.
+5. Only then validate/compile the ESPHome display configuration.
 
 ## Important
 
-The example source IDs in these files are from the original dashboard installation. They are not universal Home Assistant entity names. Keep the generated helper names stable and change only the source entity IDs unless you intentionally modify both the Home Assistant and ESPHome sides.
+The example source IDs in the weather and energy files are from the original dashboard installation. They are not universal Home Assistant entity names. Keep the generated helper names stable and change only the source entity IDs unless you intentionally modify both the Home Assistant and ESPHome sides.
