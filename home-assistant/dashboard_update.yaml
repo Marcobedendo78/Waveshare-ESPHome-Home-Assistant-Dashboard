@@ -179,7 +179,7 @@ automation:
 
             Updating is manual. Review the release notes first,
             then change `dashboard_version:` in your local
-            `user_config.yaml` to the new release and reinstall
+            `.user_config.yaml` to the new release and reinstall
             the display from ESPHome.
 
   - id: waveshare_dashboard_update_notification_dismiss
