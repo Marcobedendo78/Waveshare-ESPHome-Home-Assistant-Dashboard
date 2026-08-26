@@ -3,6 +3,8 @@ secrets.yaml
 **/secrets.yaml
 user_config.yaml
 **/user_config.yaml
+.user_config.yaml
+**/.user_config.yaml
 waveshare-display.yaml
 **/waveshare-display.yaml
 
