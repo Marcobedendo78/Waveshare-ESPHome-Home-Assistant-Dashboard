@@ -1,0 +1,17 @@
+# Local ESPHome secrets and installation-specific configuration
+secrets.yaml
+**/secrets.yaml
+user_config.yaml
+**/user_config.yaml
+waveshare-display.yaml
+**/waveshare-display.yaml
+
+# ESPHome build/cache output
+.esphome/
+**/.esphome/
+
+# Common local/editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

@@ -2,7 +2,7 @@
 
 Touchscreen wall dashboard for **Home Assistant** based on the **Waveshare ESP32-S3 Touch LCD 7B (1024×600)** and **ESPHome**.
 
-**Stable release: v1.1.0**
+**Stable release: v1.1.1**
 
 ![Installed dashboard](docs/images/dashboard-home.jpg)
 
@@ -74,9 +74,9 @@ docs/
   images/
 ```
 
-## v1.1.0 quick start
+## v1.1.1 quick start
 
-v1.1.0 separates the reusable dashboard code from installation-specific entity IDs.
+v1.1.1 separates the reusable dashboard code from installation-specific entity IDs and pins the remote package to the matching release tag.
 
 ### 1. Prepare the local ESPHome files
 
@@ -170,7 +170,7 @@ After configuring `user_config.yaml`, the secrets and the Home Assistant helper 
 3. install it on the Waveshare ESP32-S3 Touch LCD 7B;
 4. confirm the device connects to Home Assistant and receives the configured entities.
 
-## How v1.1.0 is organized
+## How v1.1.1 is organized
 
 `waveshare-display.yaml` contains the device-specific ESPHome base configuration and loads:
 
@@ -178,7 +178,15 @@ After configuring `user_config.yaml`, the secrets and the Home Assistant helper 
 esphome/dashboard-package.yaml
 ```
 
-from the repository's `main` branch.
+from the release tag declared in `packages.dashboard.ref`.
+
+For the stable v1.1.1 example this is:
+
+```yaml
+ref: v1.1.1
+```
+
+Pinning the package to the release tag ensures an existing installation keeps using the exact dashboard package published with that release, even if `main` changes later.
 
 `user_config.yaml` supplies your installation-specific substitutions to the remote package. This means most users should not need to edit the large `dashboard-package.yaml` file.
 
@@ -229,7 +237,7 @@ The display continues to operate if the microSD is not available; logging is sim
 - `v1.x.0` — backward-compatible features and configuration improvements
 - `v2.0.0` — major/incompatible changes
 
-v1.1.0 has been validated, compiled and tested successfully on the real Waveshare ESP32-S3 Touch LCD 7B hardware.
+v1.1.x has been validated, compiled and tested successfully on the real Waveshare ESP32-S3 Touch LCD 7B hardware.
 
 ## Related project
 

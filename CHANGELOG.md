@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.1] - 2026-08-26
+
+### Fixes
+
+- Pinned the remote ESPHome dashboard package to the matching release tag instead of `main`, preventing existing installations from silently picking up future dashboard changes during a later compile.
+- Updated `waveshare-display.example.yaml` and the README to document release-tag pinning.
+- Added a repository `.gitignore` to reduce the risk of committing local credentials and installation-specific configuration files.
+- Removed the obsolete `UPLOAD_INSTRUCTIONS.txt` file that referred to the original v1.0.0 repository upload procedure.
+
+### Upgrade note
+
+Users who installed v1.1.0 should use the v1.1.1 `waveshare-display.example.yaml` or change the package reference in their local `waveshare-display.yaml` to:
+
+```yaml
+ref: v1.1.1
+```
+
 ## [1.1.0] - 2026-08-26
 
 ### Configuration and installation
