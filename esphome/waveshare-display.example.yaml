@@ -1,6 +1,6 @@
 # ============================================================
 # WAVESHARE ESP32-S3 TOUCH LCD 7B
-# Local ESPHome configuration example for v1.1.1
+# Local ESPHome configuration example for v1.2.0
 #
 # QUICK SETUP
 # 1) Copy this file as: waveshare-display.yaml
@@ -15,8 +15,8 @@
 #    Home Assistant entities and robot MQTT topics.
 #
 # dashboard-package.yaml is loaded remotely from GitHub.
-# The release tag is pinned so this configuration always uses
-# the exact package version it was published with.
+# dashboard_version controls both the package ref and the
+# version sensor exposed by the ESPHome device.
 # ============================================================
 
 substitutions: !include user_config.yaml
@@ -24,7 +24,7 @@ substitutions: !include user_config.yaml
 packages:
   dashboard:
     url: https://github.com/Marcobedendo78/Waveshare-ESPHome-Home-Assistant-Dashboard
-    ref: v1.1.1
+    ref: ${dashboard_version}
     files:
       - esphome/dashboard-package.yaml
     refresh: 1h
@@ -84,3 +84,14 @@ wifi:
     password: !secret waveshare_display_ap_password
 
 captive_portal:
+
+# Exposes the exact dashboard release used by this device to
+# Home Assistant. It appears in the Waveshare ESPHome device page.
+text_sensor:
+  - platform: template
+    name: "Waveshare Dashboard Version"
+    id: waveshare_dashboard_version
+    icon: mdi:package-variant-closed
+    update_interval: 60s
+    lambda: |-
+      return {"${dashboard_version}"};
