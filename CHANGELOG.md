@@ -19,14 +19,16 @@ All notable changes to this project will be documented in this file.
 
 - Added `dashboard_version` to `user_config.yaml`.
 - The ESPHome package `ref` now uses `${dashboard_version}`, so the release reference and reported dashboard version cannot drift apart.
-- Added `sensor.waveshare_dashboard_version` from the ESPHome device.
-- The installed dashboard version is now visible directly on the Waveshare ESPHome device page in Home Assistant.
-- The Home Assistant update checker reads the installed version directly from the ESPHome device instead of duplicating it in `dashboard_update.yaml`.
+- Added the ESPHome `Waveshare Dashboard Version` text sensor, visible directly on the Waveshare device page in Home Assistant.
+- Added automatic discovery of the ESPHome version entity by the stable entity-ID suffix `waveshare_dashboard_version`, so Home Assistant device/area prefixes do not need to be known in advance.
+- Added `sensor.waveshare_dashboard_installed_version` as a stable helper that mirrors the detected ESPHome version sensor and exposes the detected source entity as an attribute.
+- Automatic discovery requires exactly one matching dashboard version sensor; ambiguous multi-display installations become unavailable instead of selecting the wrong device.
 - Updating to a new release therefore requires changing only `dashboard_version` in the local `user_config.yaml`, followed by an ESPHome reinstall.
 
 ### Documentation
 
 - Updated the configuration model for v1.2.0 so the dashboard version has a single source of truth.
+- Documented automatic version-entity discovery and Home Assistant entity-ID prefixes.
 - Documented that a full Home Assistant restart is required after adding the REST update-checker package for the first time.
 - Updated the README quick-start, repository structure and update-checker instructions.
 
