@@ -15,7 +15,7 @@
 # 5) Edit ONLY the values in .user_config.yaml to match your
 #    Home Assistant entities and robot MQTT topics.
 #
-# dashboard-package.yaml is loaded remotely from GitHub.
+# The reusable dashboard files are loaded remotely from GitHub.
 # dashboard_version controls both the package ref and the
 # version sensor exposed by the ESPHome device.
 # ============================================================
@@ -28,6 +28,7 @@ packages:
     ref: ${dashboard_version}
     files:
       - esphome/dashboard-package.yaml
+      - esphome/heating-slider-v1.2.yaml
     refresh: 1h
 
 esphome:
