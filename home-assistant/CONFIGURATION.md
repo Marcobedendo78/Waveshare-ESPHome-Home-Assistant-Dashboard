@@ -98,7 +98,7 @@ When a newer stable release is found, Home Assistant creates a persistent notifi
 
 The checker does **not** install firmware automatically. Updating remains manual so a working dashboard cannot be changed without the user's approval.
 
-From v1.2.0 the installed version has a single source of truth: `dashboard_version` in the local ESPHome `user_config.yaml`. The main `waveshare-display.yaml` uses that value both as the GitHub package `ref` and as the version exposed to Home Assistant.
+From v1.2.0 the installed version has a single source of truth: `dashboard_version` in the local ESPHome `.user_config.yaml`. The main `waveshare-display.yaml` uses that value both as the GitHub package `ref` and as the version exposed to Home Assistant.
 
 Example:
 
@@ -114,19 +114,21 @@ The GitHub check uses the public releases API and does not require a GitHub toke
 
 ## 4. ESPHome entity configuration is separate
 
-The entities used directly by the ESP32 are configured in:
+The entities used directly by the ESP32 are configured locally in:
 
 ```text
-esphome/user_config.yaml
+/config/esphome/.user_config.yaml
 ```
 
-Create that file by copying:
+Create that hidden local file by copying the repository example:
 
 ```text
-esphome/user_config.example.yaml
+esphome/user_config.example.yaml -> .user_config.yaml
 ```
 
-Do not add the generated `sensor.display_*` helper sensors to `user_config.yaml`; they are intentionally fixed because the Home Assistant packages create them for the dashboard.
+The leading dot is intentional: ESPHome Device Builder hides dot-prefixed YAML files, so the substitutions file does not appear as a separate offline device card.
+
+Do not add the generated `sensor.display_*` helper sensors to `.user_config.yaml`; they are intentionally fixed because the Home Assistant packages create them for the dashboard.
 
 Do not rename `dashboard_version`. It controls both the remote package release and the version reported by the ESPHome device.
 
