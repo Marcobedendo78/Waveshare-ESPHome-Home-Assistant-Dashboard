@@ -80,7 +80,7 @@ docs/
 
 ## v1.2.0 configuration model
 
-Starting with v1.2.0, the dashboard release is controlled by a single value in the local ESPHome `user_config.yaml`:
+Starting with v1.2.0, the dashboard release is controlled by a single value in the local hidden ESPHome file `.user_config.yaml`:
 
 ```yaml
 dashboard_version: "v1.2.0"
@@ -89,7 +89,7 @@ dashboard_version: "v1.2.0"
 That value is used for two purposes:
 
 1. it selects the matching GitHub package release through `packages.dashboard.ref`;
-2. it is exposed by ESPHome as `sensor.waveshare_dashboard_version`.
+2. it is exposed by ESPHome as the dashboard-version sensor in Home Assistant.
 
 This prevents the installed package version and the version reported to Home Assistant from drifting apart.
 
@@ -103,7 +103,7 @@ From the `esphome/` directory, keep these files in your ESPHome configuration di
 
 ```text
 waveshare-display.yaml
-user_config.yaml
+.user_config.yaml
 sd_storage.h
 Robot.jpg
 capture_card.png
@@ -113,8 +113,10 @@ Create the first two files as follows:
 
 ```text
 waveshare-display.example.yaml -> waveshare-display.yaml
-user_config.example.yaml       -> user_config.yaml
+user_config.example.yaml       -> .user_config.yaml
 ```
+
+The leading dot in `.user_config.yaml` is intentional. ESPHome Device Builder hides dot-prefixed YAML files, so this substitutions file does not appear as a false offline device card.
 
 `dashboard-package.yaml` does **not** need to be copied locally. It is loaded remotely from the GitHub release selected by `dashboard_version`.
 
@@ -125,7 +127,7 @@ The files `sd_storage.h`, `Robot.jpg`, and `capture_card.png` remain local becau
 Open:
 
 ```text
-user_config.yaml
+.user_config.yaml
 ```
 
 Change only the values on the right side of the keys. This file contains the installation-specific Home Assistant entities for energy, heat pump, lights, heating, weather, EV charging and robot lawnmower data.
@@ -178,15 +180,12 @@ The generated `sensor.display_*` entity IDs are intentionally kept stable becaus
 
 `dashboard_update.yaml` checks the latest stable GitHub release every 6 hours.
 
-It uses:
+The installed version is discovered automatically from the ESPHome dashboard-version entity. This works even if Home Assistant prefixes the entity ID with the area or device name.
+
+The package creates stable helper entities including:
 
 ```text
-sensor.waveshare_dashboard_version
-```
-
-from the ESPHome device as the installed version, and creates:
-
-```text
+sensor.waveshare_dashboard_installed_version
 sensor.waveshare_dashboard_latest_version
 binary_sensor.waveshare_dashboard_update_available
 ```
@@ -213,7 +212,7 @@ and enable:
 
 ### 7. Validate and install
 
-After configuring `user_config.yaml`, the secrets and the Home Assistant helper packages:
+After configuring `.user_config.yaml`, the secrets and the Home Assistant helper packages:
 
 1. validate the ESPHome configuration;
 2. compile it;
