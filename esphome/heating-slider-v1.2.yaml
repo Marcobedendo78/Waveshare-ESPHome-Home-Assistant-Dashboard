@@ -63,6 +63,10 @@ script:
   - id: !extend heating_popup_open
     then:
       - lvgl.widget.hide: heating_popup_arc
+      - lvgl.widget.hide: heat_salotto_slider
+      - lvgl.widget.hide: heat_studio_slider
+      - lvgl.widget.hide: heat_camera_matrimoniale_slider
+      - lvgl.widget.hide: heat_camera_da_letto_slider
       - lvgl.slider.update:
           id: heating_popup_slider
           value: !lambda 'return (int) lroundf(id(heating_popup_target) * 2.0f);'
@@ -87,19 +91,19 @@ lvgl:
         - slider:
             id: heat_salotto_slider
             x: 74
-            y: 226
+            y: 232
             width: 368
-            height: 12
+            height: 16
             min_value: 10
             max_value: 60
             value: 40
-            radius: 6
+            radius: 8
             bg_color: 0x303236
             bg_opa: COVER
             border_width: 0
             ext_click_area: 10
-            indicator: {bg_color: 0x2E6B36, bg_opa: COVER, radius: 6}
-            knob: {bg_color: 0xFFFFFF, border_width: 2, border_color: 0x43B853, radius: 9, pad_all: 3}
+            indicator: {bg_color: 0x2E6B36, bg_opa: COVER, radius: 8}
+            knob: {bg_color: 0xFFFFFF, border_width: 2, border_color: 0x43B853, radius: 11, pad_all: 4}
             on_value:
               - lvgl.label.update:
                   id: heat_salotto_target_lbl
@@ -113,19 +117,19 @@ lvgl:
         - slider:
             id: heat_studio_slider
             x: 582
-            y: 226
+            y: 232
             width: 368
-            height: 12
+            height: 16
             min_value: 10
             max_value: 60
             value: 40
-            radius: 6
+            radius: 8
             bg_color: 0x303236
             bg_opa: COVER
             border_width: 0
             ext_click_area: 10
-            indicator: {bg_color: 0x2E6B36, bg_opa: COVER, radius: 6}
-            knob: {bg_color: 0xFFFFFF, border_width: 2, border_color: 0x43B853, radius: 9, pad_all: 3}
+            indicator: {bg_color: 0x2E6B36, bg_opa: COVER, radius: 8}
+            knob: {bg_color: 0xFFFFFF, border_width: 2, border_color: 0x43B853, radius: 11, pad_all: 4}
             on_value:
               - lvgl.label.update: {id: heat_studio_target_lbl, text: !lambda 'return str_sprintf("%.1f C", x / 2.0f);'}
             on_release:
@@ -135,19 +139,19 @@ lvgl:
         - slider:
             id: heat_camera_matrimoniale_slider
             x: 74
-            y: 458
+            y: 464
             width: 368
-            height: 12
+            height: 16
             min_value: 10
             max_value: 60
             value: 40
-            radius: 6
+            radius: 8
             bg_color: 0x303236
             bg_opa: COVER
             border_width: 0
             ext_click_area: 10
-            indicator: {bg_color: 0x2E6B36, bg_opa: COVER, radius: 6}
-            knob: {bg_color: 0xFFFFFF, border_width: 2, border_color: 0x43B853, radius: 9, pad_all: 3}
+            indicator: {bg_color: 0x2E6B36, bg_opa: COVER, radius: 8}
+            knob: {bg_color: 0xFFFFFF, border_width: 2, border_color: 0x43B853, radius: 11, pad_all: 4}
             on_value:
               - lvgl.label.update: {id: heat_camera_matrimoniale_target_lbl, text: !lambda 'return str_sprintf("%.1f C", x / 2.0f);'}
             on_release:
@@ -157,19 +161,19 @@ lvgl:
         - slider:
             id: heat_camera_da_letto_slider
             x: 582
-            y: 458
+            y: 464
             width: 368
-            height: 12
+            height: 16
             min_value: 10
             max_value: 60
             value: 40
-            radius: 6
+            radius: 8
             bg_color: 0x303236
             bg_opa: COVER
             border_width: 0
             ext_click_area: 10
-            indicator: {bg_color: 0x2E6B36, bg_opa: COVER, radius: 6}
-            knob: {bg_color: 0xFFFFFF, border_width: 2, border_color: 0x43B853, radius: 9, pad_all: 3}
+            indicator: {bg_color: 0x2E6B36, bg_opa: COVER, radius: 8}
+            knob: {bg_color: 0xFFFFFF, border_width: 2, border_color: 0x43B853, radius: 11, pad_all: 4}
             on_value:
               - lvgl.label.update: {id: heat_camera_da_letto_target_lbl, text: !lambda 'return str_sprintf("%.1f C", x / 2.0f);'}
             on_release:
@@ -179,20 +183,20 @@ lvgl:
         - slider:
             id: heating_popup_slider
             x: 272
-            y: 326
+            y: 338
             width: 460
-            height: 14
+            height: 18
             hidden: true
             min_value: 10
             max_value: 60
             value: 40
-            radius: 7
+            radius: 9
             bg_color: 0x303236
             bg_opa: COVER
             border_width: 0
             ext_click_area: 12
-            indicator: {bg_color: 0x2E6B36, bg_opa: COVER, radius: 7}
-            knob: {bg_color: 0xFFFFFF, border_width: 2, border_color: 0x43B853, radius: 10, pad_all: 3}
+            indicator: {bg_color: 0x2E6B36, bg_opa: COVER, radius: 9}
+            knob: {bg_color: 0xFFFFFF, border_width: 2, border_color: 0x43B853, radius: 12, pad_all: 4}
             on_value:
               - lambda: 'id(heating_popup_target) = x / 2.0f;'
               - lvgl.label.update: {id: heating_popup_target_lbl, text: !lambda 'return str_sprintf("%.1f C", id(heating_popup_target));'}
@@ -201,7 +205,7 @@ lvgl:
         - label:
             id: heating_popup_min_lbl_v12
             x: 270
-            y: 346
+            y: 362
             width: 70
             hidden: true
             text: "5 C"
@@ -210,7 +214,7 @@ lvgl:
         - label:
             id: heating_popup_max_lbl_v12
             x: 662
-            y: 346
+            y: 362
             width: 70
             hidden: true
             text_align: RIGHT
@@ -234,3 +238,7 @@ lvgl:
               - lvgl.widget.hide: heating_popup_min_lbl_v12
               - lvgl.widget.hide: heating_popup_max_lbl_v12
               - lvgl.widget.hide: heating_popup_close_v12
+              - lvgl.widget.show: heat_salotto_slider
+              - lvgl.widget.show: heat_studio_slider
+              - lvgl.widget.show: heat_camera_matrimoniale_slider
+              - lvgl.widget.show: heat_camera_da_letto_slider
