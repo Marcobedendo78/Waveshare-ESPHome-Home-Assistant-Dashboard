@@ -1,63 +1,49 @@
 # ============================================================
 # WAVESHARE ESPHOME HOME ASSISTANT DASHBOARD - UPDATE CHECKER
-# Development version for v1.2.0
+# v1.2.0 development
 #
-# Checks the latest stable GitHub release and creates a
-# persistent Home Assistant notification when a newer
-# dashboard version is available.
-#
-# The installed version is auto-detected from the ESPHome
-# version sensor whose entity_id ends with:
-#   waveshare_dashboard_version
-# This avoids depending on Home Assistant's device/area prefix.
+# Compares the build installed on the ESP32 with the remote
+# version.json manifest. No local version/package edits are needed.
 # ============================================================
 
-# ------------------------------------------------------------
-# GITHUB - LATEST STABLE RELEASE
-# ------------------------------------------------------------
 rest:
-  - resource: "https://api.github.com/repos/Marcobedendo78/Waveshare-ESPHome-Home-Assistant-Dashboard/releases/latest"
-    scan_interval: 21600  # 6 hours
+  - resource: "https://raw.githubusercontent.com/Marcobedendo78/Waveshare-ESPHome-Home-Assistant-Dashboard/dev-v1.2.0/version.json"
+    scan_interval: 3600
     timeout: 15
     headers:
-      Accept: "application/vnd.github+json"
       User-Agent: "Home-Assistant-Waveshare-Dashboard"
     sensor:
-      - name: "Waveshare Dashboard Latest Version"
-        unique_id: waveshare_dashboard_latest_version
-        icon: mdi:github
+      - name: "Waveshare Dashboard Latest Build"
+        unique_id: waveshare_dashboard_latest_build
+        icon: mdi:update
         value_template: >-
-          {{ value_json.tag_name | default('unknown', true) }}
+          {{ value_json.build | default('unknown', true) }}
         json_attributes:
-          - html_url
-          - name
-          - published_at
+          - channel
+          - version
+          - branch
+          - message
 
-# ------------------------------------------------------------
-# INSTALLED VERSION + UPDATE STATUS
-# ------------------------------------------------------------
+# Auto-detect the ESPHome build sensor. This avoids depending on the
+# device/area prefix that Home Assistant may add to entity IDs.
 template:
-  # Home Assistant can prefix ESPHome entity IDs with the device
-  # and/or area name. This template finds the single sensor whose
-  # entity_id ends in "waveshare_dashboard_version" and exposes a
-  # stable helper entity for the update checker.
   - sensor:
-      - name: "Waveshare Dashboard Installed Version"
-        unique_id: waveshare_dashboard_installed_version
-        icon: mdi:package-variant-closed
+      - name: "Waveshare Dashboard Installed Build"
+        unique_id: waveshare_dashboard_installed_build
+        icon: mdi:source-commit
         availability: >-
           {% set ns = namespace(matches=[]) %}
           {% for s in states.sensor %}
-            {% if s.entity_id.endswith('waveshare_dashboard_version') %}
+            {% if s.entity_id.endswith('waveshare_dashboard_build') %}
               {% set ns.matches = ns.matches + [s.entity_id] %}
             {% endif %}
           {% endfor %}
           {{ ns.matches | count == 1
-             and states(ns.matches[0]) not in ['unknown', 'unavailable', 'none', ''] }}
+             and states(ns.matches[0]) not in ['unknown','unavailable','none',''] }}
         state: >-
           {% set ns = namespace(matches=[]) %}
           {% for s in states.sensor %}
-            {% if s.entity_id.endswith('waveshare_dashboard_version') %}
+            {% if s.entity_id.endswith('waveshare_dashboard_build') %}
               {% set ns.matches = ns.matches + [s.entity_id] %}
             {% endif %}
           {% endfor %}
@@ -66,134 +52,103 @@ template:
           source_entity: >-
             {% set ns = namespace(matches=[]) %}
             {% for s in states.sensor %}
-              {% if s.entity_id.endswith('waveshare_dashboard_version') %}
+              {% if s.entity_id.endswith('waveshare_dashboard_build') %}
                 {% set ns.matches = ns.matches + [s.entity_id] %}
               {% endif %}
             {% endfor %}
             {{ ns.matches[0] if ns.matches | count == 1 else 'not uniquely detected' }}
-          detected_entities: >-
-            {% set ns = namespace(matches=[]) %}
-            {% for s in states.sensor %}
-              {% if s.entity_id.endswith('waveshare_dashboard_version') %}
-                {% set ns.matches = ns.matches + [s.entity_id] %}
-              {% endif %}
-            {% endfor %}
-            {{ ns.matches | count }}
+
+      - name: "Waveshare Dashboard Installed Code Version"
+        unique_id: waveshare_dashboard_installed_code_version
+        icon: mdi:package-variant-closed
+        availability: >-
+          {% set ns = namespace(matches=[]) %}
+          {% for s in states.sensor %}
+            {% if s.entity_id.endswith('waveshare_dashboard_code_version') %}
+              {% set ns.matches = ns.matches + [s.entity_id] %}
+            {% endif %}
+          {% endfor %}
+          {{ ns.matches | count == 1 }}
+        state: >-
+          {% set ns = namespace(matches=[]) %}
+          {% for s in states.sensor %}
+            {% if s.entity_id.endswith('waveshare_dashboard_code_version') %}
+              {% set ns.matches = ns.matches + [s.entity_id] %}
+            {% endif %}
+          {% endfor %}
+          {{ states(ns.matches[0]) if ns.matches | count == 1 else 'unknown' }}
 
   - binary_sensor:
       - name: "Waveshare Dashboard Update Available"
         unique_id: waveshare_dashboard_update_available
         icon: mdi:update
         availability: >-
-          {{ states('sensor.waveshare_dashboard_latest_version') not in
-             ['unknown', 'unavailable', 'none', '']
-             and states('sensor.waveshare_dashboard_installed_version') not in
-             ['unknown', 'unavailable', 'none', ''] }}
+          {{ states('sensor.waveshare_dashboard_latest_build') not in
+             ['unknown','unavailable','none','']
+             and states('sensor.waveshare_dashboard_installed_build') not in
+             ['unknown','unavailable','none',''] }}
         state: >-
-          {% set latest = states('sensor.waveshare_dashboard_latest_version')
-             | lower | replace('v', '') %}
-          {% set installed = states('sensor.waveshare_dashboard_installed_version')
-             | lower | replace('v', '') %}
-
-          {% set lp = latest.split('.') %}
-          {% set ip = installed.split('.') %}
-
-          {% set l_major = lp[0] | int(0) if lp | count > 0 else 0 %}
-          {% set l_minor = lp[1] | int(0) if lp | count > 1 else 0 %}
-          {% set l_patch = lp[2]
-             | regex_replace(find='[^0-9].*', replace='')
-             | int(0) if lp | count > 2 else 0 %}
-
-          {% set i_major = ip[0] | int(0) if ip | count > 0 else 0 %}
-          {% set i_minor = ip[1] | int(0) if ip | count > 1 else 0 %}
-          {% set i_patch = ip[2]
-             | regex_replace(find='[^0-9].*', replace='')
-             | int(0) if ip | count > 2 else 0 %}
-
-          {% set latest_number =
-             l_major * 1000000 + l_minor * 1000 + l_patch %}
-          {% set installed_number =
-             i_major * 1000000 + i_minor * 1000 + i_patch %}
-
-          {{ latest_number > installed_number }}
+          {{ states('sensor.waveshare_dashboard_latest_build') !=
+             states('sensor.waveshare_dashboard_installed_build') }}
         attributes:
+          installed_build: >-
+            {{ states('sensor.waveshare_dashboard_installed_build') }}
+          latest_build: >-
+            {{ states('sensor.waveshare_dashboard_latest_build') }}
           installed_version: >-
-            {{ states('sensor.waveshare_dashboard_installed_version') }}
+            {{ states('sensor.waveshare_dashboard_installed_code_version') }}
           latest_version: >-
-            {{ states('sensor.waveshare_dashboard_latest_version') }}
-          release_url: >-
-            {{ state_attr(
-              'sensor.waveshare_dashboard_latest_version',
-              'html_url'
-            ) }}
+            {{ state_attr('sensor.waveshare_dashboard_latest_build', 'version') }}
+          update_message: >-
+            {{ state_attr('sensor.waveshare_dashboard_latest_build', 'message') }}
 
-# ------------------------------------------------------------
-# UPDATE NOTIFICATION
-# ------------------------------------------------------------
+# Persistent Home Assistant notification.
 automation:
   - id: waveshare_dashboard_update_available_notification
-    alias: "Waveshare Dashboard - Update available"
+    alias: "Waveshare Dashboard - Aggiornamento disponibile"
     description: >-
-      Shows a Home Assistant notification when a newer stable
-      dashboard release is available.
+      Notifica automaticamente quando il codice remoto della dashboard
+      ha un build diverso da quello installato sul display.
     mode: restart
-
     triggers:
       - trigger: state
         entity_id: binary_sensor.waveshare_dashboard_update_available
         to: "on"
-
       - trigger: homeassistant
         event: start
-
       - trigger: time_pattern
-        hours: "/6"
-
+        hours: "/1"
     actions:
-      - delay: "00:01:00"
-
+      - delay: "00:00:20"
       - condition: state
         entity_id: binary_sensor.waveshare_dashboard_update_available
         state: "on"
-
       - action: persistent_notification.create
         data:
           notification_id: waveshare_dashboard_update
-          title: "Waveshare Dashboard update available"
+          title: "Aggiornamento display Waveshare disponibile"
           message: >-
-            A new stable version of Waveshare ESPHome Home Assistant
-            Dashboard is available.
+            È disponibile un nuovo aggiornamento della dashboard.
 
-            Installed:
-            **{{ states('sensor.waveshare_dashboard_installed_version') }}**
+            Versione installata: **{{ states('sensor.waveshare_dashboard_installed_code_version') }}**
+            Build installato: **{{ states('sensor.waveshare_dashboard_installed_build') }}**
 
-            Latest:
-            **{{ states('sensor.waveshare_dashboard_latest_version') }}**
+            Versione disponibile: **{{ state_attr('sensor.waveshare_dashboard_latest_build', 'version') }}**
+            Build disponibile: **{{ states('sensor.waveshare_dashboard_latest_build') }}**
 
-            [Open the GitHub release]({{
-              state_attr(
-                'sensor.waveshare_dashboard_latest_version',
-                'html_url'
-              )
-            }})
+            {{ state_attr('sensor.waveshare_dashboard_latest_build', 'message') | default('', true) }}
 
-            Updating is manual. Review the release notes first,
-            then change `dashboard_version:` in your local
-            `.user_config.yaml` to the new release and reinstall
-            the display from ESPHome.
+            Non devi modificare YAML, versione o lista dei package.
+            Apri ESPHome e premi **Installa** sul display: `refresh: always`
+            scaricherà automaticamente il bundle e tutti i package aggiornati.
 
   - id: waveshare_dashboard_update_notification_dismiss
-    alias: "Waveshare Dashboard - Dismiss update notification"
-    description: >-
-      Dismisses the update notification when the installed
-      dashboard version is current.
+    alias: "Waveshare Dashboard - Chiudi notifica aggiornamento"
     mode: single
-
     triggers:
       - trigger: state
         entity_id: binary_sensor.waveshare_dashboard_update_available
         to: "off"
-
     actions:
       - action: persistent_notification.dismiss
         data:
