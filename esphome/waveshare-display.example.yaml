@@ -29,6 +29,7 @@ packages:
     files:
       - esphome/dashboard-package.yaml
       - esphome/heating-slider-v1.2.yaml
+      - esphome/heating-color-fix-v1.2.yaml
     refresh: 1h
 
 esphome:
