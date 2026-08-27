@@ -1,0 +1,38 @@
+# ============================================================
+# WAVESHARE DASHBOARD - UPDATE CLIENT
+# v1.2.0 development
+#
+# This file is loaded automatically by dashboard-bundle.yaml.
+# dashboard_build must be bumped whenever dashboard code changes.
+# Home Assistant compares this installed build with version.json.
+# ============================================================
+
+substitutions:
+  dashboard_channel: "dev"
+  dashboard_code_version: "v1.2.0"
+  dashboard_build: "2026.08.28.01"
+
+text_sensor:
+  - platform: template
+    name: "Waveshare Dashboard Code Version"
+    id: waveshare_dashboard_code_version
+    icon: mdi:package-variant-closed
+    update_interval: 60s
+    lambda: |-
+      return {"${dashboard_code_version}"};
+
+  - platform: template
+    name: "Waveshare Dashboard Build"
+    id: waveshare_dashboard_build
+    icon: mdi:source-commit
+    update_interval: 60s
+    lambda: |-
+      return {"${dashboard_build}"};
+
+  - platform: template
+    name: "Waveshare Dashboard Channel"
+    id: waveshare_dashboard_channel
+    icon: mdi:source-branch
+    update_interval: 60s
+    lambda: |-
+      return {"${dashboard_channel}"};
