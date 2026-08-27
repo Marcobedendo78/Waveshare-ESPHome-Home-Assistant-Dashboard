@@ -213,234 +213,251 @@ lvgl:
             width: 1024
             height: 512
 
-        # LEFT COLUMN - each card is explicit: no YAML merge keys.
+        # LEFT COLUMN
         - obj:
             x: 16
-            y: 24
+            y: 14
             width: 218
-            height: 54
+            height: 58
+            scrollbar_mode: "OFF"
             bg_color: 0x101820
             bg_opa: 82%
             radius: 10
             border_width: 1
             border_color: 0x506070
             widgets:
-              - label: {x: 8, y: 3, width: 198, text_align: CENTER, text: "Temperatura esterna", text_font: roboto_14, text_color: 0xD0D7DE}
-              - label: {id: pdc_lbl_outdoor, x: 8, y: 24, width: 198, height: 24, text_align: CENTER, text: "--.- C", text_font: roboto_bold_18, text_color: 0xFFFFFF}
+              - label: {x: 8, y: 6, width: 198, text_align: CENTER, text: "Temperatura esterna", text_font: roboto_14, text_color: 0xD0D7DE}
+              - label: {id: pdc_lbl_outdoor, x: 8, y: 31, width: 198, height: 22, text_align: CENTER, text: "--.- C", text_font: roboto_bold_18, text_color: 0xFFFFFF}
         - obj:
             x: 16
-            y: 82
+            y: 76
             width: 218
-            height: 54
+            height: 58
+            scrollbar_mode: "OFF"
             bg_color: 0x101820
             bg_opa: 82%
             radius: 10
             border_width: 1
             border_color: 0x506070
             widgets:
-              - label: {x: 8, y: 3, width: 198, text_align: CENTER, text: "Potenza assorbita", text_font: roboto_14, text_color: 0xD0D7DE}
-              - label: {id: pdc_lbl_power, x: 8, y: 24, width: 198, height: 24, text_align: CENTER, text: "-- W", text_font: roboto_bold_18, text_color: 0xFFFFFF}
+              - label: {x: 8, y: 6, width: 198, text_align: CENTER, text: "Potenza assorbita", text_font: roboto_14, text_color: 0xD0D7DE}
+              - label: {id: pdc_lbl_power, x: 8, y: 31, width: 198, height: 22, text_align: CENTER, text: "-- W", text_font: roboto_bold_18, text_color: 0xFFFFFF}
         - obj:
             x: 16
-            y: 140
+            y: 138
             width: 218
-            height: 54
+            height: 58
+            scrollbar_mode: "OFF"
             bg_color: 0x101820
             bg_opa: 82%
             radius: 10
             border_width: 1
             border_color: 0x506070
             widgets:
-              - label: {x: 8, y: 3, width: 198, text_align: CENTER, text: "RPM ventola", text_font: roboto_14, text_color: 0xD0D7DE}
-              - label: {id: pdc_lbl_fan, x: 8, y: 24, width: 198, height: 24, text_align: CENTER, text: "-- rpm", text_font: roboto_bold_18, text_color: 0xFFFFFF}
+              - label: {x: 8, y: 6, width: 198, text_align: CENTER, text: "RPM ventola", text_font: roboto_14, text_color: 0xD0D7DE}
+              - label: {id: pdc_lbl_fan, x: 8, y: 31, width: 198, height: 22, text_align: CENTER, text: "-- rpm", text_font: roboto_bold_18, text_color: 0xFFFFFF}
         - obj:
             x: 16
-            y: 198
+            y: 200
             width: 218
-            height: 54
+            height: 58
+            scrollbar_mode: "OFF"
             bg_color: 0x101820
             bg_opa: 82%
             radius: 10
             border_width: 1
             border_color: 0x506070
             widgets:
-              - label: {x: 8, y: 3, width: 198, text_align: CENTER, text: "Compressore", text_font: roboto_14, text_color: 0xD0D7DE}
-              - label: {id: pdc_lbl_compressor, x: 8, y: 24, width: 198, height: 24, text_align: CENTER, text: "-- Hz", text_font: roboto_bold_18, text_color: 0xFFFFFF}
+              - label: {x: 8, y: 6, width: 198, text_align: CENTER, text: "Compressore", text_font: roboto_14, text_color: 0xD0D7DE}
+              - label: {id: pdc_lbl_compressor, x: 8, y: 31, width: 198, height: 22, text_align: CENTER, text: "-- Hz", text_font: roboto_bold_18, text_color: 0xFFFFFF}
         - obj:
             x: 16
-            y: 256
+            y: 262
             width: 218
-            height: 54
+            height: 58
+            scrollbar_mode: "OFF"
             bg_color: 0x101820
             bg_opa: 82%
             radius: 10
             border_width: 1
             border_color: 0x506070
             widgets:
-              - label: {x: 8, y: 3, width: 198, text_align: CENTER, text: "Sbrinamento attivo", text_font: roboto_14, text_color: 0xD0D7DE}
-              - label: {id: pdc_lbl_defrost, x: 8, y: 24, width: 198, height: 24, text_align: CENTER, text: "NO", text_font: roboto_bold_18, text_color: 0xFFFFFF}
+              - label: {x: 8, y: 6, width: 198, text_align: CENTER, text: "Sbrinamento attivo", text_font: roboto_14, text_color: 0xD0D7DE}
+              - label: {id: pdc_lbl_defrost, x: 8, y: 31, width: 198, height: 22, text_align: CENTER, text: "NO", text_font: roboto_bold_18, text_color: 0xFFFFFF}
         - obj:
             x: 16
-            y: 314
+            y: 324
             width: 218
-            height: 54
+            height: 58
+            scrollbar_mode: "OFF"
             bg_color: 0x101820
             bg_opa: 82%
             radius: 10
             border_width: 1
             border_color: 0x506070
             widgets:
-              - label: {x: 8, y: 3, width: 198, text_align: CENTER, text: "COP", text_font: roboto_14, text_color: 0xD0D7DE}
-              - label: {id: pdc_lbl_cop, x: 8, y: 24, width: 198, height: 24, text_align: CENTER, text: "--", text_font: roboto_bold_18, text_color: 0xFFFFFF}
+              - label: {x: 8, y: 6, width: 198, text_align: CENTER, text: "COP", text_font: roboto_14, text_color: 0xD0D7DE}
+              - label: {id: pdc_lbl_cop, x: 8, y: 31, width: 198, height: 22, text_align: CENTER, text: "--", text_font: roboto_bold_18, text_color: 0xFFFFFF}
         - obj:
             x: 16
-            y: 372
+            y: 386
             width: 218
-            height: 54
+            height: 58
+            scrollbar_mode: "OFF"
             bg_color: 0x101820
             bg_opa: 82%
             radius: 10
             border_width: 1
             border_color: 0x506070
             widgets:
-              - label: {x: 8, y: 3, width: 198, text_align: CENTER, text: "Protezione antigelo", text_font: roboto_14, text_color: 0xD0D7DE}
-              - label: {id: pdc_lbl_freeze, x: 8, y: 24, width: 198, height: 24, text_align: CENTER, text: "NO", text_font: roboto_bold_18, text_color: 0xFFFFFF}
+              - label: {x: 8, y: 6, width: 198, text_align: CENTER, text: "Protezione antigelo", text_font: roboto_14, text_color: 0xD0D7DE}
+              - label: {id: pdc_lbl_freeze, x: 8, y: 31, width: 198, height: 22, text_align: CENTER, text: "NO", text_font: roboto_bold_18, text_color: 0xFFFFFF}
 
         # PIPE TEMPERATURES
         - obj:
             x: 448
-            y: 230
+            y: 226
             width: 145
-            height: 62
+            height: 68
+            scrollbar_mode: "OFF"
             bg_color: 0x101820
             bg_opa: 78%
             radius: 10
             border_width: 1
             border_color: 0xD84A35
             widgets:
-              - label: {x: 7, y: 4, width: 127, text_align: CENTER, text: "MANDATA", text_font: roboto_bold_14, text_color: 0xFF6A55}
-              - label: {id: pdc_lbl_supply, x: 7, y: 27, width: 127, height: 26, text_align: CENTER, text: "--.- C", text_font: roboto_bold_18, text_color: 0xFFFFFF}
+              - label: {x: 7, y: 8, width: 127, text_align: CENTER, text: "MANDATA", text_font: roboto_bold_14, text_color: 0xFF6A55}
+              - label: {id: pdc_lbl_supply, x: 7, y: 36, width: 127, height: 24, text_align: CENTER, text: "--.- C", text_font: roboto_bold_18, text_color: 0xFFFFFF}
         - obj:
             x: 448
-            y: 298
+            y: 302
             width: 145
-            height: 62
+            height: 68
+            scrollbar_mode: "OFF"
             bg_color: 0x101820
             bg_opa: 78%
             radius: 10
             border_width: 1
             border_color: 0x2488D8
             widgets:
-              - label: {x: 7, y: 4, width: 127, text_align: CENTER, text: "RITORNO", text_font: roboto_bold_14, text_color: 0x54AFFF}
-              - label: {id: pdc_lbl_return, x: 7, y: 27, width: 127, height: 26, text_align: CENTER, text: "--.- C", text_font: roboto_bold_18, text_color: 0xFFFFFF}
+              - label: {x: 7, y: 8, width: 127, text_align: CENTER, text: "RITORNO", text_font: roboto_bold_14, text_color: 0x54AFFF}
+              - label: {id: pdc_lbl_return, x: 7, y: 36, width: 127, height: 24, text_align: CENTER, text: "--.- C", text_font: roboto_bold_18, text_color: 0xFFFFFF}
 
         # RIGHT COLUMN
         - obj:
             x: 790
-            y: 10
+            y: 6
             width: 218
-            height: 51
+            height: 58
+            scrollbar_mode: "OFF"
             bg_color: 0x101820
             bg_opa: 82%
             radius: 10
             border_width: 1
             border_color: 0x506070
             widgets:
-              - label: {x: 7, y: 2, width: 200, text_align: CENTER, text: "Potenza termica", text_font: roboto_14, text_color: 0xD0D7DE}
-              - label: {id: pdc_lbl_thermal_power, x: 7, y: 21, width: 200, height: 24, text_align: CENTER, text: "-- kWt", text_font: roboto_bold_18, text_color: 0xFFFFFF}
+              - label: {x: 7, y: 6, width: 200, text_align: CENTER, text: "Potenza termica", text_font: roboto_14, text_color: 0xD0D7DE}
+              - label: {id: pdc_lbl_thermal_power, x: 7, y: 31, width: 200, height: 22, text_align: CENTER, text: "-- kWt", text_font: roboto_bold_18, text_color: 0xFFFFFF}
         - obj:
             x: 790
-            y: 64
+            y: 68
             width: 218
-            height: 51
+            height: 58
+            scrollbar_mode: "OFF"
             bg_color: 0x101820
             bg_opa: 82%
             radius: 10
             border_width: 1
             border_color: 0x506070
             widgets:
-              - label: {x: 7, y: 2, width: 200, text_align: CENTER, text: "Temperatura ACS", text_font: roboto_14, text_color: 0xD0D7DE}
-              - label: {id: pdc_lbl_dhw, x: 7, y: 21, width: 200, height: 24, text_align: CENTER, text: "--.- C", text_font: roboto_bold_18, text_color: 0xFFFFFF}
+              - label: {x: 7, y: 6, width: 200, text_align: CENTER, text: "Temperatura ACS", text_font: roboto_14, text_color: 0xD0D7DE}
+              - label: {id: pdc_lbl_dhw, x: 7, y: 31, width: 200, height: 22, text_align: CENTER, text: "--.- C", text_font: roboto_bold_18, text_color: 0xFFFFFF}
         - obj:
             x: 790
-            y: 118
+            y: 130
             width: 218
-            height: 51
+            height: 58
+            scrollbar_mode: "OFF"
             bg_color: 0x101820
             bg_opa: 82%
             radius: 10
             border_width: 1
             border_color: 0x506070
             widgets:
-              - label: {x: 7, y: 2, width: 200, text_align: CENTER, text: "Termostato", text_font: roboto_14, text_color: 0xD0D7DE}
-              - label: {id: pdc_lbl_thermostat, x: 7, y: 21, width: 200, height: 24, text_align: CENTER, text: "--", text_font: roboto_bold_18, text_color: 0xFFFFFF}
+              - label: {x: 7, y: 6, width: 200, text_align: CENTER, text: "Termostato", text_font: roboto_14, text_color: 0xD0D7DE}
+              - label: {id: pdc_lbl_thermostat, x: 7, y: 31, width: 200, height: 22, text_align: CENTER, text: "--", text_font: roboto_bold_18, text_color: 0xFFFFFF}
         - obj:
             x: 790
-            y: 172
+            y: 192
             width: 218
-            height: 51
+            height: 58
+            scrollbar_mode: "OFF"
             bg_color: 0x101820
             bg_opa: 82%
             radius: 10
             border_width: 1
             border_color: 0x506070
             widgets:
-              - label: {x: 7, y: 2, width: 200, text_align: CENTER, text: "Modalita funzionamento", text_font: roboto_14, text_color: 0xD0D7DE}
-              - label: {id: pdc_lbl_mode, x: 7, y: 21, width: 200, height: 24, text_align: CENTER, text: "--", text_font: roboto_bold_16, text_color: 0xFFFFFF}
+              - label: {x: 7, y: 6, width: 200, text_align: CENTER, text: "Modalita funzionamento", text_font: roboto_14, text_color: 0xD0D7DE}
+              - label: {id: pdc_lbl_mode, x: 7, y: 31, width: 200, height: 22, text_align: CENTER, text: "--", text_font: roboto_bold_16, text_color: 0xFFFFFF}
         - obj:
             x: 790
-            y: 226
+            y: 254
             width: 218
-            height: 51
+            height: 58
+            scrollbar_mode: "OFF"
             bg_color: 0x101820
             bg_opa: 82%
             radius: 10
             border_width: 1
             border_color: 0x506070
             widgets:
-              - label: {x: 7, y: 2, width: 200, text_align: CENTER, text: "Modalita I/U", text_font: roboto_14, text_color: 0xD0D7DE}
-              - label: {id: pdc_lbl_io_mode, x: 7, y: 21, width: 200, height: 24, text_align: CENTER, text: "--", text_font: roboto_bold_16, text_color: 0xFFFFFF}
+              - label: {x: 7, y: 6, width: 200, text_align: CENTER, text: "Modalita I/U", text_font: roboto_14, text_color: 0xD0D7DE}
+              - label: {id: pdc_lbl_io_mode, x: 7, y: 31, width: 200, height: 22, text_align: CENTER, text: "--", text_font: roboto_bold_16, text_color: 0xFFFFFF}
         - obj:
             x: 790
-            y: 280
+            y: 316
             width: 218
-            height: 51
+            height: 58
+            scrollbar_mode: "OFF"
             bg_color: 0x101820
             bg_opa: 82%
             radius: 10
             border_width: 1
             border_color: 0x506070
             widgets:
-              - label: {x: 7, y: 2, width: 200, text_align: CENTER, text: "Portata pompa", text_font: roboto_14, text_color: 0xD0D7DE}
-              - label: {id: pdc_lbl_flow, x: 7, y: 21, width: 200, height: 24, text_align: CENTER, text: "-- l/min", text_font: roboto_bold_18, text_color: 0xFFFFFF}
+              - label: {x: 7, y: 6, width: 200, text_align: CENTER, text: "Portata pompa", text_font: roboto_14, text_color: 0xD0D7DE}
+              - label: {id: pdc_lbl_flow, x: 7, y: 31, width: 200, height: 22, text_align: CENTER, text: "-- l/min", text_font: roboto_bold_18, text_color: 0xFFFFFF}
         - obj:
             x: 790
-            y: 334
+            y: 378
             width: 218
-            height: 51
+            height: 58
+            scrollbar_mode: "OFF"
             bg_color: 0x101820
             bg_opa: 82%
             radius: 10
             border_width: 1
             border_color: 0x506070
             widgets:
-              - label: {x: 7, y: 2, width: 200, text_align: CENTER, text: "Pressione impianto", text_font: roboto_14, text_color: 0xD0D7DE}
-              - label: {id: pdc_lbl_pressure, x: 7, y: 21, width: 200, height: 24, text_align: CENTER, text: "-- bar", text_font: roboto_bold_18, text_color: 0xFFFFFF}
+              - label: {x: 7, y: 6, width: 200, text_align: CENTER, text: "Pressione impianto", text_font: roboto_14, text_color: 0xD0D7DE}
+              - label: {id: pdc_lbl_pressure, x: 7, y: 31, width: 200, height: 22, text_align: CENTER, text: "-- bar", text_font: roboto_bold_18, text_color: 0xFFFFFF}
         - obj:
             x: 790
-            y: 388
+            y: 440
             width: 218
-            height: 51
+            height: 58
+            scrollbar_mode: "OFF"
             bg_color: 0x101820
             bg_opa: 82%
             radius: 10
             border_width: 1
             border_color: 0x506070
             widgets:
-              - label: {x: 7, y: 2, width: 200, text_align: CENTER, text: "Temperatura interna", text_font: roboto_14, text_color: 0xD0D7DE}
-              - label: {id: pdc_lbl_indoor, x: 7, y: 21, width: 200, height: 24, text_align: CENTER, text: "--.- C", text_font: roboto_bold_18, text_color: 0xFFFFFF}
+              - label: {x: 7, y: 6, width: 200, text_align: CENTER, text: "Temperatura interna", text_font: roboto_14, text_color: 0xD0D7DE}
+              - label: {id: pdc_lbl_indoor, x: 7, y: 31, width: 200, height: 22, text_align: CENTER, text: "--.- C", text_font: roboto_bold_18, text_color: 0xFFFFFF}
 
-        # FLOW DOTS - explicit objects avoid inherited IDs/artifacts.
+        # FLOW DOTS
         - obj:
             id: pdc_red_dot_1
             x: 390
