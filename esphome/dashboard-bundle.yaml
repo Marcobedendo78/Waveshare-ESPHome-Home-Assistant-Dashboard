@@ -1,0 +1,14 @@
+# ============================================================
+# WAVESHARE ESPHOME HOME ASSISTANT DASHBOARD - REMOTE BUNDLE
+#
+# This is the ONLY remote package file that the local
+# waveshare-display.yaml needs to load.
+#
+# When new dashboard modules are added, update this file on GitHub.
+# Existing installations keep the same local package list.
+# ============================================================
+
+packages:
+  dashboard_base: !include dashboard-package.yaml
+  heating_slider: !include heating-slider-v1.2.yaml
+  pdc_page: !include pdc-page-v1.2.yaml
