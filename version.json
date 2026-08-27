@@ -1,0 +1,7 @@
+{
+  "channel": "dev",
+  "version": "v1.2.0",
+  "build": "2026.08.28.01",
+  "branch": "dev-v1.2.0",
+  "message": "PDC layout fixes and automatic update notification framework"
+}
