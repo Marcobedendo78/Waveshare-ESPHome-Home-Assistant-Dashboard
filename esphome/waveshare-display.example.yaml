@@ -10,6 +10,7 @@
 #      - sd_storage.h
 #      - Robot.jpg
 #      - capture_card.png
+#      - pdc-background.png
 # 4) Copy the required values from secrets.example.yaml into
 #    your normal ESPHome secrets.yaml file.
 # 5) Edit ONLY the values in .user_config.yaml to match your
@@ -30,6 +31,7 @@ packages:
       - esphome/dashboard-package.yaml
       - esphome/heating-slider-v1.2.yaml
       - esphome/heating-color-fix-v1.2.yaml
+      - esphome/pdc-page-v1.2.yaml
     refresh: 1h
 
 esphome:
