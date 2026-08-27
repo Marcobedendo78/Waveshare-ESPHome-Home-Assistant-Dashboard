@@ -1,6 +1,6 @@
 # ============================================================
 # WAVESHARE ESP32-S3 TOUCH LCD 7B
-# Local ESPHome configuration example for v1.2.0
+# Local ESPHome configuration example for v1.2.0+
 #
 # QUICK SETUP
 # 1) Copy this file as: waveshare-display.yaml
@@ -16,9 +16,17 @@
 # 5) Edit ONLY the values in .user_config.yaml to match your
 #    Home Assistant entities and robot MQTT topics.
 #
-# The reusable dashboard files are loaded remotely from GitHub.
-# dashboard_version controls both the package ref and the
-# version sensor exposed by the ESPHome device.
+# IMPORTANT
+# The local configuration now loads ONE remote bundle only.
+# dashboard-bundle.yaml includes every dashboard module from GitHub.
+# Future modules can therefore be added without editing the local
+# files: list again.
+#
+# dashboard_version controls both the remote Git ref and the
+# version sensor exposed by the ESPHome device. When a new release
+# notification arrives, changing dashboard_version to the new tag
+# is enough; ESPHome will download the complete matching bundle at
+# the next validation/install.
 # ============================================================
 
 substitutions: !include .user_config.yaml
@@ -28,11 +36,8 @@ packages:
     url: https://github.com/Marcobedendo78/Waveshare-ESPHome-Home-Assistant-Dashboard
     ref: ${dashboard_version}
     files:
-      - esphome/dashboard-package.yaml
-      - esphome/heating-slider-v1.2.yaml
-      - esphome/heating-color-fix-v1.2.yaml
-      - esphome/pdc-page-v1.2.yaml
-    refresh: 1h
+      - esphome/dashboard-bundle.yaml
+    refresh: always
 
 esphome:
   name: ${device_name}
