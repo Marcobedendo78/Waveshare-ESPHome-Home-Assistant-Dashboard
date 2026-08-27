@@ -2,159 +2,76 @@
 # WAVESHARE DASHBOARD - HEATING SLIDER COLOR FIX
 # v1.2.0 development patch
 #
-# Color semantics follow Tado manual overlay state:
-#   overlay OFF  -> green  (automatic schedule)
-#   overlay ON   -> orange (manual temperature override)
+# Single source of truth for slider color:
+#   overlay OFF -> green  (automatic schedule)
+#   overlay ON  -> orange (manual temperature override)
+#
+# The original arc widgets already receive the correct overlay state.
+# This patch reads the same binary sensors directly and reapplies the
+# corresponding slider colors at a short interval, avoiding conflicts
+# between package-level on_state/on_value handlers.
 # ============================================================
 
-binary_sensor:
-  - id: !extend heat_salotto_overlay
-    on_state:
-      - if:
-          condition: {lambda: 'return x;'}
-          then:
-            - lvgl.slider.update: {id: heat_salotto_slider, indicator: {bg_color: 0x9A4314}, knob: {border_color: 0xD85A18}}
-            - if:
-                condition: {lambda: 'return id(heating_selected_room) == 0;'}
-                then:
-                  - lvgl.slider.update: {id: heating_popup_slider, indicator: {bg_color: 0x9A4314}, knob: {border_color: 0xD85A18}}
-          else:
-            - lvgl.slider.update: {id: heat_salotto_slider, indicator: {bg_color: 0x2E6B36}, knob: {border_color: 0x43B853}}
-            - if:
-                condition: {lambda: 'return id(heating_selected_room) == 0;'}
-                then:
-                  - lvgl.slider.update: {id: heating_popup_slider, indicator: {bg_color: 0x2E6B36}, knob: {border_color: 0x43B853}}
-
-  - id: !extend heat_studio_overlay
-    on_state:
-      - if:
-          condition: {lambda: 'return x;'}
-          then:
-            - lvgl.slider.update: {id: heat_studio_slider, indicator: {bg_color: 0x9A4314}, knob: {border_color: 0xD85A18}}
-            - if:
-                condition: {lambda: 'return id(heating_selected_room) == 1;'}
-                then:
-                  - lvgl.slider.update: {id: heating_popup_slider, indicator: {bg_color: 0x9A4314}, knob: {border_color: 0xD85A18}}
-          else:
-            - lvgl.slider.update: {id: heat_studio_slider, indicator: {bg_color: 0x2E6B36}, knob: {border_color: 0x43B853}}
-            - if:
-                condition: {lambda: 'return id(heating_selected_room) == 1;'}
-                then:
-                  - lvgl.slider.update: {id: heating_popup_slider, indicator: {bg_color: 0x2E6B36}, knob: {border_color: 0x43B853}}
-
-  - id: !extend heat_camera_matrimoniale_overlay
-    on_state:
-      - if:
-          condition: {lambda: 'return x;'}
-          then:
-            - lvgl.slider.update: {id: heat_camera_matrimoniale_slider, indicator: {bg_color: 0x9A4314}, knob: {border_color: 0xD85A18}}
-            - if:
-                condition: {lambda: 'return id(heating_selected_room) == 2;'}
-                then:
-                  - lvgl.slider.update: {id: heating_popup_slider, indicator: {bg_color: 0x9A4314}, knob: {border_color: 0xD85A18}}
-          else:
-            - lvgl.slider.update: {id: heat_camera_matrimoniale_slider, indicator: {bg_color: 0x2E6B36}, knob: {border_color: 0x43B853}}
-            - if:
-                condition: {lambda: 'return id(heating_selected_room) == 2;'}
-                then:
-                  - lvgl.slider.update: {id: heating_popup_slider, indicator: {bg_color: 0x2E6B36}, knob: {border_color: 0x43B853}}
-
-  - id: !extend heat_camera_da_letto_overlay
-    on_state:
-      - if:
-          condition: {lambda: 'return x;'}
-          then:
-            - lvgl.slider.update: {id: heat_camera_da_letto_slider, indicator: {bg_color: 0x9A4314}, knob: {border_color: 0xD85A18}}
-            - if:
-                condition: {lambda: 'return id(heating_selected_room) == 3;'}
-                then:
-                  - lvgl.slider.update: {id: heating_popup_slider, indicator: {bg_color: 0x9A4314}, knob: {border_color: 0xD85A18}}
-          else:
-            - lvgl.slider.update: {id: heat_camera_da_letto_slider, indicator: {bg_color: 0x2E6B36}, knob: {border_color: 0x43B853}}
-            - if:
-                condition: {lambda: 'return id(heating_selected_room) == 3;'}
-                then:
-                  - lvgl.slider.update: {id: heating_popup_slider, indicator: {bg_color: 0x2E6B36}, knob: {border_color: 0x43B853}}
-
-# Programmatic target updates move LVGL sliders and trigger on_value.
-# Re-apply the real overlay color immediately afterward so an automatic
-# thermostat never remains orange just because its value was synchronized.
-sensor:
-  - id: !extend heat_salotto_target
-    on_value:
+interval:
+  - interval: 500ms
+    then:
+      # Living room
       - if:
           condition: {lambda: 'return id(heat_salotto_overlay).state;'}
           then:
-            - lvgl.slider.update: {id: heat_salotto_slider, indicator: {bg_color: 0x9A4314}, knob: {border_color: 0xD85A18}}
+            - lvgl.slider.update:
+                id: heat_salotto_slider
+                indicator: {bg_color: 0x9A4314}
+                knob: {bg_color: 0xFFFFFF, border_color: 0xD85A18}
           else:
-            - lvgl.slider.update: {id: heat_salotto_slider, indicator: {bg_color: 0x2E6B36}, knob: {border_color: 0x43B853}}
-      - if:
-          condition: {lambda: 'return id(heating_selected_room) == 0;'}
-          then:
-            - if:
-                condition: {lambda: 'return id(heat_salotto_overlay).state;'}
-                then:
-                  - lvgl.slider.update: {id: heating_popup_slider, indicator: {bg_color: 0x9A4314}, knob: {border_color: 0xD85A18}}
-                else:
-                  - lvgl.slider.update: {id: heating_popup_slider, indicator: {bg_color: 0x2E6B36}, knob: {border_color: 0x43B853}}
+            - lvgl.slider.update:
+                id: heat_salotto_slider
+                indicator: {bg_color: 0x2E6B36}
+                knob: {bg_color: 0xFFFFFF, border_color: 0x43B853}
 
-  - id: !extend heat_studio_target
-    on_value:
+      # Study
       - if:
           condition: {lambda: 'return id(heat_studio_overlay).state;'}
           then:
-            - lvgl.slider.update: {id: heat_studio_slider, indicator: {bg_color: 0x9A4314}, knob: {border_color: 0xD85A18}}
+            - lvgl.slider.update:
+                id: heat_studio_slider
+                indicator: {bg_color: 0x9A4314}
+                knob: {bg_color: 0xFFFFFF, border_color: 0xD85A18}
           else:
-            - lvgl.slider.update: {id: heat_studio_slider, indicator: {bg_color: 0x2E6B36}, knob: {border_color: 0x43B853}}
-      - if:
-          condition: {lambda: 'return id(heating_selected_room) == 1;'}
-          then:
-            - if:
-                condition: {lambda: 'return id(heat_studio_overlay).state;'}
-                then:
-                  - lvgl.slider.update: {id: heating_popup_slider, indicator: {bg_color: 0x9A4314}, knob: {border_color: 0xD85A18}}
-                else:
-                  - lvgl.slider.update: {id: heating_popup_slider, indicator: {bg_color: 0x2E6B36}, knob: {border_color: 0x43B853}}
+            - lvgl.slider.update:
+                id: heat_studio_slider
+                indicator: {bg_color: 0x2E6B36}
+                knob: {bg_color: 0xFFFFFF, border_color: 0x43B853}
 
-  - id: !extend heat_camera_matrimoniale_target
-    on_value:
+      # Main bedroom
       - if:
           condition: {lambda: 'return id(heat_camera_matrimoniale_overlay).state;'}
           then:
-            - lvgl.slider.update: {id: heat_camera_matrimoniale_slider, indicator: {bg_color: 0x9A4314}, knob: {border_color: 0xD85A18}}
+            - lvgl.slider.update:
+                id: heat_camera_matrimoniale_slider
+                indicator: {bg_color: 0x9A4314}
+                knob: {bg_color: 0xFFFFFF, border_color: 0xD85A18}
           else:
-            - lvgl.slider.update: {id: heat_camera_matrimoniale_slider, indicator: {bg_color: 0x2E6B36}, knob: {border_color: 0x43B853}}
-      - if:
-          condition: {lambda: 'return id(heating_selected_room) == 2;'}
-          then:
-            - if:
-                condition: {lambda: 'return id(heat_camera_matrimoniale_overlay).state;'}
-                then:
-                  - lvgl.slider.update: {id: heating_popup_slider, indicator: {bg_color: 0x9A4314}, knob: {border_color: 0xD85A18}}
-                else:
-                  - lvgl.slider.update: {id: heating_popup_slider, indicator: {bg_color: 0x2E6B36}, knob: {border_color: 0x43B853}}
+            - lvgl.slider.update:
+                id: heat_camera_matrimoniale_slider
+                indicator: {bg_color: 0x2E6B36}
+                knob: {bg_color: 0xFFFFFF, border_color: 0x43B853}
 
-  - id: !extend heat_camera_da_letto_target
-    on_value:
+      # Bedroom
       - if:
           condition: {lambda: 'return id(heat_camera_da_letto_overlay).state;'}
           then:
-            - lvgl.slider.update: {id: heat_camera_da_letto_slider, indicator: {bg_color: 0x9A4314}, knob: {border_color: 0xD85A18}}
+            - lvgl.slider.update:
+                id: heat_camera_da_letto_slider
+                indicator: {bg_color: 0x9A4314}
+                knob: {bg_color: 0xFFFFFF, border_color: 0xD85A18}
           else:
-            - lvgl.slider.update: {id: heat_camera_da_letto_slider, indicator: {bg_color: 0x2E6B36}, knob: {border_color: 0x43B853}}
-      - if:
-          condition: {lambda: 'return id(heating_selected_room) == 3;'}
-          then:
-            - if:
-                condition: {lambda: 'return id(heat_camera_da_letto_overlay).state;'}
-                then:
-                  - lvgl.slider.update: {id: heating_popup_slider, indicator: {bg_color: 0x9A4314}, knob: {border_color: 0xD85A18}}
-                else:
-                  - lvgl.slider.update: {id: heating_popup_slider, indicator: {bg_color: 0x2E6B36}, knob: {border_color: 0x43B853}}
+            - lvgl.slider.update:
+                id: heat_camera_da_letto_slider
+                indicator: {bg_color: 0x2E6B36}
+                knob: {bg_color: 0xFFFFFF, border_color: 0x43B853}
 
-script:
-  - id: !extend heating_popup_open
-    then:
+      # Popup follows the currently selected room.
       - if:
           condition:
             lambda: |-
@@ -165,6 +82,12 @@ script:
                 default: return id(heat_camera_da_letto_overlay).state;
               }
           then:
-            - lvgl.slider.update: {id: heating_popup_slider, indicator: {bg_color: 0x9A4314}, knob: {border_color: 0xD85A18}}
+            - lvgl.slider.update:
+                id: heating_popup_slider
+                indicator: {bg_color: 0x9A4314}
+                knob: {bg_color: 0xFFFFFF, border_color: 0xD85A18}
           else:
-            - lvgl.slider.update: {id: heating_popup_slider, indicator: {bg_color: 0x2E6B36}, knob: {border_color: 0x43B853}}
+            - lvgl.slider.update:
+                id: heating_popup_slider
+                indicator: {bg_color: 0x2E6B36}
+                knob: {bg_color: 0xFFFFFF, border_color: 0x43B853}
