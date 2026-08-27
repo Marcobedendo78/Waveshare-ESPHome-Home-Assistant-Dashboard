@@ -4,11 +4,12 @@
 # This is the ONLY remote package file that the local
 # waveshare-display.yaml needs to load.
 #
-# When new dashboard modules are added, update this file on GitHub.
-# Existing installations keep the same local package list.
+# New dashboard modules are added here on GitHub so existing
+# installations do not need local package-list changes.
 # ============================================================
 
 packages:
   dashboard_base: !include dashboard-package.yaml
   heating_slider: !include heating-slider-v1.2.yaml
   pdc_page: !include pdc-page-v1.2.yaml
+  update_client: !include update-client-v1.2.yaml
