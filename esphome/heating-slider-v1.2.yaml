@@ -2,16 +2,16 @@
 # WAVESHARE DASHBOARD - HEATING SLIDER UI OVERRIDE
 # v1.2.0
 # ============================================================
-# Slider source: climate entity target temperature.
-# The Tado climate entities expose min_temp=5, max_temp=25 and
-# target_temp_step=0.1, therefore LVGL uses 50..250 and /10.0.
+# IMPORTANT COLOR RULE
+# This file NEVER decides slider color.
+# Color is controlled only by heating-color-fix-v1.2.yaml using
+# the same Tado overlay entities that controlled the old arcs:
+#   overlay OFF = green (automatic)
+#   overlay ON  = orange (manual override)
 # ============================================================
 
 sensor:
-  # ----------------------------------------------------------
-  # TARGET TEMPERATURE
-  # Keeps Home Assistant, card slider and popup slider synced.
-  # ----------------------------------------------------------
+  # TARGET TEMPERATURE - climate entity attribute "temperature"
   - id: !extend heat_salotto_target
     on_value:
       - lvgl.slider.update:
@@ -88,9 +88,7 @@ sensor:
                 id: heating_popup_target_v12
                 text: !lambda 'return str_sprintf("%.1f C", x);'
 
-  # ----------------------------------------------------------
   # CURRENT TEMPERATURE
-  # ----------------------------------------------------------
   - id: !extend heat_salotto_temp
     on_value:
       - lvgl.label.update: {id: heat_salotto_current_v12, text: !lambda 'return str_sprintf("%.1f C", x);'}
@@ -123,9 +121,7 @@ sensor:
           then:
             - lvgl.label.update: {id: heating_popup_current_v12, text: !lambda 'return str_sprintf("Attuale %.1f C", x);'}
 
-  # ----------------------------------------------------------
   # HUMIDITY
-  # ----------------------------------------------------------
   - id: !extend heat_salotto_hum
     on_value:
       - lvgl.label.update: {id: heat_salotto_humidity_v12, text: !lambda 'return isnan(x) ? std::string("--%") : str_sprintf("%.0f%%", x);'}
@@ -139,68 +135,39 @@ sensor:
     on_value:
       - lvgl.label.update: {id: heat_camera_da_letto_humidity_v12, text: !lambda 'return isnan(x) ? std::string("--%") : str_sprintf("%.0f%%", x);'}
 
-  # ----------------------------------------------------------
-  # HEATING OUTPUT
-  # Green = idle. Orange = actual heating.
-  # ----------------------------------------------------------
+  # HEATING OUTPUT - text only. It must never change slider color.
   - id: !extend heat_salotto_heating
     on_value:
       - lvgl.label.update:
           id: heat_salotto_state_v12
           text: !lambda 'return (isnan(x) || x <= 0.1f) ? std::string("Inattivo") : str_sprintf("Risc. %.0f%%", x);'
-      - if:
-          condition: {lambda: 'return !isnan(x) && x > 0.1f;'}
-          then:
-            - lvgl.slider.update: {id: heat_salotto_slider, indicator: {bg_color: 0x9A4314}, knob: {border_color: 0xD85A18}}
-          else:
-            - lvgl.slider.update: {id: heat_salotto_slider, indicator: {bg_color: 0x2E6B36}, knob: {border_color: 0x43B853}}
 
   - id: !extend heat_studio_heating
     on_value:
       - lvgl.label.update:
           id: heat_studio_state_v12
           text: !lambda 'return (isnan(x) || x <= 0.1f) ? std::string("Inattivo") : str_sprintf("Risc. %.0f%%", x);'
-      - if:
-          condition: {lambda: 'return !isnan(x) && x > 0.1f;'}
-          then:
-            - lvgl.slider.update: {id: heat_studio_slider, indicator: {bg_color: 0x9A4314}, knob: {border_color: 0xD85A18}}
-          else:
-            - lvgl.slider.update: {id: heat_studio_slider, indicator: {bg_color: 0x2E6B36}, knob: {border_color: 0x43B853}}
 
   - id: !extend heat_camera_matrimoniale_heating
     on_value:
       - lvgl.label.update:
           id: heat_camera_matrimoniale_state_v12
           text: !lambda 'return (isnan(x) || x <= 0.1f) ? std::string("Inattivo") : str_sprintf("Risc. %.0f%%", x);'
-      - if:
-          condition: {lambda: 'return !isnan(x) && x > 0.1f;'}
-          then:
-            - lvgl.slider.update: {id: heat_camera_matrimoniale_slider, indicator: {bg_color: 0x9A4314}, knob: {border_color: 0xD85A18}}
-          else:
-            - lvgl.slider.update: {id: heat_camera_matrimoniale_slider, indicator: {bg_color: 0x2E6B36}, knob: {border_color: 0x43B853}}
 
   - id: !extend heat_camera_da_letto_heating
     on_value:
       - lvgl.label.update:
           id: heat_camera_da_letto_state_v12
           text: !lambda 'return (isnan(x) || x <= 0.1f) ? std::string("Inattivo") : str_sprintf("Risc. %.0f%%", x);'
-      - if:
-          condition: {lambda: 'return !isnan(x) && x > 0.1f;'}
-          then:
-            - lvgl.slider.update: {id: heat_camera_da_letto_slider, indicator: {bg_color: 0x9A4314}, knob: {border_color: 0xD85A18}}
-          else:
-            - lvgl.slider.update: {id: heat_camera_da_letto_slider, indicator: {bg_color: 0x2E6B36}, knob: {border_color: 0x43B853}}
 
 script:
   - id: !extend heating_popup_open
     then:
-      # Old circular control and old popup values are replaced by v1.2 widgets.
       - lvgl.widget.hide: heating_popup_arc
       - lvgl.widget.hide: heating_popup_state
       - lvgl.widget.hide: heating_popup_target_lbl
       - lvgl.widget.hide: heating_popup_current
 
-      # Hide card widgets that would otherwise render above the popup.
       - lvgl.widget.hide: heat_salotto_slider
       - lvgl.widget.hide: heat_studio_slider
       - lvgl.widget.hide: heat_camera_matrimoniale_slider
@@ -222,7 +189,6 @@ script:
       - lvgl.widget.hide: heat_camera_da_letto_target_v12
       - lvgl.widget.hide: heat_camera_da_letto_humidity_v12
 
-      # Read the selected room directly so popup always opens synchronized.
       - lambda: |-
           float target = 20.0f;
           float current = NAN;
@@ -255,20 +221,6 @@ script:
           lv_label_set_text(id(heating_popup_target_v12), str_sprintf("%.1f C", target).c_str());
           lv_label_set_text(id(heating_popup_current_v12), isnan(current) ? "Attuale --.- C" : str_sprintf("Attuale %.1f C", current).c_str());
           lv_label_set_text(id(heating_popup_state_v12), (isnan(heating) || heating <= 0.1f) ? "Inattivo" : str_sprintf("Riscaldamento %.0f%%", heating).c_str());
-
-      - if:
-          condition:
-            lambda: |-
-              switch (id(heating_selected_room)) {
-                case 0: return id(heat_salotto_heating).state > 0.1f;
-                case 1: return id(heat_studio_heating).state > 0.1f;
-                case 2: return id(heat_camera_matrimoniale_heating).state > 0.1f;
-                default: return id(heat_camera_da_letto_heating).state > 0.1f;
-              }
-          then:
-            - lvgl.slider.update: {id: heating_popup_slider, indicator: {bg_color: 0x9A4314}, knob: {border_color: 0xD85A18}}
-          else:
-            - lvgl.slider.update: {id: heating_popup_slider, indicator: {bg_color: 0x2E6B36}, knob: {border_color: 0x43B853}}
 
       - lvgl.widget.show: heating_popup_state_v12
       - lvgl.widget.show: heating_popup_target_v12
@@ -307,9 +259,7 @@ lvgl:
   pages:
     - id: !extend page_heating
       widgets:
-        # ======================================================
-        # CARD INFORMATION - larger and proportional
-        # ======================================================
+        # CARD INFORMATION
         - label: {id: heat_salotto_state_v12, x: 48, y: 112, width: 105, text_align: CENTER, text: "Inattivo", text_font: roboto_bold_16, text_color: 0xEAEAEA}
         - label: {id: heat_salotto_current_v12, x: 151, y: 106, width: 110, text_align: CENTER, text: "--.- C", text_font: roboto_bold_22, text_color: 0xFFFFFF}
         - label: {id: heat_salotto_target_v12, x: 259, y: 110, width: 105, text_align: CENTER, text: "--.- C", text_font: roboto_bold_18, text_color: 0xFFFFFF}
@@ -330,9 +280,7 @@ lvgl:
         - label: {id: heat_camera_da_letto_target_v12, x: 767, y: 342, width: 105, text_align: CENTER, text: "--.- C", text_font: roboto_bold_18, text_color: 0xFFFFFF}
         - label: {id: heat_camera_da_letto_humidity_v12, x: 870, y: 342, width: 86, text_align: CENTER, text: "--%", text_font: roboto_bold_18, text_color: 0xD8D8D8}
 
-        # ======================================================
-        # CARD SLIDERS - climate target temperature 5.0..25.0 C
-        # ======================================================
+        # CARD SLIDERS
         - slider:
             id: heat_salotto_slider
             x: 64
@@ -350,18 +298,11 @@ lvgl:
             indicator: {bg_color: 0x2E6B36, bg_opa: COVER, radius: 16}
             knob: {bg_color: 0xFFFFFF, border_width: 2, border_color: 0x43B853, radius: 12, pad_all: 2}
             on_value:
-              - lvgl.slider.update: {id: heat_salotto_slider, indicator: {bg_color: 0x9A4314}, knob: {border_color: 0xD85A18}}
               - lvgl.label.update: {id: heat_salotto_target_v12, text: !lambda 'return str_sprintf("%.1f C", x / 10.0f);'}
             on_release:
               - homeassistant.action:
                   action: climate.set_temperature
                   data: {entity_id: "${heating_living_climate}", temperature: !lambda 'return str_sprintf("%.1f", x / 10.0f);'}
-              - if:
-                  condition: {lambda: 'return id(heat_salotto_heating).state > 0.1f;'}
-                  then:
-                    - lvgl.slider.update: {id: heat_salotto_slider, indicator: {bg_color: 0x9A4314}, knob: {border_color: 0xD85A18}}
-                  else:
-                    - lvgl.slider.update: {id: heat_salotto_slider, indicator: {bg_color: 0x2E6B36}, knob: {border_color: 0x43B853}}
 
         - slider:
             id: heat_studio_slider
@@ -380,18 +321,11 @@ lvgl:
             indicator: {bg_color: 0x2E6B36, bg_opa: COVER, radius: 16}
             knob: {bg_color: 0xFFFFFF, border_width: 2, border_color: 0x43B853, radius: 12, pad_all: 2}
             on_value:
-              - lvgl.slider.update: {id: heat_studio_slider, indicator: {bg_color: 0x9A4314}, knob: {border_color: 0xD85A18}}
               - lvgl.label.update: {id: heat_studio_target_v12, text: !lambda 'return str_sprintf("%.1f C", x / 10.0f);'}
             on_release:
               - homeassistant.action:
                   action: climate.set_temperature
                   data: {entity_id: "${heating_study_climate}", temperature: !lambda 'return str_sprintf("%.1f", x / 10.0f);'}
-              - if:
-                  condition: {lambda: 'return id(heat_studio_heating).state > 0.1f;'}
-                  then:
-                    - lvgl.slider.update: {id: heat_studio_slider, indicator: {bg_color: 0x9A4314}, knob: {border_color: 0xD85A18}}
-                  else:
-                    - lvgl.slider.update: {id: heat_studio_slider, indicator: {bg_color: 0x2E6B36}, knob: {border_color: 0x43B853}}
 
         - slider:
             id: heat_camera_matrimoniale_slider
@@ -410,18 +344,11 @@ lvgl:
             indicator: {bg_color: 0x2E6B36, bg_opa: COVER, radius: 16}
             knob: {bg_color: 0xFFFFFF, border_width: 2, border_color: 0x43B853, radius: 12, pad_all: 2}
             on_value:
-              - lvgl.slider.update: {id: heat_camera_matrimoniale_slider, indicator: {bg_color: 0x9A4314}, knob: {border_color: 0xD85A18}}
               - lvgl.label.update: {id: heat_camera_matrimoniale_target_v12, text: !lambda 'return str_sprintf("%.1f C", x / 10.0f);'}
             on_release:
               - homeassistant.action:
                   action: climate.set_temperature
                   data: {entity_id: "${heating_main_bedroom_climate}", temperature: !lambda 'return str_sprintf("%.1f", x / 10.0f);'}
-              - if:
-                  condition: {lambda: 'return id(heat_camera_matrimoniale_heating).state > 0.1f;'}
-                  then:
-                    - lvgl.slider.update: {id: heat_camera_matrimoniale_slider, indicator: {bg_color: 0x9A4314}, knob: {border_color: 0xD85A18}}
-                  else:
-                    - lvgl.slider.update: {id: heat_camera_matrimoniale_slider, indicator: {bg_color: 0x2E6B36}, knob: {border_color: 0x43B853}}
 
         - slider:
             id: heat_camera_da_letto_slider
@@ -440,22 +367,13 @@ lvgl:
             indicator: {bg_color: 0x2E6B36, bg_opa: COVER, radius: 16}
             knob: {bg_color: 0xFFFFFF, border_width: 2, border_color: 0x43B853, radius: 12, pad_all: 2}
             on_value:
-              - lvgl.slider.update: {id: heat_camera_da_letto_slider, indicator: {bg_color: 0x9A4314}, knob: {border_color: 0xD85A18}}
               - lvgl.label.update: {id: heat_camera_da_letto_target_v12, text: !lambda 'return str_sprintf("%.1f C", x / 10.0f);'}
             on_release:
               - homeassistant.action:
                   action: climate.set_temperature
                   data: {entity_id: "${heating_bedroom_climate}", temperature: !lambda 'return str_sprintf("%.1f", x / 10.0f);'}
-              - if:
-                  condition: {lambda: 'return id(heat_camera_da_letto_heating).state > 0.1f;'}
-                  then:
-                    - lvgl.slider.update: {id: heat_camera_da_letto_slider, indicator: {bg_color: 0x9A4314}, knob: {border_color: 0xD85A18}}
-                  else:
-                    - lvgl.slider.update: {id: heat_camera_da_letto_slider, indicator: {bg_color: 0x2E6B36}, knob: {border_color: 0x43B853}}
 
-        # ======================================================
-        # POPUP VALUES - large and completely above slider
-        # ======================================================
+        # POPUP VALUES
         - label:
             id: heating_popup_state_v12
             x: 382
@@ -489,9 +407,7 @@ lvgl:
             text_font: roboto_bold_20
             text_color: 0xD8D8D8
 
-        # ======================================================
-        # POPUP SLIDER - exact climate range 5.0..25.0 C
-        # ======================================================
+        # POPUP SLIDER
         - slider:
             id: heating_popup_slider
             x: 272
@@ -510,7 +426,6 @@ lvgl:
             indicator: {bg_color: 0x2E6B36, bg_opa: COVER, radius: 18}
             knob: {bg_color: 0xFFFFFF, border_width: 2, border_color: 0x43B853, radius: 13, pad_all: 2}
             on_value:
-              - lvgl.slider.update: {id: heating_popup_slider, indicator: {bg_color: 0x9A4314}, knob: {border_color: 0xD85A18}}
               - lambda: |-
                   const float t = x / 10.0f;
                   id(heating_popup_target) = t;
@@ -537,19 +452,6 @@ lvgl:
                   text: !lambda 'return str_sprintf("%.1f C", x / 10.0f);'
             on_release:
               - script.execute: heating_popup_set_temperature
-              - if:
-                  condition:
-                    lambda: |-
-                      switch (id(heating_selected_room)) {
-                        case 0: return id(heat_salotto_heating).state > 0.1f;
-                        case 1: return id(heat_studio_heating).state > 0.1f;
-                        case 2: return id(heat_camera_matrimoniale_heating).state > 0.1f;
-                        default: return id(heat_camera_da_letto_heating).state > 0.1f;
-                      }
-                  then:
-                    - lvgl.slider.update: {id: heating_popup_slider, indicator: {bg_color: 0x9A4314}, knob: {border_color: 0xD85A18}}
-                  else:
-                    - lvgl.slider.update: {id: heating_popup_slider, indicator: {bg_color: 0x2E6B36}, knob: {border_color: 0x43B853}}
 
         - label:
             id: heating_popup_min_lbl_v12
