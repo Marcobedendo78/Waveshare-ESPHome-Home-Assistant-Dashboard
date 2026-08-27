@@ -1,0 +1,456 @@
+# ============================================================
+# WAVESHARE DASHBOARD - PDC / HEAT PUMP PAGE
+# v1.2.0 development
+#
+# Read-only page. The local background image must be available in
+# /config/esphome/ and is selected with ${pdc_image_file}.
+# ============================================================
+
+image:
+  - platform: file
+    file: "${pdc_image_file}"
+    id: pdc_background
+    type: RGB565
+    resize: 1024x512
+
+# Animation phase for the moving water-flow dots.
+globals:
+  - id: pdc_flow_phase
+    type: int
+    restore_value: no
+    initial_value: '0'
+
+sensor:
+  - platform: homeassistant
+    id: pdc_supply_temp
+    entity_id: ${pdc_supply_temperature}
+    internal: true
+    on_value:
+      - lvgl.label.update:
+          id: pdc_lbl_supply
+          text: !lambda 'return isnan(x) ? std::string("--.- C") : str_sprintf("%.1f C", x);'
+
+  - platform: homeassistant
+    id: pdc_return_temp
+    entity_id: ${pdc_return_temperature}
+    internal: true
+    on_value:
+      - lvgl.label.update:
+          id: pdc_lbl_return
+          text: !lambda 'return isnan(x) ? std::string("--.- C") : str_sprintf("%.1f C", x);'
+
+  - platform: homeassistant
+    id: pdc_power_absorbed
+    entity_id: ${pdc_power}
+    internal: true
+    on_value:
+      - lvgl.label.update:
+          id: pdc_lbl_power
+          text: !lambda |-
+            if (isnan(x)) return std::string("-- W");
+            if (fabsf(x) < 1000.0f) return str_sprintf("%.0f W", x);
+            return str_sprintf("%.2f kW", x / 1000.0f);
+
+  - platform: homeassistant
+    id: pdc_thermal_power
+    entity_id: ${pdc_thermal_power}
+    internal: true
+    on_value:
+      - lvgl.label.update:
+          id: pdc_lbl_thermal_power
+          text: !lambda 'return isnan(x) ? std::string("-- kWt") : str_sprintf("%.2f kWt", x);'
+
+  - platform: homeassistant
+    id: pdc_dhw_temp
+    entity_id: ${pdc_dhw_temperature}
+    internal: true
+    on_value:
+      - lvgl.label.update:
+          id: pdc_lbl_dhw
+          text: !lambda 'return isnan(x) ? std::string("--.- C") : str_sprintf("%.1f C", x);'
+
+  - platform: homeassistant
+    id: pdc_compressor_hz
+    entity_id: ${pdc_compressor}
+    internal: true
+    on_value:
+      - lvgl.label.update:
+          id: pdc_lbl_compressor
+          text: !lambda 'return isnan(x) ? std::string("-- Hz") : str_sprintf("%.0f Hz", x);'
+
+  - platform: homeassistant
+    id: pdc_water_flow
+    entity_id: ${pdc_water_flow}
+    internal: true
+    on_value:
+      - lvgl.label.update:
+          id: pdc_lbl_flow
+          text: !lambda 'return isnan(x) ? std::string("-- l/min") : str_sprintf("%.1f l/min", x);'
+
+  - platform: homeassistant
+    id: pdc_fan_rpm
+    entity_id: ${pdc_fan_rpm}
+    internal: true
+    on_value:
+      - lvgl.label.update:
+          id: pdc_lbl_fan
+          text: !lambda 'return isnan(x) ? std::string("-- rpm") : str_sprintf("%.0f rpm", x);'
+
+  - platform: homeassistant
+    id: pdc_pressure
+    entity_id: ${pdc_pressure}
+    internal: true
+    on_value:
+      - lvgl.label.update:
+          id: pdc_lbl_pressure
+          text: !lambda 'return isnan(x) ? std::string("-- bar") : str_sprintf("%.1f bar", x);'
+
+  - platform: homeassistant
+    id: pdc_indoor_temp
+    entity_id: ${pdc_indoor_temperature}
+    internal: true
+    on_value:
+      - lvgl.label.update:
+          id: pdc_lbl_indoor
+          text: !lambda 'return isnan(x) ? std::string("--.- C") : str_sprintf("%.1f C", x);'
+
+  - platform: homeassistant
+    id: pdc_outdoor_temp
+    entity_id: ${pdc_outdoor_temperature}
+    internal: true
+    on_value:
+      - lvgl.label.update:
+          id: pdc_lbl_outdoor
+          text: !lambda 'return isnan(x) ? std::string("--.- C") : str_sprintf("%.1f C", x);'
+
+  - platform: homeassistant
+    id: pdc_cop
+    entity_id: ${pdc_cop}
+    internal: true
+    on_value:
+      - lvgl.label.update:
+          id: pdc_lbl_cop
+          text: !lambda 'return isnan(x) ? std::string("--") : str_sprintf("%.2f", x);'
+
+text_sensor:
+  - platform: homeassistant
+    id: pdc_thermostat
+    entity_id: ${pdc_thermostat}
+    internal: true
+    on_value:
+      - lvgl.label.update:
+          id: pdc_lbl_thermostat
+          text: !lambda |-
+            std::string s = x;
+            for (auto &c : s) c = tolower(c);
+            if (s == "on") return std::string("ON");
+            if (s == "off") return std::string("OFF");
+            return x;
+
+  - platform: homeassistant
+    id: pdc_operating_mode
+    entity_id: ${pdc_operating_mode}
+    internal: true
+    on_value:
+      - lvgl.label.update:
+          id: pdc_lbl_mode
+          text: !lambda 'return x.empty() ? std::string("--") : x;'
+
+  - platform: homeassistant
+    id: pdc_indoor_outdoor_mode
+    entity_id: ${pdc_indoor_outdoor_mode}
+    internal: true
+    on_value:
+      - lvgl.label.update:
+          id: pdc_lbl_io_mode
+          text: !lambda 'return x.empty() ? std::string("--") : x;'
+
+  - platform: homeassistant
+    id: pdc_defrost
+    entity_id: ${pdc_defrost}
+    internal: true
+    on_value:
+      - lvgl.label.update:
+          id: pdc_lbl_defrost
+          text: !lambda |-
+            std::string s = x;
+            for (auto &c : s) c = tolower(c);
+            return s == "on" ? std::string("ATTIVO") : std::string("NO");
+
+  - platform: homeassistant
+    id: pdc_freeze_protection
+    entity_id: ${pdc_freeze_protection}
+    internal: true
+    on_value:
+      - lvgl.label.update:
+          id: pdc_lbl_freeze
+          text: !lambda |-
+            std::string s = x;
+            for (auto &c : s) c = tolower(c);
+            return s == "on" ? std::string("ATTIVA") : std::string("NO");
+
+# Move six small dots along simplified pipe paths. They are hidden when
+# water flow is zero or unavailable.
+interval:
+  - interval: 180ms
+    then:
+      - lambda: |-
+          float flow = id(pdc_water_flow).state;
+          bool active = !isnan(flow) && flow > 0.05f;
+
+          lv_obj_t *red[3] = {id(pdc_red_dot_1), id(pdc_red_dot_2), id(pdc_red_dot_3)};
+          lv_obj_t *blue[3] = {id(pdc_blue_dot_1), id(pdc_blue_dot_2), id(pdc_blue_dot_3)};
+
+          if (!active) {
+            for (int i = 0; i < 3; i++) {
+              lv_obj_add_flag(red[i], LV_OBJ_FLAG_HIDDEN);
+              lv_obj_add_flag(blue[i], LV_OBJ_FLAG_HIDDEN);
+            }
+            return;
+          }
+
+          for (int i = 0; i < 3; i++) {
+            lv_obj_clear_flag(red[i], LV_OBJ_FLAG_HIDDEN);
+            lv_obj_clear_flag(blue[i], LV_OBJ_FLAG_HIDDEN);
+          }
+
+          id(pdc_flow_phase) = (id(pdc_flow_phase) + 7) % 1000;
+
+          auto red_pos = [](int p, int &x, int &y) {
+            // OUTDOOR -> INDOOR: horizontal supply, external riser,
+            // then visible indoor supply segment.
+            if (p < 220) {
+              x = 388 + (p * 112) / 220;
+              y = 421;
+            } else if (p < 760) {
+              x = 500;
+              y = 421 - ((p - 220) * 360) / 540;
+            } else {
+              x = 620 + ((p - 760) * 36) / 240;
+              y = 92 + ((p - 760) * 96) / 240;
+            }
+          };
+
+          auto blue_pos = [](int p, int &x, int &y) {
+            // INDOOR -> OUTDOOR: visible indoor return, external riser,
+            // then horizontal return toward the outdoor unit.
+            if (p < 240) {
+              x = 642 - (p * 24) / 240;
+              y = 190 - (p * 92) / 240;
+            } else if (p < 780) {
+              x = 511;
+              y = 62 + ((p - 240) * 376) / 540;
+            } else {
+              x = 511 - ((p - 780) * 123) / 220;
+              y = 438;
+            }
+          };
+
+          for (int i = 0; i < 3; i++) {
+            int pr = (id(pdc_flow_phase) + i * 333) % 1000;
+            int pb = (id(pdc_flow_phase) + i * 333) % 1000;
+            int x, y;
+            red_pos(pr, x, y);
+            lv_obj_set_pos(red[i], x - 5, y - 5);
+            blue_pos(pb, x, y);
+            lv_obj_set_pos(blue[i], x - 5, y - 5);
+          }
+
+lvgl:
+  pages:
+    - id: !extend page_pdc
+      widgets:
+        # Background is intentionally limited to the content area so it
+        # never covers the existing bottom navigation bar.
+        - image:
+            id: pdc_bg_widget
+            src: pdc_background
+            x: 0
+            y: 0
+            width: 1024
+            height: 512
+
+        # ---------------- LEFT COLUMN ----------------
+        - obj: &pdc_card_left
+            x: 16
+            y: 24
+            width: 218
+            height: 54
+            bg_color: 0x101820
+            bg_opa: 82%
+            radius: 10
+            border_width: 1
+            border_color: 0x506070
+            widgets:
+              - label: {x: 10, y: 5, text: "Temperatura esterna", text_font: roboto_14, text_color: 0xD0D7DE}
+              - label: {id: pdc_lbl_outdoor, x: 10, y: 25, width: 194, text_align: RIGHT, text: "--.- C", text_font: roboto_bold_18, text_color: 0xFFFFFF}
+
+        - obj:
+            <<: *pdc_card_left
+            y: 82
+            widgets:
+              - label: {x: 10, y: 5, text: "Potenza assorbita", text_font: roboto_14, text_color: 0xD0D7DE}
+              - label: {id: pdc_lbl_power, x: 10, y: 25, width: 194, text_align: RIGHT, text: "-- W", text_font: roboto_bold_18, text_color: 0xFFFFFF}
+
+        - obj:
+            <<: *pdc_card_left
+            y: 140
+            widgets:
+              - label: {x: 10, y: 5, text: "RPM ventola", text_font: roboto_14, text_color: 0xD0D7DE}
+              - label: {id: pdc_lbl_fan, x: 10, y: 25, width: 194, text_align: RIGHT, text: "-- rpm", text_font: roboto_bold_18, text_color: 0xFFFFFF}
+
+        - obj:
+            <<: *pdc_card_left
+            y: 198
+            widgets:
+              - label: {x: 10, y: 5, text: "Compressore", text_font: roboto_14, text_color: 0xD0D7DE}
+              - label: {id: pdc_lbl_compressor, x: 10, y: 25, width: 194, text_align: RIGHT, text: "-- Hz", text_font: roboto_bold_18, text_color: 0xFFFFFF}
+
+        - obj:
+            <<: *pdc_card_left
+            y: 256
+            widgets:
+              - label: {x: 10, y: 5, text: "Sbrinamento attivo", text_font: roboto_14, text_color: 0xD0D7DE}
+              - label: {id: pdc_lbl_defrost, x: 10, y: 25, width: 194, text_align: RIGHT, text: "NO", text_font: roboto_bold_18, text_color: 0xFFFFFF}
+
+        - obj:
+            <<: *pdc_card_left
+            y: 314
+            widgets:
+              - label: {x: 10, y: 5, text: "COP", text_font: roboto_14, text_color: 0xD0D7DE}
+              - label: {id: pdc_lbl_cop, x: 10, y: 25, width: 194, text_align: RIGHT, text: "--", text_font: roboto_bold_18, text_color: 0xFFFFFF}
+
+        - obj:
+            <<: *pdc_card_left
+            y: 372
+            widgets:
+              - label: {x: 10, y: 5, text: "Protezione antigelo", text_font: roboto_14, text_color: 0xD0D7DE}
+              - label: {id: pdc_lbl_freeze, x: 10, y: 25, width: 194, text_align: RIGHT, text: "NO", text_font: roboto_bold_18, text_color: 0xFFFFFF}
+
+        # Pipe temperatures, centered next to the visible risers.
+        - obj:
+            x: 448
+            y: 230
+            width: 145
+            height: 58
+            bg_color: 0x101820
+            bg_opa: 78%
+            radius: 10
+            border_width: 1
+            border_color: 0xD84A35
+            widgets:
+              - label: {x: 8, y: 5, width: 125, text_align: CENTER, text: "MANDATA", text_font: roboto_bold_14, text_color: 0xFF6A55}
+              - label: {id: pdc_lbl_supply, x: 8, y: 27, width: 125, text_align: CENTER, text: "--.- C", text_font: roboto_bold_18, text_color: 0xFFFFFF}
+
+        - obj:
+            x: 448
+            y: 294
+            width: 145
+            height: 58
+            bg_color: 0x101820
+            bg_opa: 78%
+            radius: 10
+            border_width: 1
+            border_color: 0x2488D8
+            widgets:
+              - label: {x: 8, y: 5, width: 125, text_align: CENTER, text: "RITORNO", text_font: roboto_bold_14, text_color: 0x54AFFF}
+              - label: {id: pdc_lbl_return, x: 8, y: 27, width: 125, text_align: CENTER, text: "--.- C", text_font: roboto_bold_18, text_color: 0xFFFFFF}
+
+        # ---------------- RIGHT COLUMN ----------------
+        - obj: &pdc_card_right
+            x: 790
+            y: 10
+            width: 218
+            height: 51
+            bg_color: 0x101820
+            bg_opa: 82%
+            radius: 10
+            border_width: 1
+            border_color: 0x506070
+            widgets:
+              - label: {x: 9, y: 3, text: "Potenza termica", text_font: roboto_14, text_color: 0xD0D7DE}
+              - label: {id: pdc_lbl_thermal_power, x: 9, y: 22, width: 196, text_align: RIGHT, text: "-- kWt", text_font: roboto_bold_18, text_color: 0xFFFFFF}
+
+        - obj:
+            <<: *pdc_card_right
+            y: 64
+            widgets:
+              - label: {x: 9, y: 3, text: "Temperatura ACS", text_font: roboto_14, text_color: 0xD0D7DE}
+              - label: {id: pdc_lbl_dhw, x: 9, y: 22, width: 196, text_align: RIGHT, text: "--.- C", text_font: roboto_bold_18, text_color: 0xFFFFFF}
+
+        - obj:
+            <<: *pdc_card_right
+            y: 118
+            widgets:
+              - label: {x: 9, y: 3, text: "Termostato", text_font: roboto_14, text_color: 0xD0D7DE}
+              - label: {id: pdc_lbl_thermostat, x: 9, y: 22, width: 196, text_align: RIGHT, text: "--", text_font: roboto_bold_18, text_color: 0xFFFFFF}
+
+        - obj:
+            <<: *pdc_card_right
+            y: 172
+            widgets:
+              - label: {x: 9, y: 3, text: "Modalita funzionamento", text_font: roboto_14, text_color: 0xD0D7DE}
+              - label: {id: pdc_lbl_mode, x: 9, y: 22, width: 196, text_align: RIGHT, text: "--", text_font: roboto_bold_16, text_color: 0xFFFFFF, long_mode: DOT}
+
+        - obj:
+            <<: *pdc_card_right
+            y: 226
+            widgets:
+              - label: {x: 9, y: 3, text: "Modalita I/U", text_font: roboto_14, text_color: 0xD0D7DE}
+              - label: {id: pdc_lbl_io_mode, x: 9, y: 22, width: 196, text_align: RIGHT, text: "--", text_font: roboto_bold_16, text_color: 0xFFFFFF, long_mode: DOT}
+
+        - obj:
+            <<: *pdc_card_right
+            y: 280
+            widgets:
+              - label: {x: 9, y: 3, text: "Portata pompa", text_font: roboto_14, text_color: 0xD0D7DE}
+              - label: {id: pdc_lbl_flow, x: 9, y: 22, width: 196, text_align: RIGHT, text: "-- l/min", text_font: roboto_bold_18, text_color: 0xFFFFFF}
+
+        - obj:
+            <<: *pdc_card_right
+            y: 334
+            widgets:
+              - label: {x: 9, y: 3, text: "Pressione impianto", text_font: roboto_14, text_color: 0xD0D7DE}
+              - label: {id: pdc_lbl_pressure, x: 9, y: 22, width: 196, text_align: RIGHT, text: "-- bar", text_font: roboto_bold_18, text_color: 0xFFFFFF}
+
+        - obj:
+            <<: *pdc_card_right
+            y: 388
+            widgets:
+              - label: {x: 9, y: 3, text: "Temperatura interna", text_font: roboto_14, text_color: 0xD0D7DE}
+              - label: {id: pdc_lbl_indoor, x: 9, y: 22, width: 196, text_align: RIGHT, text: "--.- C", text_font: roboto_bold_18, text_color: 0xFFFFFF}
+
+        # Animated flow dots. Their positions are updated by the interval.
+        - obj: &pdc_red_dot
+            id: pdc_red_dot_1
+            x: 390
+            y: 416
+            width: 10
+            height: 10
+            radius: 5
+            bg_color: 0xFF2D20
+            border_width: 0
+            hidden: true
+        - obj:
+            <<: *pdc_red_dot
+            id: pdc_red_dot_2
+        - obj:
+            <<: *pdc_red_dot
+            id: pdc_red_dot_3
+
+        - obj: &pdc_blue_dot
+            id: pdc_blue_dot_1
+            x: 506
+            y: 433
+            width: 10
+            height: 10
+            radius: 5
+            bg_color: 0x198CFF
+            border_width: 0
+            hidden: true
+        - obj:
+            <<: *pdc_blue_dot
+            id: pdc_blue_dot_2
+        - obj:
+            <<: *pdc_blue_dot
+            id: pdc_blue_dot_3
