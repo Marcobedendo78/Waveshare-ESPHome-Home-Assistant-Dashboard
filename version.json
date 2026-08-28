@@ -1,7 +1,7 @@
 {
   "channel": "dev",
   "version": "v1.2.0",
-  "build": "2026.08.28.06",
+  "build": "2026.08.28.07",
   "branch": "dev-v1.2.0",
-  "message": "Fix compatibilita microSD dopo migrazione al componente remoto waveshare_sd"
+  "message": "Pagina Energia ridisegnata per area 1024x512 con navigazione inferiore e consumi giornalieri corretti"
 }
