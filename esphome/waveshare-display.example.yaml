@@ -5,28 +5,18 @@
 # QUICK SETUP
 # 1) Copy this file as: waveshare-display.yaml
 # 2) Copy user_config.example.yaml as: .user_config.yaml
-#    The leading dot keeps it hidden from ESPHome Device Builder.
-# 3) Keep these files in the SAME ESPHome directory:
-#      - sd_storage.h
-#      - Robot.jpg
-#      - capture_card.png
-#      - pdc-background.png
-# 4) Copy the required values from secrets.example.yaml into
-#    your normal ESPHome secrets.yaml file.
-# 5) Edit ONLY the values in .user_config.yaml to match your
-#    Home Assistant entities and robot MQTT topics.
+# 3) Edit ONLY .user_config.yaml with your Home Assistant entities.
+# 4) Copy the required secret values from secrets.example.yaml into
+#    your normal ESPHome secrets.yaml.
 #
-# IMPORTANT
-# The local configuration now loads ONE remote bundle only.
-# dashboard-bundle.yaml includes every dashboard module from GitHub.
-# Future modules can therefore be added without editing the local
-# files: list again.
+# DASHBOARD FILES / IMAGES
+# All dashboard YAML packages are loaded automatically from GitHub.
+# Robot.jpg, capture_card.png and pdc-background.png are also fetched
+# automatically from GitHub during compilation. They do NOT need to be
+# copied into the user's ESPHome directory.
 #
-# dashboard_version controls both the remote Git ref and the
-# version sensor exposed by the ESPHome device. When a new release
-# notification arrives, changing dashboard_version to the new tag
-# is enough; ESPHome will download the complete matching bundle at
-# the next validation/install.
+# sd_storage.h is currently the only local support file still required;
+# it will be converted to a remotely installable component separately.
 # ============================================================
 
 substitutions: !include .user_config.yaml
@@ -42,8 +32,13 @@ packages:
 esphome:
   name: ${device_name}
   friendly_name: ${friendly_name}
+  name_add_mac_suffix: false
 
-  # Local file: must be in the same ESPHome configuration directory.
+  project:
+    name: marcobedendo78.waveshare-dashboard
+    version: "1.2.0-dev"
+
+  # Temporary local dependency: microSD support.
   includes:
     - sd_storage.h
 
@@ -58,6 +53,12 @@ esphome:
           } else {
             ESP_LOGW("sd_storage", "microSD non disponibile: il display continua normalmente");
           }
+
+# Allows ESPHome Device Builder to adopt an installed dashboard and create
+# a minimal configuration backed by the public GitHub repository.
+dashboard_import:
+  package_import_url: github://Marcobedendo78/Waveshare-ESPHome-Home-Assistant-Dashboard/esphome/waveshare-display.example.yaml@dev-v1.2.0
+  import_full_config: false
 
 esp32:
   variant: esp32s3
@@ -95,8 +96,9 @@ wifi:
 
 captive_portal:
 
-# Exposes the exact dashboard release used by this device to
-# Home Assistant. It appears in the Waveshare ESPHome device page.
+improv_serial:
+
+# Exposes the exact dashboard release used by this device to Home Assistant.
 text_sensor:
   - platform: template
     name: "Waveshare Dashboard Version"
