@@ -10,8 +10,8 @@ esphome:
       - delay: 1s
       - lambda: |-
           // Standard 58 px information boxes.
-          // Values were already moved upward. Move the titles upward by the
-          // same amount and shift both title/value slightly to the left.
+          // Keep the corrected vertical positions and move both title/value
+          // further to the left inside every side box.
           lv_obj_t *values[] = {
             id(pdc_lbl_outdoor), id(pdc_lbl_power), id(pdc_lbl_fan),
             id(pdc_lbl_compressor), id(pdc_lbl_defrost), id(pdc_lbl_cop),
@@ -22,7 +22,7 @@ esphome:
 
           for (auto *value : values) {
             lv_obj_set_y(value, 12);
-            lv_obj_set_x(value, 2);
+            lv_obj_set_x(value, -6);
           }
 
           // First child of each side box is the sensor title.
@@ -30,11 +30,11 @@ esphome:
             lv_obj_t *box = lv_obj_get_parent(value);
             lv_obj_t *title = lv_obj_get_child(box, 0);
             lv_obj_set_y(title, -13);
-            lv_obj_set_x(title, 2);
+            lv_obj_set_x(title, -6);
           }
 
-          // MANDATA / RITORNO: keep the compact boxes to the left of the
-          // pipes, but move both title and value clearly upward and left.
+          // MANDATA / RITORNO: retain current vertical correction and shift
+          // title/value further left inside the compact boxes.
           lv_obj_t *supply_box = lv_obj_get_parent(id(pdc_lbl_supply));
           lv_obj_t *return_box = lv_obj_get_parent(id(pdc_lbl_return));
 
@@ -45,19 +45,19 @@ esphome:
 
           lv_obj_t *supply_title = lv_obj_get_child(supply_box, 0);
           lv_obj_t *return_title = lv_obj_get_child(return_box, 0);
-          lv_obj_set_pos(supply_title, -2, -9);
+          lv_obj_set_pos(supply_title, -10, -9);
           lv_obj_set_width(supply_title, 108);
-          lv_obj_set_pos(return_title, -2, -9);
+          lv_obj_set_pos(return_title, -10, -9);
           lv_obj_set_width(return_title, 108);
 
-          lv_obj_set_pos(id(pdc_lbl_supply), -2, 7);
+          lv_obj_set_pos(id(pdc_lbl_supply), -10, 7);
           lv_obj_set_size(id(pdc_lbl_supply), 108, 24);
-          lv_obj_set_pos(id(pdc_lbl_return), -2, 7);
+          lv_obj_set_pos(id(pdc_lbl_return), -10, 7);
           lv_obj_set_size(id(pdc_lbl_return), 108, 24);
 
-# Keep only the dots on the outdoor-unit pipe section. The section around /
-# above the indoor unit does not match the rendered background accurately,
-# so dots are hidden there instead of crossing the appliance.
+# The rendered pipes around the indoor unit do not align accurately enough
+# with the animation. Keep animated dots only on the outdoor/lower pipe area
+# and hide them before they reach the indoor-unit section.
 interval:
   - interval: 180ms
     then:
@@ -68,25 +68,24 @@ interval:
           lv_obj_t *red[3] = {id(pdc_red_dot_1), id(pdc_red_dot_2), id(pdc_red_dot_3)};
           lv_obj_t *blue[3] = {id(pdc_blue_dot_1), id(pdc_blue_dot_2), id(pdc_blue_dot_3)};
 
-          // Outdoor section only:
-          // red: outdoor unit -> lower pipe -> exterior vertical pipe
-          // blue: exterior vertical pipe -> lower pipe -> outdoor unit
+          // RED: lower horizontal section and lower part of exterior vertical.
           auto red_pos = [](int p, int &x, int &y, bool &visible) {
-            visible = p < 760;
+            visible = p < 570;
             if (p < 220) {
               x = 388 + (p * 112) / 220;
               y = 421;
             } else {
               x = 500;
-              y = 421 - ((p - 220) * 359) / 540;
+              y = 421 - ((p - 220) * 232) / 350;
             }
           };
 
+          // BLUE: lower part of exterior vertical and lower horizontal only.
           auto blue_pos = [](int p, int &x, int &y, bool &visible) {
-            visible = p >= 240;
+            visible = p >= 430;
             if (p < 780) {
               x = 511;
-              y = 72 + ((p - 240) * 366) / 540;
+              y = 189 + ((p - 430) * 249) / 350;
             } else {
               x = 511 - ((p - 780) * 123) / 220;
               y = 438;
