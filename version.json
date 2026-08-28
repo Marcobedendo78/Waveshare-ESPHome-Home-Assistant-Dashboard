@@ -1,7 +1,7 @@
 {
   "channel": "dev",
   "version": "v1.2.0",
-  "build": "2026.08.28.03",
+  "build": "2026.08.28.04",
   "branch": "dev-v1.2.0",
-  "message": "Correzione layout PDC: valori, riquadri mandata/ritorno e percorso flussi"
+  "message": "Caricamento automatico del componente remoto microSD dal dashboard bundle"
 }
