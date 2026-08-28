@@ -1,7 +1,7 @@
 {
   "channel": "dev",
   "version": "v1.2.0",
-  "build": "2026.08.28.04",
+  "build": "2026.08.28.05",
   "branch": "dev-v1.2.0",
-  "message": "Caricamento automatico del componente remoto microSD dal dashboard bundle"
+  "message": "Nuova pagina Energia con riepilogo giornaliero, batteria e consumi Wallbox, PDC e luci"
 }
