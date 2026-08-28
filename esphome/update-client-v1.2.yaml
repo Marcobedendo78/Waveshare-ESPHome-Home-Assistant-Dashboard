@@ -10,7 +10,7 @@
 substitutions:
   dashboard_channel: "dev"
   dashboard_code_version: "v1.2.0"
-  dashboard_build: "2026.08.29.10"
+  dashboard_build: "2026.08.29.11"
 
 text_sensor:
   - platform: template
