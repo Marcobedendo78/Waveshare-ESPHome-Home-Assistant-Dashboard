@@ -97,5 +97,68 @@ void WaveshareSD::append_energy(int64_t timestamp, float solar_w, float grid_w,
   fclose(f);
 }
 
+bool WaveshareSD::save_energy_baseline(int day_key, float grid_import,
+                                       float grid_export, float wallbox,
+                                       float pdc, float gate_lights,
+                                       float path_lights) {
+  if (!this->mounted_)
+    return false;
+
+  const char *path = "/sdcard/waveshare/energy_baseline.csv";
+  FILE *f = fopen(path, "w");
+  if (f == nullptr) {
+    ESP_LOGW(TAG, "Impossibile salvare baseline energia su microSD");
+    return false;
+  }
+
+  fprintf(f, "day_key,grid_import,grid_export,wallbox,pdc,gate_lights,path_lights\n");
+  fprintf(f, "%d,%.6f,%.6f,%.6f,%.6f,%.6f,%.6f\n", day_key,
+          grid_import, grid_export, wallbox, pdc, gate_lights, path_lights);
+  fflush(f);
+  fclose(f);
+  ESP_LOGI(TAG, "Baseline energia salvata su microSD per %d", day_key);
+  return true;
+}
+
+bool WaveshareSD::load_energy_baseline(int expected_day_key,
+                                       float *grid_import, float *grid_export,
+                                       float *wallbox, float *pdc,
+                                       float *gate_lights,
+                                       float *path_lights) {
+  if (!this->mounted_ || grid_import == nullptr || grid_export == nullptr ||
+      wallbox == nullptr || pdc == nullptr || gate_lights == nullptr ||
+      path_lights == nullptr)
+    return false;
+
+  const char *path = "/sdcard/waveshare/energy_baseline.csv";
+  FILE *f = fopen(path, "r");
+  if (f == nullptr)
+    return false;
+
+  char header[160];
+  if (fgets(header, sizeof(header), f) == nullptr) {
+    fclose(f);
+    return false;
+  }
+
+  int day_key = -1;
+  float gi = 0.0f, ge = 0.0f, wb = 0.0f, hp = 0.0f, gl = 0.0f, pl = 0.0f;
+  const int count = fscanf(f, "%d,%f,%f,%f,%f,%f,%f", &day_key, &gi, &ge,
+                           &wb, &hp, &gl, &pl);
+  fclose(f);
+
+  if (count != 7 || day_key != expected_day_key)
+    return false;
+
+  *grid_import = gi;
+  *grid_export = ge;
+  *wallbox = wb;
+  *pdc = hp;
+  *gate_lights = gl;
+  *path_lights = pl;
+  ESP_LOGI(TAG, "Baseline energia ripristinata da microSD per %d", day_key);
+  return true;
+}
+
 }  // namespace waveshare_sd
 }  // namespace esphome
