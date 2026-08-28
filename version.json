@@ -1,7 +1,7 @@
 {
   "channel": "dev",
   "version": "v1.2.0",
-  "build": "2026.08.28.02",
+  "build": "2026.08.28.03",
   "branch": "dev-v1.2.0",
-  "message": "Test automatic update notification"
+  "message": "Correzione layout PDC: valori, riquadri mandata/ritorno e percorso flussi"
 }
