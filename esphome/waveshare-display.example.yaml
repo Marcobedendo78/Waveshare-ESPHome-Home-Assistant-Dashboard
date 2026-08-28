@@ -9,14 +9,13 @@
 # 4) Copy the required secret values from secrets.example.yaml into
 #    your normal ESPHome secrets.yaml.
 #
-# DASHBOARD FILES / IMAGES
+# DASHBOARD FILES / IMAGES / SUPPORT CODE
 # All dashboard YAML packages are loaded automatically from GitHub.
-# Robot.jpg, capture_card.png and pdc-background.png are also fetched
-# automatically from GitHub during compilation. They do NOT need to be
-# copied into the user's ESPHome directory.
-#
-# sd_storage.h is currently the only local support file still required;
-# it will be converted to a remotely installable component separately.
+# Robot.jpg, capture_card.png and pdc-background.png are fetched
+# automatically from GitHub during compilation.
+# microSD support is also fetched automatically as an external ESPHome
+# component. No dashboard image, header or support source file needs to be
+# copied manually into the user's ESPHome directory.
 # ============================================================
 
 substitutions: !include .user_config.yaml
@@ -29,6 +28,18 @@ packages:
       - esphome/dashboard-bundle.yaml
     refresh: always
 
+external_components:
+  - source:
+      type: git
+      url: https://github.com/Marcobedendo78/Waveshare-ESPHome-Home-Assistant-Dashboard
+      ref: ${dashboard_version}
+    components:
+      - waveshare_sd
+    refresh: always
+
+waveshare_sd:
+  id: dashboard_sd
+
 esphome:
   name: ${device_name}
   friendly_name: ${friendly_name}
@@ -37,22 +48,6 @@ esphome:
   project:
     name: marcobedendo78.waveshare-dashboard
     version: "1.2.0-dev"
-
-  # Temporary local dependency: microSD support.
-  includes:
-    - sd_storage.h
-
-  on_boot:
-    priority: -100
-    then:
-      - delay: 2s
-      - lambda: |-
-          if (sd_storage_mount()) {
-            ESP_LOGI("sd_storage", "microSD montata correttamente");
-            sd_storage_append_log("BOOT", "Waveshare display avviato");
-          } else {
-            ESP_LOGW("sd_storage", "microSD non disponibile: il display continua normalmente");
-          }
 
 # Allows ESPHome Device Builder to adopt an installed dashboard and create
 # a minimal configuration backed by the public GitHub repository.
