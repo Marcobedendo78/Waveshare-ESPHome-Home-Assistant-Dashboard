@@ -1,7 +1,7 @@
 {
   "channel": "dev",
   "version": "v1.2.0",
-  "build": "2026.08.28.08",
+  "build": "2026.08.29.09",
   "branch": "dev-v1.2.0",
-  "message": "Pagina Energia: layout corretto, totale dispositivi visibile e baseline giornaliere salvate anche su microSD"
+  "message": "Pagina Energia: flussi alzati, icone colorate nei cerchi e icone aggiunte a tutte le righe"
 }
