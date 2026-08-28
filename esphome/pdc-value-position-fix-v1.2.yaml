@@ -10,8 +10,7 @@ esphome:
       - delay: 1s
       - lambda: |-
           // Standard 58 px information boxes.
-          // Keep the corrected vertical positions and move both title/value
-          // further to the left inside every side box.
+          // Keep the corrected vertical positions and horizontal alignment.
           lv_obj_t *values[] = {
             id(pdc_lbl_outdoor), id(pdc_lbl_power), id(pdc_lbl_fan),
             id(pdc_lbl_compressor), id(pdc_lbl_defrost), id(pdc_lbl_cop),
@@ -33,8 +32,7 @@ esphome:
             lv_obj_set_x(title, -6);
           }
 
-          // MANDATA / RITORNO: retain current vertical correction and shift
-          // title/value further left inside the compact boxes.
+          // MANDATA / RITORNO layout.
           lv_obj_t *supply_box = lv_obj_get_parent(id(pdc_lbl_supply));
           lv_obj_t *return_box = lv_obj_get_parent(id(pdc_lbl_return));
 
@@ -55,19 +53,22 @@ esphome:
           lv_obj_set_pos(id(pdc_lbl_return), -10, 7);
           lv_obj_set_size(id(pdc_lbl_return), 108, 24);
 
-# Keep animated dots only on the outdoor/lower pipe section.
-# No dot is allowed on the short diagonal/vertical pipes entering the indoor
-# unit or on the black front panel of the indoor unit.
+# SINGLE FLOW ANIMATION.
+# The old animation has been removed from pdc-page-v1.2.yaml.
+# Dots now exist only on the exterior pipes: lower horizontal section and
+# exterior vertical risers. There are no coordinates at all on the indoor
+# unit or on the short pipes above it.
 interval:
-  - interval: 50ms
+  - interval: 180ms
     then:
       - lambda: |-
           float flow = id(pdc_water_flow).state;
+          bool active = !isnan(flow) && flow > 0.05f;
 
           lv_obj_t *red[3] = {id(pdc_red_dot_1), id(pdc_red_dot_2), id(pdc_red_dot_3)};
           lv_obj_t *blue[3] = {id(pdc_blue_dot_1), id(pdc_blue_dot_2), id(pdc_blue_dot_3)};
 
-          if (isnan(flow) || flow <= 0.05f) {
+          if (!active) {
             for (int i = 0; i < 3; i++) {
               lv_obj_add_flag(red[i], LV_OBJ_FLAG_HIDDEN);
               lv_obj_add_flag(blue[i], LV_OBJ_FLAG_HIDDEN);
@@ -75,28 +76,44 @@ interval:
             return;
           }
 
-          // RED: outdoor unit -> lower horizontal red pipe -> exterior wall
-          // vertical red pipe. Stop well before the indoor-unit connection.
+          id(pdc_flow_phase) = (id(pdc_flow_phase) + 7) % 1000;
+
+          // RED / MANDATA
+          // p 0..200   : outdoor unit -> lower red pipe -> wall
+          // p 200..700 : exterior red riser upward
+          // p 700..999 : hidden (the real pipe continues toward indoor unit)
           auto red_pos = [](int p, int &x, int &y, bool &visible) {
-            visible = p < 565;
-            if (p < 220) {
-              x = 388 + (p * 112) / 220;
+            if (p < 200) {
+              visible = true;
+              x = 388 + (p * 112) / 200;
               y = 421;
-            } else {
+            } else if (p < 700) {
+              visible = true;
               x = 500;
-              y = 421 - ((p - 220) * 228) / 345;
+              y = 421 - ((p - 200) * 231) / 500;
+            } else {
+              visible = false;
+              x = 500;
+              y = 190;
             }
           };
 
-          // BLUE: exterior wall vertical blue pipe -> lower horizontal blue
-          // pipe -> outdoor unit. The upper indoor-unit connection is omitted.
+          // BLUE / RITORNO
+          // p 0..299   : hidden (the real pipe comes from indoor unit)
+          // p 300..800 : exterior blue riser downward
+          // p 800..999 : lower blue pipe -> outdoor unit
           auto blue_pos = [](int p, int &x, int &y, bool &visible) {
-            visible = p >= 435;
-            if (p < 780) {
+            if (p < 300) {
+              visible = false;
               x = 511;
-              y = 193 + ((p - 435) * 245) / 345;
+              y = 190;
+            } else if (p < 800) {
+              visible = true;
+              x = 511;
+              y = 190 + ((p - 300) * 248) / 500;
             } else {
-              x = 511 - ((p - 780) * 123) / 220;
+              visible = true;
+              x = 511 - ((p - 800) * 123) / 200;
               y = 438;
             }
           };
@@ -121,16 +138,4 @@ interval:
             } else {
               lv_obj_add_flag(blue[i], LV_OBJ_FLAG_HIDDEN);
             }
-          }
-
-          // Safety mask against the original 180 ms animation: if another
-          // interval briefly moves a dot into the indoor-unit area, hide it.
-          for (int i = 0; i < 3; i++) {
-            lv_coord_t rx = lv_obj_get_x(red[i]);
-            lv_coord_t ry = lv_obj_get_y(red[i]);
-            lv_coord_t bx = lv_obj_get_x(blue[i]);
-            lv_coord_t by = lv_obj_get_y(blue[i]);
-
-            if (rx > 535 && ry < 260) lv_obj_add_flag(red[i], LV_OBJ_FLAG_HIDDEN);
-            if (bx > 535 && by < 260) lv_obj_add_flag(blue[i], LV_OBJ_FLAG_HIDDEN);
           }
