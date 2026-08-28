@@ -1,7 +1,7 @@
 {
   "channel": "dev",
   "version": "v1.2.0",
-  "build": "2026.08.28.07",
+  "build": "2026.08.28.08",
   "branch": "dev-v1.2.0",
-  "message": "Pagina Energia ridisegnata per area 1024x512 con navigazione inferiore e consumi giornalieri corretti"
+  "message": "Pagina Energia: layout corretto, totale dispositivi visibile e baseline giornaliere salvate anche su microSD"
 }
