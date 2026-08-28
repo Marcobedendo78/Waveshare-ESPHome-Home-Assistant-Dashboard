@@ -1,0 +1,38 @@
+# ============================================================
+# WAVESHARE DASHBOARD - PDC VALUE POSITION FIX
+# v1.2.0 development patch
+#
+# Moves only the value labels upward inside the existing PDC
+# information boxes. Box sizes, titles, fonts, background,
+# pipe graphics and entities remain unchanged.
+# ============================================================
+
+esphome:
+  on_boot:
+    priority: -50
+    then:
+      - delay: 1s
+      - lambda: |-
+          // Standard 58 px information boxes: values were at y=31.
+          // Move them 5 px upward for correct visibility on the 7" LCD.
+          lv_obj_set_y(id(pdc_lbl_outdoor), 26);
+          lv_obj_set_y(id(pdc_lbl_power), 26);
+          lv_obj_set_y(id(pdc_lbl_fan), 26);
+          lv_obj_set_y(id(pdc_lbl_compressor), 26);
+          lv_obj_set_y(id(pdc_lbl_defrost), 26);
+          lv_obj_set_y(id(pdc_lbl_cop), 26);
+          lv_obj_set_y(id(pdc_lbl_freeze), 26);
+
+          lv_obj_set_y(id(pdc_lbl_thermal_power), 26);
+          lv_obj_set_y(id(pdc_lbl_dhw), 26);
+          lv_obj_set_y(id(pdc_lbl_thermostat), 26);
+          lv_obj_set_y(id(pdc_lbl_mode), 26);
+          lv_obj_set_y(id(pdc_lbl_io_mode), 26);
+          lv_obj_set_y(id(pdc_lbl_flow), 26);
+          lv_obj_set_y(id(pdc_lbl_pressure), 26);
+          lv_obj_set_y(id(pdc_lbl_indoor), 26);
+
+          // Pipe temperature boxes are 68 px high; move values from
+          // y=36 to y=31 to keep the same visual correction.
+          lv_obj_set_y(id(pdc_lbl_supply), 31);
+          lv_obj_set_y(id(pdc_lbl_return), 31);
