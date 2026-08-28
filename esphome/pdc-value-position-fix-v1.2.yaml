@@ -10,27 +10,31 @@ esphome:
       - delay: 1s
       - lambda: |-
           // Standard 58 px information boxes.
-          // Move the values upward by roughly one full font height.
-          // Fonts and box sizes remain unchanged.
-          lv_obj_set_y(id(pdc_lbl_outdoor), 12);
-          lv_obj_set_y(id(pdc_lbl_power), 12);
-          lv_obj_set_y(id(pdc_lbl_fan), 12);
-          lv_obj_set_y(id(pdc_lbl_compressor), 12);
-          lv_obj_set_y(id(pdc_lbl_defrost), 12);
-          lv_obj_set_y(id(pdc_lbl_cop), 12);
-          lv_obj_set_y(id(pdc_lbl_freeze), 12);
+          // Values were already moved upward. Move the titles upward by the
+          // same amount and shift both title/value slightly to the left.
+          lv_obj_t *values[] = {
+            id(pdc_lbl_outdoor), id(pdc_lbl_power), id(pdc_lbl_fan),
+            id(pdc_lbl_compressor), id(pdc_lbl_defrost), id(pdc_lbl_cop),
+            id(pdc_lbl_freeze), id(pdc_lbl_thermal_power), id(pdc_lbl_dhw),
+            id(pdc_lbl_thermostat), id(pdc_lbl_mode), id(pdc_lbl_io_mode),
+            id(pdc_lbl_flow), id(pdc_lbl_pressure), id(pdc_lbl_indoor)
+          };
 
-          lv_obj_set_y(id(pdc_lbl_thermal_power), 12);
-          lv_obj_set_y(id(pdc_lbl_dhw), 12);
-          lv_obj_set_y(id(pdc_lbl_thermostat), 12);
-          lv_obj_set_y(id(pdc_lbl_mode), 12);
-          lv_obj_set_y(id(pdc_lbl_io_mode), 12);
-          lv_obj_set_y(id(pdc_lbl_flow), 12);
-          lv_obj_set_y(id(pdc_lbl_pressure), 12);
-          lv_obj_set_y(id(pdc_lbl_indoor), 12);
+          for (auto *value : values) {
+            lv_obj_set_y(value, 12);
+            lv_obj_set_x(value, 2);
+          }
 
-          // Move MANDATA / RITORNO to the left of the pipes, above the
-          // outdoor unit. Make the boxes narrower without changing fonts.
+          // First child of each side box is the sensor title.
+          for (auto *value : values) {
+            lv_obj_t *box = lv_obj_get_parent(value);
+            lv_obj_t *title = lv_obj_get_child(box, 0);
+            lv_obj_set_y(title, -13);
+            lv_obj_set_x(title, 2);
+          }
+
+          // MANDATA / RITORNO: keep the compact boxes to the left of the
+          // pipes, but move both title and value clearly upward and left.
           lv_obj_t *supply_box = lv_obj_get_parent(id(pdc_lbl_supply));
           lv_obj_t *return_box = lv_obj_get_parent(id(pdc_lbl_return));
 
@@ -39,22 +43,21 @@ esphome:
           lv_obj_set_pos(return_box, 326, 250);
           lv_obj_set_size(return_box, 112, 56);
 
-          // Reposition title labels (first child) and value labels.
           lv_obj_t *supply_title = lv_obj_get_child(supply_box, 0);
           lv_obj_t *return_title = lv_obj_get_child(return_box, 0);
-          lv_obj_set_pos(supply_title, 6, 5);
-          lv_obj_set_width(supply_title, 98);
-          lv_obj_set_pos(return_title, 6, 5);
-          lv_obj_set_width(return_title, 98);
+          lv_obj_set_pos(supply_title, -2, -9);
+          lv_obj_set_width(supply_title, 108);
+          lv_obj_set_pos(return_title, -2, -9);
+          lv_obj_set_width(return_title, 108);
 
-          lv_obj_set_pos(id(pdc_lbl_supply), 6, 25);
-          lv_obj_set_size(id(pdc_lbl_supply), 98, 24);
-          lv_obj_set_pos(id(pdc_lbl_return), 6, 25);
-          lv_obj_set_size(id(pdc_lbl_return), 98, 24);
+          lv_obj_set_pos(id(pdc_lbl_supply), -2, 7);
+          lv_obj_set_size(id(pdc_lbl_supply), 108, 24);
+          lv_obj_set_pos(id(pdc_lbl_return), -2, 7);
+          lv_obj_set_size(id(pdc_lbl_return), 108, 24);
 
-# The base PDC animation updates every 180 ms. This second pass runs at the
-# same cadence after the base package and corrects the dot coordinates so the
-# dots stay on the visible red/blue pipes and do not cross the indoor unit.
+# Keep only the dots on the outdoor-unit pipe section. The section around /
+# above the indoor unit does not match the rendered background accurately,
+# so dots are hidden there instead of crossing the appliance.
 interval:
   - interval: 180ms
     then:
@@ -65,35 +68,23 @@ interval:
           lv_obj_t *red[3] = {id(pdc_red_dot_1), id(pdc_red_dot_2), id(pdc_red_dot_3)};
           lv_obj_t *blue[3] = {id(pdc_blue_dot_1), id(pdc_blue_dot_2), id(pdc_blue_dot_3)};
 
-          // RED / MANDATA:
-          // outdoor unit -> lower red pipe -> vertical red pipe ->
-          // upper pipe above the indoor unit.
-          auto red_pos = [](int p, int &x, int &y) {
+          // Outdoor section only:
+          // red: outdoor unit -> lower pipe -> exterior vertical pipe
+          // blue: exterior vertical pipe -> lower pipe -> outdoor unit
+          auto red_pos = [](int p, int &x, int &y, bool &visible) {
+            visible = p < 760;
             if (p < 220) {
               x = 388 + (p * 112) / 220;
               y = 421;
-            } else if (p < 760) {
+            } else {
               x = 500;
               y = 421 - ((p - 220) * 359) / 540;
-            } else if (p < 900) {
-              x = 500 + ((p - 760) * 145) / 140;
-              y = 62;
-            } else {
-              x = 645;
-              y = 62 + ((p - 900) * 88) / 100;
             }
           };
 
-          // BLUE / RITORNO: reverse route on the blue pipe, remaining above
-          // the indoor unit before descending along the exterior vertical.
-          auto blue_pos = [](int p, int &x, int &y) {
-            if (p < 100) {
-              x = 635;
-              y = 150 - (p * 78) / 100;
-            } else if (p < 240) {
-              x = 635 - ((p - 100) * 124) / 140;
-              y = 72;
-            } else if (p < 780) {
+          auto blue_pos = [](int p, int &x, int &y, bool &visible) {
+            visible = p >= 240;
+            if (p < 780) {
               x = 511;
               y = 72 + ((p - 240) * 366) / 540;
             } else {
@@ -105,8 +96,21 @@ interval:
           for (int i = 0; i < 3; i++) {
             int p = (id(pdc_flow_phase) + i * 333) % 1000;
             int x, y;
-            red_pos(p, x, y);
-            lv_obj_set_pos(red[i], x - 5, y - 5);
-            blue_pos(p, x, y);
-            lv_obj_set_pos(blue[i], x - 5, y - 5);
+            bool visible;
+
+            red_pos(p, x, y, visible);
+            if (visible) {
+              lv_obj_clear_flag(red[i], LV_OBJ_FLAG_HIDDEN);
+              lv_obj_set_pos(red[i], x - 5, y - 5);
+            } else {
+              lv_obj_add_flag(red[i], LV_OBJ_FLAG_HIDDEN);
+            }
+
+            blue_pos(p, x, y, visible);
+            if (visible) {
+              lv_obj_clear_flag(blue[i], LV_OBJ_FLAG_HIDDEN);
+              lv_obj_set_pos(blue[i], x - 5, y - 5);
+            } else {
+              lv_obj_add_flag(blue[i], LV_OBJ_FLAG_HIDDEN);
+            }
           }
