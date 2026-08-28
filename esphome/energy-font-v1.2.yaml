@@ -1,0 +1,10 @@
+# ============================================================
+# WAVESHARE DASHBOARD - ENERGY PAGE FONT SUPPORT
+# v1.2.0 development
+# ============================================================
+
+font:
+  - file: "gfonts://Roboto"
+    id: roboto_12
+    size: 12
+    bpp: 4
