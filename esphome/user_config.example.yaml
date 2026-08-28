@@ -1,24 +1,27 @@
 # ============================================================
 # WAVESHARE DASHBOARD - USER CONFIGURATION
 #
-# Copy this file as: user_config.yaml
+# Copy this file as: .user_config.yaml
 # Change ONLY the values on the right.
 # Do not rename the keys on the left.
 #
+# Dashboard packages and standard images are downloaded directly
+# from GitHub during ESPHome validation/compilation. You only need
+# to change an image URL if you want to use your own artwork.
+#
 # dashboard_version controls BOTH the remote package release
 # and the version reported by the ESPHome device to Home Assistant.
-# Change it only when following the upgrade instructions for a
-# newer dashboard release.
-#
-# sensor.display_* helper entities are generated automatically
-# by the Home Assistant helper packages and are not listed here.
 # ============================================================
 
-dashboard_version: "v1.2.0"
+dashboard_version: "dev-v1.2.0"
 device_name: "waveshare-display"
 friendly_name: "waveshare-display"
-robot_image_file: "Robot.jpg"
-ev_image_file: "capture_card.png"
+
+# Standard dashboard assets hosted on GitHub.
+# ESPHome downloads these automatically at compile time.
+robot_image_file: "https://raw.githubusercontent.com/Marcobedendo78/Waveshare-ESPHome-Home-Assistant-Dashboard/dev-v1.2.0/esphome/Robot.jpg"
+ev_image_file: "https://raw.githubusercontent.com/Marcobedendo78/Waveshare-ESPHome-Home-Assistant-Dashboard/dev-v1.2.0/esphome/capture_card.png"
+pdc_image_file: "https://raw.githubusercontent.com/Marcobedendo78/Waveshare-ESPHome-Home-Assistant-Dashboard/dev-v1.2.0/esphome/pdc-background.png"
 
 # ------------------------------------------------------------
 # HOME / ENERGY
