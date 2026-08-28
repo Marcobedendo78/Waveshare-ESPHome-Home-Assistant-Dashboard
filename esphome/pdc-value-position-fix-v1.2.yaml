@@ -55,37 +55,46 @@ esphome:
           lv_obj_set_pos(id(pdc_lbl_return), -10, 7);
           lv_obj_set_size(id(pdc_lbl_return), 108, 24);
 
-# The rendered pipes around the indoor unit do not align accurately enough
-# with the animation. Keep animated dots only on the outdoor/lower pipe area
-# and hide them before they reach the indoor-unit section.
+# Keep animated dots only on the outdoor/lower pipe section.
+# No dot is allowed on the short diagonal/vertical pipes entering the indoor
+# unit or on the black front panel of the indoor unit.
 interval:
-  - interval: 180ms
+  - interval: 50ms
     then:
       - lambda: |-
           float flow = id(pdc_water_flow).state;
-          if (isnan(flow) || flow <= 0.05f) return;
 
           lv_obj_t *red[3] = {id(pdc_red_dot_1), id(pdc_red_dot_2), id(pdc_red_dot_3)};
           lv_obj_t *blue[3] = {id(pdc_blue_dot_1), id(pdc_blue_dot_2), id(pdc_blue_dot_3)};
 
-          // RED: lower horizontal section and lower part of exterior vertical.
+          if (isnan(flow) || flow <= 0.05f) {
+            for (int i = 0; i < 3; i++) {
+              lv_obj_add_flag(red[i], LV_OBJ_FLAG_HIDDEN);
+              lv_obj_add_flag(blue[i], LV_OBJ_FLAG_HIDDEN);
+            }
+            return;
+          }
+
+          // RED: outdoor unit -> lower horizontal red pipe -> exterior wall
+          // vertical red pipe. Stop well before the indoor-unit connection.
           auto red_pos = [](int p, int &x, int &y, bool &visible) {
-            visible = p < 570;
+            visible = p < 565;
             if (p < 220) {
               x = 388 + (p * 112) / 220;
               y = 421;
             } else {
               x = 500;
-              y = 421 - ((p - 220) * 232) / 350;
+              y = 421 - ((p - 220) * 228) / 345;
             }
           };
 
-          // BLUE: lower part of exterior vertical and lower horizontal only.
+          // BLUE: exterior wall vertical blue pipe -> lower horizontal blue
+          // pipe -> outdoor unit. The upper indoor-unit connection is omitted.
           auto blue_pos = [](int p, int &x, int &y, bool &visible) {
-            visible = p >= 430;
+            visible = p >= 435;
             if (p < 780) {
               x = 511;
-              y = 189 + ((p - 430) * 249) / 350;
+              y = 193 + ((p - 435) * 245) / 345;
             } else {
               x = 511 - ((p - 780) * 123) / 220;
               y = 438;
@@ -112,4 +121,16 @@ interval:
             } else {
               lv_obj_add_flag(blue[i], LV_OBJ_FLAG_HIDDEN);
             }
+          }
+
+          // Safety mask against the original 180 ms animation: if another
+          // interval briefly moves a dot into the indoor-unit area, hide it.
+          for (int i = 0; i < 3; i++) {
+            lv_coord_t rx = lv_obj_get_x(red[i]);
+            lv_coord_t ry = lv_obj_get_y(red[i]);
+            lv_coord_t bx = lv_obj_get_x(blue[i]);
+            lv_coord_t by = lv_obj_get_y(blue[i]);
+
+            if (rx > 535 && ry < 260) lv_obj_add_flag(red[i], LV_OBJ_FLAG_HIDDEN);
+            if (bx > 535 && by < 260) lv_obj_add_flag(blue[i], LV_OBJ_FLAG_HIDDEN);
           }
