@@ -3,7 +3,11 @@
 namespace esphome {
 namespace waveshare_sd {
 
+WaveshareSD *global_waveshare_sd = nullptr;
+
 void WaveshareSD::setup() {
+  global_waveshare_sd = this;
+
   if (this->mount()) {
     ESP_LOGI(TAG, "microSD montata correttamente");
     this->append_log("BOOT", "Waveshare display avviato");
