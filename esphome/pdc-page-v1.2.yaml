@@ -170,37 +170,6 @@ text_sensor:
             for (auto &c : s) c = tolower(c);
             return s == "on" ? std::string("ATTIVA") : std::string("NO");
 
-interval:
-  - interval: 180ms
-    then:
-      - lambda: |-
-          float flow = id(pdc_water_flow).state;
-          bool active = !isnan(flow) && flow > 0.05f;
-          lv_obj_t *red[3] = {id(pdc_red_dot_1), id(pdc_red_dot_2), id(pdc_red_dot_3)};
-          lv_obj_t *blue[3] = {id(pdc_blue_dot_1), id(pdc_blue_dot_2), id(pdc_blue_dot_3)};
-          if (!active) {
-            for (int i = 0; i < 3; i++) { lv_obj_add_flag(red[i], LV_OBJ_FLAG_HIDDEN); lv_obj_add_flag(blue[i], LV_OBJ_FLAG_HIDDEN); }
-            return;
-          }
-          for (int i = 0; i < 3; i++) { lv_obj_clear_flag(red[i], LV_OBJ_FLAG_HIDDEN); lv_obj_clear_flag(blue[i], LV_OBJ_FLAG_HIDDEN); }
-          id(pdc_flow_phase) = (id(pdc_flow_phase) + 7) % 1000;
-          auto red_pos = [](int p, int &x, int &y) {
-            if (p < 220) { x = 388 + (p * 112) / 220; y = 421; }
-            else if (p < 760) { x = 500; y = 421 - ((p - 220) * 360) / 540; }
-            else { x = 620 + ((p - 760) * 36) / 240; y = 92 + ((p - 760) * 96) / 240; }
-          };
-          auto blue_pos = [](int p, int &x, int &y) {
-            if (p < 240) { x = 642 - (p * 24) / 240; y = 190 - (p * 92) / 240; }
-            else if (p < 780) { x = 511; y = 62 + ((p - 240) * 376) / 540; }
-            else { x = 511 - ((p - 780) * 123) / 220; y = 438; }
-          };
-          for (int i = 0; i < 3; i++) {
-            int p = (id(pdc_flow_phase) + i * 333) % 1000;
-            int x, y;
-            red_pos(p, x, y); lv_obj_set_pos(red[i], x - 5, y - 5);
-            blue_pos(p, x, y); lv_obj_set_pos(blue[i], x - 5, y - 5);
-          }
-
 lvgl:
   pages:
     - id: !extend page_pdc
