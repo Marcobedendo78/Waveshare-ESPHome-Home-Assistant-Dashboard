@@ -1,7 +1,7 @@
 {
   "channel": "dev",
   "version": "v1.2.0",
-  "build": "2026.08.28.05",
+  "build": "2026.08.28.06",
   "branch": "dev-v1.2.0",
-  "message": "Nuova pagina Energia con riepilogo giornaliero, batteria e consumi Wallbox, PDC e luci"
+  "message": "Fix compatibilita microSD dopo migrazione al componente remoto waveshare_sd"
 }
