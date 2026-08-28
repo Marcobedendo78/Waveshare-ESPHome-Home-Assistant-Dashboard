@@ -1,0 +1,362 @@
+# ============================================================
+# WAVESHARE DASHBOARD - ENERGY PAGE
+# v1.2.2 development
+# Native 1024x512 layout: bottom navigation remains in base package.
+# Daily baselines are stored both in ESP32 NVS and on the microSD.
+# Visual changes are integrated directly in this page (no overlay package).
+# ============================================================
+
+substitutions:
+  energy_page_solar_daily: "sensor.inverter_rendimento_giornaliero"
+  energy_page_grid_import_total: "sensor.power_meter_consumo"
+  energy_page_grid_export_total: "sensor.power_meter_esportata"
+  energy_page_battery_charge_daily: "sensor.battery_carica_giornaliera"
+  energy_page_battery_discharge_daily: "sensor.battery_scarica_giornaliera"
+  energy_page_wallbox_total: "sensor.wallbox_energy_active_import_register_2"
+  energy_page_pdc_total: "sensor.consumo_totale_pdc_2"
+  energy_page_gate_lights_total: "sensor.shelly_pro2_energy_2"
+  energy_page_path_lights_total: "sensor.shelly_pro2_energy"
+
+globals:
+  - {id: energy_page_baseline_schema, type: int, restore_value: yes, initial_value: '0'}
+  - {id: energy_page_day_key, type: int, restore_value: yes, initial_value: '-1'}
+  - {id: energy_page_base_grid_import, type: float, restore_value: yes, initial_value: '0.0'}
+  - {id: energy_page_base_grid_export, type: float, restore_value: yes, initial_value: '0.0'}
+  - {id: energy_page_base_wallbox, type: float, restore_value: yes, initial_value: '0.0'}
+  - {id: energy_page_base_pdc, type: float, restore_value: yes, initial_value: '0.0'}
+  - {id: energy_page_base_gate_lights, type: float, restore_value: yes, initial_value: '0.0'}
+  - {id: energy_page_base_path_lights, type: float, restore_value: yes, initial_value: '0.0'}
+  - {id: energy_page_today_grid_import, type: float, restore_value: no, initial_value: '0.0'}
+  - {id: energy_page_today_grid_export, type: float, restore_value: no, initial_value: '0.0'}
+  - {id: energy_page_today_home, type: float, restore_value: no, initial_value: '0.0'}
+  - {id: energy_page_today_wallbox, type: float, restore_value: no, initial_value: '0.0'}
+  - {id: energy_page_today_pdc, type: float, restore_value: no, initial_value: '0.0'}
+  - {id: energy_page_today_gate_lights, type: float, restore_value: no, initial_value: '0.0'}
+  - {id: energy_page_today_path_lights, type: float, restore_value: no, initial_value: '0.0'}
+  - {id: energy_page_today_devices, type: float, restore_value: no, initial_value: '0.0'}
+  - {id: energy_page_battery_balance, type: float, restore_value: no, initial_value: '0.0'}
+
+sensor:
+  - platform: homeassistant
+    id: energy_page_solar_daily_sensor
+    entity_id: ${energy_page_solar_daily}
+    internal: true
+    on_value: [{script.execute: energy_page_refresh}]
+  - platform: homeassistant
+    id: energy_page_grid_import_counter
+    entity_id: ${energy_page_grid_import_total}
+    internal: true
+    on_value: [{script.execute: energy_page_refresh}]
+  - platform: homeassistant
+    id: energy_page_grid_export_counter
+    entity_id: ${energy_page_grid_export_total}
+    internal: true
+    on_value: [{script.execute: energy_page_refresh}]
+  - platform: homeassistant
+    id: energy_page_battery_charge_sensor
+    entity_id: ${energy_page_battery_charge_daily}
+    internal: true
+    on_value: [{script.execute: energy_page_refresh}]
+  - platform: homeassistant
+    id: energy_page_battery_discharge_sensor
+    entity_id: ${energy_page_battery_discharge_daily}
+    internal: true
+    on_value: [{script.execute: energy_page_refresh}]
+  - platform: homeassistant
+    id: energy_page_wallbox_counter
+    entity_id: ${energy_page_wallbox_total}
+    internal: true
+    on_value: [{script.execute: energy_page_refresh}]
+  - platform: homeassistant
+    id: energy_page_pdc_counter
+    entity_id: ${energy_page_pdc_total}
+    internal: true
+    on_value: [{script.execute: energy_page_refresh}]
+  - platform: homeassistant
+    id: energy_page_gate_lights_counter
+    entity_id: ${energy_page_gate_lights_total}
+    internal: true
+    on_value: [{script.execute: energy_page_refresh}]
+  - platform: homeassistant
+    id: energy_page_path_lights_counter
+    entity_id: ${energy_page_path_lights_total}
+    internal: true
+    on_value: [{script.execute: energy_page_refresh}]
+
+script:
+  - id: energy_page_refresh
+    mode: restart
+    then:
+      - lambda: |-
+          const float gi = id(energy_page_grid_import_counter).state;
+          const float ge = id(energy_page_grid_export_counter).state;
+          const float wb = id(energy_page_wallbox_counter).state;
+          const float hp = id(energy_page_pdc_counter).state;
+          const float gl = id(energy_page_gate_lights_counter).state;
+          const float pl = id(energy_page_path_lights_counter).state;
+          auto now = id(ha_time).now();
+          const bool ok = !isnan(gi) && !isnan(ge) && !isnan(wb) && !isnan(hp) && !isnan(gl) && !isnan(pl);
+          if (now.is_valid() && ok) {
+            const int day_key = now.year * 10000 + now.month * 100 + now.day_of_month;
+            if (id(energy_page_baseline_schema) != 3 || id(energy_page_day_key) != day_key) {
+              float sgi=0, sge=0, swb=0, shp=0, sgl=0, spl=0;
+              const bool restored = id(dashboard_sd).load_energy_baseline(day_key, &sgi, &sge, &swb, &shp, &sgl, &spl);
+              if (restored) {
+                id(energy_page_base_grid_import)=sgi; id(energy_page_base_grid_export)=sge;
+                id(energy_page_base_wallbox)=swb; id(energy_page_base_pdc)=shp;
+                id(energy_page_base_gate_lights)=sgl; id(energy_page_base_path_lights)=spl;
+              } else {
+                id(energy_page_base_grid_import)=gi; id(energy_page_base_grid_export)=ge;
+                id(energy_page_base_wallbox)=wb; id(energy_page_base_pdc)=hp;
+                id(energy_page_base_gate_lights)=gl; id(energy_page_base_path_lights)=pl;
+                id(dashboard_sd).save_energy_baseline(day_key, gi, ge, wb, hp, gl, pl);
+              }
+              id(energy_page_day_key)=day_key;
+              id(energy_page_baseline_schema)=3;
+            }
+          }
+          auto delta=[](float c,float b)->float { if (isnan(c)) return 0.0f; float d=c-b; return d>0.0f?d:0.0f; };
+          id(energy_page_today_grid_import)=delta(gi,id(energy_page_base_grid_import));
+          id(energy_page_today_grid_export)=delta(ge,id(energy_page_base_grid_export));
+          id(energy_page_today_wallbox)=delta(wb,id(energy_page_base_wallbox));
+          id(energy_page_today_pdc)=delta(hp,id(energy_page_base_pdc));
+          id(energy_page_today_gate_lights)=delta(gl,id(energy_page_base_gate_lights));
+          id(energy_page_today_path_lights)=delta(pl,id(energy_page_base_path_lights));
+          const float solar=isnan(id(energy_page_solar_daily_sensor).state)?0.0f:id(energy_page_solar_daily_sensor).state;
+          const float bchg=isnan(id(energy_page_battery_charge_sensor).state)?0.0f:id(energy_page_battery_charge_sensor).state;
+          const float bdis=isnan(id(energy_page_battery_discharge_sensor).state)?0.0f:id(energy_page_battery_discharge_sensor).state;
+          float home=solar+id(energy_page_today_grid_import)+bdis-id(energy_page_today_grid_export)-bchg;
+          id(energy_page_today_home)=home>0.0f?home:0.0f;
+          id(energy_page_today_devices)=id(energy_page_today_wallbox)+id(energy_page_today_pdc)+id(energy_page_today_gate_lights)+id(energy_page_today_path_lights);
+          id(energy_page_battery_balance)=bchg-bdis;
+      - lvgl.label.update:
+          id: energy_lbl_date
+          text: !lambda |-
+            auto now=id(ha_time).now(); if(!now.is_valid()) return std::string("--/--/----");
+            return str_sprintf("%02d/%02d/%04d",now.day_of_month,now.month,now.year);
+      - lvgl.label.update: {id: energy_lbl_solar, text: !lambda 'float v=id(energy_page_solar_daily_sensor).state; return isnan(v)?std::string("-- kWh"):str_sprintf("%.2f kWh",v);'}
+      - lvgl.label.update: {id: energy_lbl_grid_import, text: !lambda 'return str_sprintf("%.2f kWh",id(energy_page_today_grid_import));'}
+      - lvgl.label.update: {id: energy_lbl_grid_export, text: !lambda 'return str_sprintf("%.2f kWh",id(energy_page_today_grid_export));'}
+      - lvgl.label.update: {id: energy_lbl_home, text: !lambda 'return str_sprintf("%.2f kWh",id(energy_page_today_home));'}
+      - lvgl.label.update: {id: energy_lbl_battery_charge, text: !lambda 'float v=id(energy_page_battery_charge_sensor).state; return isnan(v)?std::string("-- kWh"):str_sprintf("%.2f kWh",v);'}
+      - lvgl.label.update: {id: energy_lbl_battery_discharge, text: !lambda 'float v=id(energy_page_battery_discharge_sensor).state; return isnan(v)?std::string("-- kWh"):str_sprintf("%.2f kWh",v);'}
+      - lvgl.label.update: {id: energy_sum_solar, text: !lambda 'float v=id(energy_page_solar_daily_sensor).state; return isnan(v)?std::string("-- kWh"):str_sprintf("%.2f kWh",v);'}
+      - lvgl.label.update: {id: energy_sum_grid_import, text: !lambda 'return str_sprintf("%.2f kWh",id(energy_page_today_grid_import));'}
+      - lvgl.label.update: {id: energy_sum_grid_export, text: !lambda 'return str_sprintf("%.2f kWh",id(energy_page_today_grid_export));'}
+      - lvgl.label.update: {id: energy_sum_battery_charge, text: !lambda 'float v=id(energy_page_battery_charge_sensor).state; return isnan(v)?std::string("-- kWh"):str_sprintf("%.2f kWh",v);'}
+      - lvgl.label.update: {id: energy_sum_battery_discharge, text: !lambda 'float v=id(energy_page_battery_discharge_sensor).state; return isnan(v)?std::string("-- kWh"):str_sprintf("%.2f kWh",v);'}
+      - lvgl.label.update: {id: energy_sum_home, text: !lambda 'return str_sprintf("%.2f kWh",id(energy_page_today_home));'}
+      - lvgl.label.update: {id: energy_dev_wallbox_value, text: !lambda 'return str_sprintf("%.2f kWh",id(energy_page_today_wallbox));'}
+      - lvgl.label.update: {id: energy_dev_pdc_value, text: !lambda 'return str_sprintf("%.2f kWh",id(energy_page_today_pdc));'}
+      - lvgl.label.update: {id: energy_dev_gate_value, text: !lambda 'return str_sprintf("%.2f kWh",id(energy_page_today_gate_lights));'}
+      - lvgl.label.update: {id: energy_dev_path_value, text: !lambda 'return str_sprintf("%.2f kWh",id(energy_page_today_path_lights));'}
+      - lvgl.label.update: {id: energy_dev_total_value, text: !lambda 'return str_sprintf("%.2f kWh",id(energy_page_today_devices));'}
+      - lvgl.label.update: {id: energy_dev_wallbox_pct, text: !lambda 'float h=id(energy_page_today_home); return str_sprintf("%.1f %%",h>0.01f?id(energy_page_today_wallbox)/h*100.0f:0.0f);'}
+      - lvgl.label.update: {id: energy_dev_pdc_pct, text: !lambda 'float h=id(energy_page_today_home); return str_sprintf("%.1f %%",h>0.01f?id(energy_page_today_pdc)/h*100.0f:0.0f);'}
+      - lvgl.label.update: {id: energy_dev_gate_pct, text: !lambda 'float h=id(energy_page_today_home); return str_sprintf("%.1f %%",h>0.01f?id(energy_page_today_gate_lights)/h*100.0f:0.0f);'}
+      - lvgl.label.update: {id: energy_dev_path_pct, text: !lambda 'float h=id(energy_page_today_home); return str_sprintf("%.1f %%",h>0.01f?id(energy_page_today_path_lights)/h*100.0f:0.0f);'}
+      - lvgl.label.update: {id: energy_dev_total_pct, text: !lambda 'float h=id(energy_page_today_home); return str_sprintf("%.1f %%",h>0.01f?id(energy_page_today_devices)/h*100.0f:0.0f);'}
+      - lvgl.bar.update: {id: energy_bar_wallbox, value: !lambda 'float h=id(energy_page_today_home); return h>0.01f?int(fminf(100.0f,id(energy_page_today_wallbox)/h*100.0f)):0;'}
+      - lvgl.bar.update: {id: energy_bar_pdc, value: !lambda 'float h=id(energy_page_today_home); return h>0.01f?int(fminf(100.0f,id(energy_page_today_pdc)/h*100.0f)):0;'}
+      - lvgl.bar.update: {id: energy_bar_gate, value: !lambda 'float h=id(energy_page_today_home); return h>0.01f?int(fminf(100.0f,id(energy_page_today_gate_lights)/h*100.0f)):0;'}
+      - lvgl.bar.update: {id: energy_bar_path, value: !lambda 'float h=id(energy_page_today_home); return h>0.01f?int(fminf(100.0f,id(energy_page_today_path_lights)/h*100.0f)):0;'}
+      - lvgl.label.update: {id: energy_bat_charge_value, text: !lambda 'float v=id(energy_page_battery_charge_sensor).state; return isnan(v)?std::string("-- kWh"):str_sprintf("%.2f kWh",v);'}
+      - lvgl.label.update: {id: energy_bat_discharge_value, text: !lambda 'float v=id(energy_page_battery_discharge_sensor).state; return isnan(v)?std::string("-- kWh"):str_sprintf("%.2f kWh",v);'}
+      - lvgl.label.update: {id: energy_bat_balance_value, text: !lambda 'return str_sprintf("%+.2f kWh",id(energy_page_battery_balance));'}
+
+interval:
+  - interval: 10s
+    then: [{script.execute: energy_page_refresh}]
+
+lvgl:
+  pages:
+    - id: !extend page_energy
+      widgets:
+        - obj: {x: 0, y: 0, width: 1024, height: 512, bg_color: 0x10151B, bg_opa: COVER, border_width: 0, radius: 0, scrollable: false, scrollbar_mode: "OFF"}
+
+        # TOP LEFT - all flow nodes raised
+        - obj:
+            x: 10
+            y: 8
+            width: 620
+            height: 322
+            bg_color: 0x151C24
+            border_color: 0x303A45
+            border_width: 1
+            radius: 16
+            scrollable: false
+            scrollbar_mode: "OFF"
+            widgets:
+              - label: {x: 18, y: 12, text: "Energia", text_font: roboto_bold_22, text_color: 0xFFFFFF}
+              - label: {id: energy_lbl_date, x: 430, y: 14, width: 165, text_align: RIGHT, text: "--/--/----", text_font: roboto_16, text_color: 0xDCE2E8}
+              - obj: {x: 115, y: 188, width: 145, height: 3, bg_color: 0x3FA7FF, border_width: 0, radius: 0}
+              - obj: {x: 296, y: 142, width: 3, height: 9, bg_color: 0xFFC400, border_width: 0, radius: 0}
+              - obj: {x: 336, y: 188, width: 156, height: 3, bg_color: 0x75D34B, border_width: 0, radius: 0}
+              - obj:
+                  x: 261
+                  y: 18
+                  width: 74
+                  height: 74
+                  radius: 37
+                  bg_color: 0x111820
+                  border_width: 2
+                  border_color: 0xFFC400
+                  scrollable: false
+                  widgets:
+                    - image: {src: img_solar, align: CENTER, image_recolor: 0xFFC400, image_recolor_opa: COVER}
+              - label: {x: 243, y: 96, width: 110, text_align: CENTER, text: "Solare", text_font: roboto_bold_16, text_color: 0xFFFFFF}
+              - label: {x: 240, y: 116, width: 116, text_align: CENTER, text: "Produzione", text_font: roboto_12, text_color: 0xAEB4BF}
+              - label: {id: energy_lbl_solar, x: 220, y: 134, width: 156, text_align: CENTER, text: "-- kWh", text_font: roboto_bold_18, text_color: 0xFFC400}
+              - obj:
+                  x: 40
+                  y: 150
+                  width: 76
+                  height: 76
+                  radius: 38
+                  bg_color: 0x111820
+                  border_width: 2
+                  border_color: 0x3FA7FF
+                  scrollable: false
+                  widgets:
+                    - image: {src: img_grid, align: CENTER, image_recolor: 0x3FA7FF, image_recolor_opa: COVER}
+              - label: {x: 22, y: 228, width: 112, text_align: CENTER, text: "Rete", text_font: roboto_bold_16, text_color: 0xFFFFFF}
+              - label: {x: 8, y: 247, width: 72, text_align: CENTER, text: "Consumo", text_font: roboto_12, text_color: 0xAEB4BF}
+              - label: {x: 80, y: 247, width: 72, text_align: CENTER, text: "Esportata", text_font: roboto_12, text_color: 0xAEB4BF}
+              - label: {id: energy_lbl_grid_import, x: 0, y: 265, width: 88, text_align: CENTER, text: "-- kWh", text_font: roboto_bold_14, text_color: 0x3FA7FF}
+              - label: {id: energy_lbl_grid_export, x: 76, y: 265, width: 92, text_align: CENTER, text: "-- kWh", text_font: roboto_bold_14, text_color: 0x7FC5FF}
+              - obj:
+                  x: 260
+                  y: 150
+                  width: 76
+                  height: 76
+                  radius: 38
+                  bg_color: 0x111820
+                  border_width: 2
+                  border_color: 0xF2F2F2
+                  scrollable: false
+                  widgets:
+                    - image: {src: img_home, align: CENTER, image_recolor: 0xF2F2F2, image_recolor_opa: COVER}
+              - label: {x: 243, y: 228, width: 110, text_align: CENTER, text: "Casa", text_font: roboto_bold_16, text_color: 0xFFFFFF}
+              - label: {x: 228, y: 247, width: 140, text_align: CENTER, text: "Consumo totale", text_font: roboto_12, text_color: 0xAEB4BF}
+              - label: {id: energy_lbl_home, x: 218, y: 265, width: 160, text_align: CENTER, text: "-- kWh", text_font: roboto_bold_18, text_color: 0xFFFFFF}
+              - obj:
+                  x: 492
+                  y: 150
+                  width: 76
+                  height: 76
+                  radius: 38
+                  bg_color: 0x111820
+                  border_width: 2
+                  border_color: 0x75D34B
+                  scrollable: false
+                  widgets:
+                    - image: {src: img_battery, align: CENTER, image_recolor: 0x75D34B, image_recolor_opa: COVER}
+              - label: {x: 474, y: 228, width: 112, text_align: CENTER, text: "Batteria", text_font: roboto_bold_16, text_color: 0xFFFFFF}
+              - label: {x: 448, y: 247, width: 84, text_align: CENTER, text: "Caricata", text_font: roboto_12, text_color: 0xAEB4BF}
+              - label: {x: 530, y: 247, width: 84, text_align: CENTER, text: "Scaricata", text_font: roboto_12, text_color: 0xAEB4BF}
+              - label: {id: energy_lbl_battery_charge, x: 434, y: 265, width: 106, text_align: CENTER, text: "-- kWh", text_font: roboto_bold_14, text_color: 0x75D34B}
+              - label: {id: energy_lbl_battery_discharge, x: 524, y: 265, width: 106, text_align: CENTER, text: "-- kWh", text_font: roboto_bold_14, text_color: 0xA6E789}
+
+        # TOP RIGHT - entity symbols + values
+        - obj:
+            x: 640
+            y: 8
+            width: 374
+            height: 322
+            bg_color: 0x151C24
+            border_color: 0x303A45
+            border_width: 1
+            radius: 16
+            scrollable: false
+            scrollbar_mode: "OFF"
+            widgets:
+              - label: {x: 18, y: 12, text: "Riepilogo giornaliero", text_font: roboto_bold_20, text_color: 0xFFFFFF}
+              - image: {x: 16, y: 43, src: img_solar, image_recolor: 0xFFC400, image_recolor_opa: COVER}
+              - label: {x: 58, y: 53, text: "Produzione solare", text_font: roboto_14, text_color: 0xDCE2E8}
+              - label: {id: energy_sum_solar, x: 220, y: 51, width: 132, text_align: RIGHT, text: "-- kWh", text_font: roboto_bold_16, text_color: 0xFFC400}
+              - obj: {x: 18, y: 80, width: 334, height: 1, bg_color: 0x303A45, border_width: 0}
+              - image: {x: 16, y: 81, src: img_grid, image_recolor: 0x3FA7FF, image_recolor_opa: COVER}
+              - label: {x: 58, y: 91, text: "Energia da rete", text_font: roboto_14, text_color: 0xDCE2E8}
+              - label: {id: energy_sum_grid_import, x: 220, y: 89, width: 132, text_align: RIGHT, text: "-- kWh", text_font: roboto_bold_16, text_color: 0x3FA7FF}
+              - obj: {x: 18, y: 118, width: 334, height: 1, bg_color: 0x303A45, border_width: 0}
+              - image: {x: 16, y: 119, src: img_grid, image_recolor: 0x64C8FF, image_recolor_opa: COVER}
+              - label: {x: 58, y: 129, text: "Energia esportata", text_font: roboto_14, text_color: 0xDCE2E8}
+              - label: {id: energy_sum_grid_export, x: 220, y: 127, width: 132, text_align: RIGHT, text: "-- kWh", text_font: roboto_bold_16, text_color: 0x64C8FF}
+              - obj: {x: 18, y: 156, width: 334, height: 1, bg_color: 0x303A45, border_width: 0}
+              - image: {x: 17, y: 157, src: img_battery, image_recolor: 0x75D34B, image_recolor_opa: COVER}
+              - label: {x: 58, y: 167, text: "Batteria caricata", text_font: roboto_14, text_color: 0xDCE2E8}
+              - label: {id: energy_sum_battery_charge, x: 220, y: 165, width: 132, text_align: RIGHT, text: "-- kWh", text_font: roboto_bold_16, text_color: 0x75D34B}
+              - obj: {x: 18, y: 194, width: 334, height: 1, bg_color: 0x303A45, border_width: 0}
+              - image: {x: 17, y: 195, src: img_battery, image_recolor: 0xA6E789, image_recolor_opa: COVER}
+              - label: {x: 58, y: 205, text: "Batteria scaricata", text_font: roboto_14, text_color: 0xDCE2E8}
+              - label: {id: energy_sum_battery_discharge, x: 220, y: 203, width: 132, text_align: RIGHT, text: "-- kWh", text_font: roboto_bold_16, text_color: 0x75D34B}
+              - obj: {x: 18, y: 232, width: 334, height: 1, bg_color: 0x303A45, border_width: 0}
+              - image: {x: 16, y: 236, src: img_home, image_recolor: 0xFFFFFF, image_recolor_opa: COVER}
+              - label: {x: 58, y: 250, text: "Consumo totale", text_font: roboto_bold_16, text_color: 0xFFFFFF}
+              - label: {id: energy_sum_home, x: 210, y: 247, width: 142, text_align: RIGHT, text: "-- kWh", text_font: roboto_bold_18, text_color: 0xFFFFFF}
+
+        # BOTTOM LEFT - moved upward and entity symbols added
+        - obj:
+            x: 10
+            y: 332
+            width: 620
+            height: 172
+            bg_color: 0x151C24
+            border_color: 0x303A45
+            border_width: 1
+            radius: 16
+            scrollable: false
+            scrollbar_mode: "OFF"
+            widgets:
+              - label: {x: 18, y: 6, text: "Consumi dispositivi", text_font: roboto_bold_18, text_color: 0xFFFFFF}
+              - image: {x: 16, y: 27, src: img_auto, image_recolor: 0xD68AFF, image_recolor_opa: COVER}
+              - label: {x: 54, y: 31, width: 92, text: "Wallbox", text_font: roboto_14, text_color: 0xE8EDF2}
+              - bar: {id: energy_bar_wallbox, x: 148, y: 39, width: 247, height: 7, min_value: 0, max_value: 100, value: 0, bg_color: 0x28313B, radius: 4, indicator: {bg_color: 0xB667E8, radius: 4}}
+              - label: {id: energy_dev_wallbox_value, x: 405, y: 29, width: 112, text_align: RIGHT, text: "-- kWh", text_font: roboto_bold_14, text_color: 0xD68AFF}
+              - label: {id: energy_dev_wallbox_pct, x: 525, y: 29, width: 72, text_align: RIGHT, text: "-- %", text_font: roboto_14, text_color: 0xAEB4BF}
+              - image: {x: 14, y: 49, src: img_pdc, image_recolor: 0x6DCCFF, image_recolor_opa: COVER}
+              - label: {x: 54, y: 53, width: 92, text: "Pompa di calore", text_font: roboto_14, text_color: 0xE8EDF2}
+              - bar: {id: energy_bar_pdc, x: 148, y: 61, width: 247, height: 7, min_value: 0, max_value: 100, value: 0, bg_color: 0x28313B, radius: 4, indicator: {bg_color: 0x37B9FF, radius: 4}}
+              - label: {id: energy_dev_pdc_value, x: 405, y: 51, width: 112, text_align: RIGHT, text: "-- kWh", text_font: roboto_bold_14, text_color: 0x6DCCFF}
+              - label: {id: energy_dev_pdc_pct, x: 525, y: 51, width: 72, text_align: RIGHT, text: "-- %", text_font: roboto_14, text_color: 0xAEB4BF}
+              - image: {x: 8, y: 70, src: img_gate, image_recolor: 0xFFD54F, image_recolor_opa: COVER}
+              - label: {x: 54, y: 75, width: 92, text: "Luci cancello", text_font: roboto_14, text_color: 0xE8EDF2}
+              - bar: {id: energy_bar_gate, x: 148, y: 83, width: 247, height: 7, min_value: 0, max_value: 100, value: 0, bg_color: 0x28313B, radius: 4, indicator: {bg_color: 0xFFC400, radius: 4}}
+              - label: {id: energy_dev_gate_value, x: 405, y: 73, width: 112, text_align: RIGHT, text: "-- kWh", text_font: roboto_bold_14, text_color: 0xFFD54F}
+              - label: {id: energy_dev_gate_pct, x: 525, y: 73, width: 72, text_align: RIGHT, text: "-- %", text_font: roboto_14, text_color: 0xAEB4BF}
+              - image: {x: 11, y: 95, src: img_light_switch, image_recolor: 0xFFBE4A, image_recolor_opa: COVER}
+              - label: {x: 54, y: 97, width: 92, text: "Luci vialetto", text_font: roboto_14, text_color: 0xE8EDF2}
+              - bar: {id: energy_bar_path, x: 148, y: 105, width: 247, height: 7, min_value: 0, max_value: 100, value: 0, bg_color: 0x28313B, radius: 4, indicator: {bg_color: 0xF2A51A, radius: 4}}
+              - label: {id: energy_dev_path_value, x: 405, y: 95, width: 112, text_align: RIGHT, text: "-- kWh", text_font: roboto_bold_14, text_color: 0xFFBE4A}
+              - label: {id: energy_dev_path_pct, x: 525, y: 95, width: 72, text_align: RIGHT, text: "-- %", text_font: roboto_14, text_color: 0xAEB4BF}
+              - obj: {x: 18, y: 126, width: 580, height: 1, bg_color: 0x303A45, border_width: 0}
+              - image: {x: 16, y: 130, src: img_home, image_recolor: 0xFFFFFF, image_recolor_opa: COVER}
+              - label: {x: 54, y: 136, text: "Totale monitorato", text_font: roboto_bold_14, text_color: 0xFFFFFF}
+              - label: {id: energy_dev_total_value, x: 392, y: 133, width: 125, text_align: RIGHT, text: "-- kWh", text_font: roboto_bold_16, text_color: 0xFFFFFF}
+              - label: {id: energy_dev_total_pct, x: 525, y: 134, width: 72, text_align: RIGHT, text: "-- %", text_font: roboto_14, text_color: 0xAEB4BF}
+
+        # BOTTOM RIGHT - moved upward and entity symbols added
+        - obj:
+            x: 640
+            y: 332
+            width: 374
+            height: 172
+            bg_color: 0x151C24
+            border_color: 0x303A45
+            border_width: 1
+            radius: 16
+            scrollable: false
+            scrollbar_mode: "OFF"
+            widgets:
+              - label: {x: 18, y: 6, text: "Dettaglio batterie", text_font: roboto_bold_18, text_color: 0xFFFFFF}
+              - image: {x: 17, y: 30, src: img_battery, image_recolor: 0x75D34B, image_recolor_opa: COVER}
+              - label: {x: 58, y: 39, text: "Energia caricata oggi", text_font: roboto_14, text_color: 0xDCE2E8}
+              - label: {id: energy_bat_charge_value, x: 215, y: 36, width: 137, text_align: RIGHT, text: "-- kWh", text_font: roboto_bold_16, text_color: 0x75D34B}
+              - image: {x: 17, y: 62, src: img_battery, image_recolor: 0xA6E789, image_recolor_opa: COVER}
+              - label: {x: 58, y: 71, text: "Energia scaricata oggi", text_font: roboto_14, text_color: 0xDCE2E8}
+              - label: {id: energy_bat_discharge_value, x: 215, y: 68, width: 137, text_align: RIGHT, text: "-- kWh", text_font: roboto_bold_16, text_color: 0x75D34B}
+              - obj: {x: 18, y: 100, width: 334, height: 1, bg_color: 0x303A45, border_width: 0}
+              - image: {x: 17, y: 105, src: img_battery, image_recolor: 0x9BE36F, image_recolor_opa: COVER}
+              - label: {x: 58, y: 112, text: "Saldo netto batteria", text_font: roboto_bold_14, text_color: 0xFFFFFF}
+              - label: {id: energy_bat_balance_value, x: 205, y: 109, width: 147, text_align: RIGHT, text: "-- kWh", text_font: roboto_bold_18, text_color: 0x9BE36F}
+              - label: {x: 58, y: 137, width: 294, text: "positivo = energia netta accumulata", text_font: roboto_12, text_color: 0x86909A}
