@@ -35,6 +35,16 @@ class WaveshareSD : public Component {
                      float battery_w, float home_w, float pdc_w,
                      float battery_soc);
 
+  // Persistent daily baselines used by the Energy page. NVS remains the
+  // primary fast store, while the microSD provides a second copy that can be
+  // restored after firmware changes or loss of ESP32 preferences.
+  bool save_energy_baseline(int day_key, float grid_import, float grid_export,
+                            float wallbox, float pdc, float gate_lights,
+                            float path_lights);
+  bool load_energy_baseline(int expected_day_key, float *grid_import,
+                            float *grid_export, float *wallbox, float *pdc,
+                            float *gate_lights, float *path_lights);
+
  protected:
   bool mounted_{false};
   sdmmc_card_t *card_{nullptr};
