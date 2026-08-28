@@ -13,6 +13,7 @@ packages:
   heating_slider: !include heating-slider-v1.2.yaml
   pdc_page: !include pdc-page-v1.2.yaml
   pdc_value_position_fix: !include pdc-value-position-fix-v1.2.yaml
+  energy_page: !include energy-page-v1.2.yaml
   update_client: !include update-client-v1.2.yaml
 
 # Remote support code. Existing installations that load only this bundle
