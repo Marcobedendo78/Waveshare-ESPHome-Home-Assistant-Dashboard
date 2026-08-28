@@ -40,5 +40,32 @@ class WaveshareSD : public Component {
   sdmmc_card_t *card_{nullptr};
 };
 
+// Pointer used by compatibility wrappers while the dashboard package is
+// migrated from the old sd_storage.h helper API to this ESPHome component.
+extern WaveshareSD *global_waveshare_sd;
+
 }  // namespace waveshare_sd
 }  // namespace esphome
+
+// Backward-compatible helper names still referenced by dashboard-package.yaml.
+// They now forward to the remote waveshare_sd component, so no local header is
+// needed and existing dashboard code keeps compiling during the migration.
+inline bool sd_storage_is_mounted() {
+  return esphome::waveshare_sd::global_waveshare_sd != nullptr &&
+         esphome::waveshare_sd::global_waveshare_sd->is_mounted();
+}
+
+inline void sd_storage_append_log(const char *level, const char *message) {
+  if (esphome::waveshare_sd::global_waveshare_sd != nullptr)
+    esphome::waveshare_sd::global_waveshare_sd->append_log(level, message);
+}
+
+inline void sd_storage_append_energy(int64_t timestamp, float solar_w,
+                                     float grid_w, float battery_w,
+                                     float home_w, float pdc_w,
+                                     float battery_soc) {
+  if (esphome::waveshare_sd::global_waveshare_sd != nullptr) {
+    esphome::waveshare_sd::global_waveshare_sd->append_energy(
+        timestamp, solar_w, grid_w, battery_w, home_w, pdc_w, battery_soc);
+  }
+}
