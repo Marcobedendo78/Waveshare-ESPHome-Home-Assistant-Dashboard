@@ -1,7 +1,7 @@
 {
   "channel": "dev",
   "version": "v1.2.0",
-  "build": "2026.08.29.09",
+  "build": "2026.08.29.10",
   "branch": "dev-v1.2.0",
-  "message": "Pagina Energia: flussi alzati, icone colorate nei cerchi e icone aggiunte a tutte le righe"
+  "message": "Correzione stabilità pagina Energia: rimosso overlay LVGL .09 che causava watchdog e rollback OTA"
 }
