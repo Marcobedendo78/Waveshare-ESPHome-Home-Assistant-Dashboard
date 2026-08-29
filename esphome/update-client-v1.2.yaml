@@ -1,14 +1,10 @@
 # ============================================================
 # WAVESHARE DASHBOARD - UPDATE CLIENT
-# v1.2.0 development
-#
-# This file is loaded automatically by dashboard-bundle.yaml.
-# dashboard_build must be bumped whenever dashboard code changes.
-# Home Assistant compares this installed build with version.json.
+# v1.2.0 stable
 # ============================================================
 
 substitutions:
-  dashboard_channel: "dev"
+  dashboard_channel: "stable"
   dashboard_code_version: "v1.2.0"
   dashboard_build: "2026.08.29.12"
 
