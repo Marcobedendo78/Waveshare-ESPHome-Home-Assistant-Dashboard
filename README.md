@@ -1,144 +1,216 @@
 # Waveshare ESPHome Home Assistant Dashboard
 
-Touchscreen wall dashboard for **Home Assistant** based on the **Waveshare ESP32-S3 Touch LCD 7B (1024×600)** and **ESPHome**.
+Dashboard touchscreen da parete per **Home Assistant**, realizzata per **Waveshare ESP32-S3 Touch LCD 7B 7" 1024×600** e gestita tramite **ESPHome**.
 
-**Stable release: v1.1.1**  
-**Development branch: v1.2.0**
+La configurazione principale viene scaricata direttamente da questo repository: l'utente deve mantenere localmente solo il file ESPHome del display, il file con le proprie entità e i normali secrets di ESPHome.
 
-![Installed dashboard](docs/images/dashboard-home.jpg)
+![Dashboard installata](docs/images/dashboard-home.jpg)
 
-## Features
+## Funzioni principali
 
-- Home energy distribution with animated power-flow visualization
-- Solar production and home-consumption charts
-- Heat-pump monitoring page
-- Lighting control
-- Room heating controls
-- Weather page and forecast helpers
-- EV charging dashboard
-- Robot lawnmower dashboard and controls
-- Configurable robot MQTT topics
-- Capacitive touchscreen navigation
-- microSD logging support
-- Native Home Assistant integration through ESPHome
-- Dashboard version shown directly on the ESPHome device page
-- Optional GitHub release checker with Home Assistant update notifications
+- distribuzione energia con flussi animati;
+- potenza FV, rete, batteria, abitazione, pompa di calore e Wallbox;
+- pagina Energia con riepilogo giornaliero e consumi dispositivi;
+- monitoraggio pompa di calore;
+- controllo luci e cancello;
+- gestione riscaldamento ambiente;
+- pagina meteo;
+- gestione ricarica auto / Wallbox;
+- pagina robot tagliaerba con comandi MQTT;
+- touchscreen capacitivo;
+- supporto microSD integrato;
+- integrazione nativa con Home Assistant tramite ESPHome.
 
 ## Hardware
 
-The project is designed for the **Waveshare ESP32-S3 Touch LCD 7B**, 7-inch 1024×600 capacitive touchscreen.
+Il progetto è sviluppato per:
 
-A custom 3D-printed enclosure and wall mounting system is available on MakerWorld:
+**Waveshare ESP32-S3 Touch LCD 7B — 7 pollici — 1024×600**
 
-**MakerWorld:**  
+È disponibile anche la cover/supporto da parete stampabile in 3D:
+
 https://makerworld.com/it/models/3204446-cover-display-waveshare-7-pollici#profileId-3626631
 
-The enclosure provides:
+## Installazione
 
-- wall mounting on a standard 503 box;
-- integration with a Vimar Plana USB power module;
-- hidden USB cable routing;
-- external access to RESET and BOOT;
-- ventilation openings.
+### 1. Copiare i due file ESPHome necessari
 
-## Dashboard examples
-
-### Home
-![Home](docs/images/dashboard-home.jpg)
-
-### Lights
-![Lights](docs/images/dashboard-lights.jpg)
-
-### Robot lawnmower
-![Robot](docs/images/dashboard-robot.jpg)
-
-### EV charging
-![EV charging](docs/images/dashboard-ev-charging.jpg)
-
-## Repository structure
+Dalla cartella `esphome/` del repository utilizzare:
 
 ```text
-esphome/
-  dashboard-package.yaml
-  waveshare-display.example.yaml
-  user_config.example.yaml
-  secrets.example.yaml
-  sd_storage.h
-  Robot.jpg
-  capture_card.png
-  waveshare-dashboard.yaml        # legacy/reference v1.0 configuration
-
-home-assistant/
-  display_weather.yaml
-  home_assistant_display.yaml
-  dashboard_update.yaml           # update checker from v1.2.0
-  CONFIGURATION.md
-
-docs/
-  images/
+waveshare-display.example.yaml
+user_config.example.yaml
 ```
 
-## v1.2.0 configuration model
-
-Starting with v1.2.0, the dashboard release is controlled by a single value in the local hidden ESPHome file `.user_config.yaml`:
-
-```yaml
-dashboard_version: "v1.2.0"
-```
-
-That value is used for two purposes:
-
-1. it selects the matching GitHub package release through `packages.dashboard.ref`;
-2. it is exposed by ESPHome as the dashboard-version sensor in Home Assistant.
-
-This prevents the installed package version and the version reported to Home Assistant from drifting apart.
-
-To update to a future release, change only `dashboard_version` to the new release tag and reinstall the display from ESPHome.
-
-## Quick start
-
-### 1. Prepare the local ESPHome files
-
-From the `esphome/` directory, keep these files in your ESPHome configuration directory:
+Nella cartella ESPHome di Home Assistant creare:
 
 ```text
 waveshare-display.yaml
 .user_config.yaml
-sd_storage.h
-Robot.jpg
-capture_card.png
 ```
 
-Create the first two files as follows:
+copiando:
 
 ```text
-waveshare-display.example.yaml -> waveshare-display.yaml
-user_config.example.yaml       -> .user_config.yaml
+waveshare-display.example.yaml  -> waveshare-display.yaml
+user_config.example.yaml        -> .user_config.yaml
 ```
 
-The leading dot in `.user_config.yaml` is intentional. ESPHome Device Builder hides dot-prefixed YAML files, so this substitutions file does not appear as a false offline device card.
+Il punto iniziale di `.user_config.yaml` è intenzionale: evita che ESPHome Device Builder lo interpreti come un secondo dispositivo.
 
-`dashboard-package.yaml` does **not** need to be copied locally. It is loaded remotely from the GitHub release selected by `dashboard_version`.
+### 2. Non copiare gli altri file del dashboard
 
-The files `sd_storage.h`, `Robot.jpg`, and `capture_card.png` remain local because the ESPHome configuration references them as local include/image assets.
+Il file locale `waveshare-display.yaml` carica automaticamente da GitHub:
 
-### 2. Configure your entities
+```text
+esphome/dashboard-bundle.yaml
+```
 
-Open:
+Il bundle richiama a sua volta tutti i moduli del dashboard, compreso il supporto microSD.
+
+Le immagini standard del progetto vengono scaricate automaticamente durante la compilazione.
+
+Non è quindi necessario copiare manualmente `dashboard-package.yaml`, i moduli delle singole pagine, immagini, header C++ o componenti microSD.
+
+## Configurare le proprie entità Home Assistant
+
+Tutta la personalizzazione dell'impianto viene effettuata nel file:
 
 ```text
 .user_config.yaml
 ```
 
-Change only the values on the right side of the keys. This file contains the installation-specific Home Assistant entities for energy, heat pump, lights, heating, weather, EV charging and robot lawnmower data.
+**Non modificare i nomi a sinistra dei due punti.** Modificare solamente l'entity ID tra virgolette sulla destra.
 
-Do not rename:
+Esempio:
 
 ```yaml
-dashboard_version: "v1.2.0"
+energy_solar_power: "sensor.inverter_potenza_in_ingresso"
 ```
 
-The robot command topics are also configurable:
+Se nel proprio Home Assistant il sensore FV si chiama:
+
+```text
+sensor.fotovoltaico_potenza
+```
+
+modificare solamente così:
+
+```yaml
+energy_solar_power: "sensor.fotovoltaico_potenza"
+```
+
+Lo stesso principio vale per tutte le altre entità.
+
+### Energia / Home
+
+Le principali associazioni sono:
+
+```yaml
+energy_solar_power: "sensor..."       # potenza FV istantanea, W
+energy_solar_daily: "sensor..."       # produzione FV giornaliera, kWh
+energy_grid_power: "sensor..."        # potenza rete istantanea, W
+energy_battery_power: "sensor..."     # carica/scarica batteria, W
+energy_battery_soc: "sensor..."       # stato batteria, %
+heatpump_power: "sensor..."           # consumo istantaneo PDC, W
+```
+
+La Wallbox utilizzata nel flusso energetico usa il sensore di potenza istantanea:
+
+```text
+sensor.consumo_istantaneo_wallbox
+```
+
+Se non si possiede già un sensore complessivo trifase, è possibile crearne uno in Home Assistant sommando le tre fasi, ad esempio:
+
+```yaml
+template:
+  - sensor:
+      - name: "Consumo istantaneo WALLBOX"
+        unique_id: consumo_istantaneo_wallbox
+        unit_of_measurement: "W"
+        device_class: power
+        state: >-
+          {{ (states('sensor.FASE_A_POTENZA') | float(0) +
+              states('sensor.FASE_B_POTENZA') | float(0) +
+              states('sensor.FASE_C_POTENZA') | float(0)) }}
+```
+
+Sostituire i tre `sensor.FASE_*_POTENZA` con i propri sensori.
+
+### Luci e cancello
+
+Nel blocco `LIGHTS / GATE` sostituire le entità `switch.*` con quelle del proprio impianto.
+
+Esempio:
+
+```yaml
+light_kitchen: "switch.luce_cucina"
+light_garage: "switch.luce_garage"
+gate_control: "switch.cancello"
+```
+
+I sensori di potenza delle luci esterne sono configurabili nello stesso file.
+
+### Riscaldamento
+
+Sono previste quattro zone:
+
+- soggiorno;
+- camera matrimoniale;
+- camera;
+- studio.
+
+Per ogni zona sono disponibili associazioni per `climate`, temperatura, umidità, finestra, stato riscaldamento, connettività e modalità.
+
+Esempio:
+
+```yaml
+heating_living_climate: "climate.salotto"
+heating_living_temperature: "sensor.salotto_temperatura"
+heating_living_humidity: "sensor.salotto_umidita"
+```
+
+### Meteo
+
+Nel blocco `WEATHER` impostare le proprie entità per:
+
+- entità `weather` principale;
+- temperatura esterna;
+- umidità esterna;
+- alba e tramonto;
+- pioggia;
+- qualità aria;
+- umidità terreno, se disponibile.
+
+### Ricarica auto / Wallbox
+
+Nel blocco `EV CHARGING` sostituire le entità relative a Wallbox e veicolo.
+
+Sono previste, tra le altre:
+
+```yaml
+ev_wallbox_max_current: "number..."
+ev_wallbox_connector_status: "sensor..."
+ev_wallbox_session_energy: "sensor..."
+ev_wallbox_session_time: "sensor..."
+ev_wallbox_total_energy: "sensor..."
+ev_vehicle_battery: "sensor..."
+```
+
+Le funzioni che comandano Home Assistant richiedono che ESPHome sia autorizzato a eseguire azioni.
+
+In Home Assistant aprire:
+
+**Impostazioni → Dispositivi e servizi → ESPHome → waveshare-display → Configura**
+
+e abilitare l'opzione che consente al dispositivo di eseguire azioni Home Assistant.
+
+### Robot tagliaerba
+
+Nel blocco `ROBOT LAWNMOWER` associare i propri sensori.
+
+I topic MQTT sono configurabili:
 
 ```yaml
 robot_mqtt_control_topic: "home/robot/mower/control"
@@ -146,133 +218,133 @@ robot_mqtt_timers_topic: "home/robot/mower/control/timers"
 robot_mqtt_joystick_topic: "home/robot/mower/control/joystick"
 ```
 
-### 3. Configure ESPHome secrets
+Chi utilizza un robot differente deve adattare sia le entità sia i topic/comandi alla propria implementazione.
 
-Use `esphome/secrets.example.yaml` as a reference and add these keys to your normal ESPHome `secrets.yaml`:
+## Secrets ESPHome
+
+Nel normale file `secrets.yaml` di ESPHome devono essere presenti almeno:
 
 ```yaml
-wifi_ssid: "YOUR_WIFI_SSID"
-wifi_password: "YOUR_WIFI_PASSWORD"
-waveshare_display_encryption_key: "YOUR_ESPHOME_API_ENCRYPTION_KEY"
-waveshare_display_ap_password: "YOUR_FALLBACK_AP_PASSWORD"
+wifi_ssid: "NOME_WIFI"
+wifi_password: "PASSWORD_WIFI"
+waveshare_display_encryption_key: "CHIAVE_API_ESPHOME"
+waveshare_display_ap_password: "PASSWORD_AP_FALLBACK"
 ```
 
-Do not publish your real `secrets.yaml`.
+Il repository contiene `esphome/secrets.example.yaml` come riferimento.
 
-### 4. Install the Home Assistant helper packages
+**Non pubblicare mai il proprio `secrets.yaml`.**
 
-The dashboard uses helper entities generated by:
+## Pacchetti Home Assistant
 
-- `home-assistant/display_weather.yaml`
-- `home-assistant/home_assistant_display.yaml`
-
-From v1.2.0, the optional but recommended update checker is:
-
-- `home-assistant/dashboard_update.yaml`
-
-Before using the Home Assistant packages, read:
-
-**`home-assistant/CONFIGURATION.md`**
-
-The generated `sensor.display_*` entity IDs are intentionally kept stable because the ESP32 dashboard reads those helper names directly.
-
-### 5. Automatic update notification
-
-`dashboard_update.yaml` checks the latest stable GitHub release every 6 hours.
-
-The installed version is discovered automatically from the ESPHome dashboard-version entity. This works even if Home Assistant prefixes the entity ID with the area or device name.
-
-The package creates stable helper entities including:
+Nella cartella:
 
 ```text
-sensor.waveshare_dashboard_installed_version
-sensor.waveshare_dashboard_latest_version
-binary_sensor.waveshare_dashboard_update_available
+home-assistant/
 ```
 
-If a newer stable release exists, Home Assistant creates a persistent notification containing:
+sono presenti i package/helper utilizzati dal progetto, tra cui:
 
-- installed version;
-- latest version;
-- direct link to the GitHub release.
+```text
+display_weather.yaml
+home_assistant_display.yaml
+dashboard_update.yaml
+```
 
-The checker **never installs firmware automatically**. Updating remains manual by design.
-
-After adding `dashboard_update.yaml` for the first time, perform a **full Home Assistant restart**. Reloading YAML alone may not create the REST sensor.
-
-### 6. Allow Home Assistant actions
-
-In Home Assistant open:
-
-**Settings → Devices & services → ESPHome → waveshare-display → Configure**
-
-and enable:
-
-**Allow the device to perform Home Assistant actions**
-
-### 7. Validate and install
-
-After configuring `.user_config.yaml`, the secrets and the Home Assistant helper packages:
-
-1. validate the ESPHome configuration;
-2. compile it;
-3. install it on the Waveshare ESP32-S3 Touch LCD 7B;
-4. confirm the device connects to Home Assistant;
-5. confirm `Waveshare Dashboard Version` is visible on the ESPHome device page;
-6. confirm the update-checker entities are available if `dashboard_update.yaml` is installed.
-
-## Home Assistant helper packages
-
-The helper packages create the historical/weather `sensor.display_*` entities required by the graphs and forecast page. Their source entity IDs are not universal, so they must be adapted to each Home Assistant installation.
-
-See:
+Per la configurazione leggere anche:
 
 ```text
 home-assistant/CONFIGURATION.md
 ```
 
-for the exact mapping and requirements.
+Alcune pagine utilizzano sensori helper `sensor.display_*`: i sensori sorgente devono essere adattati al proprio impianto seguendo il file di configurazione.
+
+Dopo aver aggiunto per la prima volta package Home Assistant che creano nuove entità, eseguire un **riavvio completo di Home Assistant**.
+
+## Convalida e installazione
+
+Dopo aver configurato `.user_config.yaml` e `secrets.yaml`:
+
+1. aprire ESPHome Device Builder;
+2. selezionare `waveshare-display`;
+3. eseguire **Convalida**;
+4. correggere eventuali entity ID mancanti o errati;
+5. eseguire **Installa**;
+6. per gli aggiornamenti successivi è possibile utilizzare **Wireless / OTA**.
+
+Al primo flash via USB seguire la normale procedura ESPHome per ESP32-S3.
+
+## Aggiornamenti del dashboard
+
+La configurazione è modulare e viene caricata dal repository GitHub. Il file locale contiene principalmente Wi-Fi, API ESPHome e associazioni personali.
+
+Prima di installare una nuova versione è consigliato eseguire sempre **Convalida**.
+
+Il package opzionale `home-assistant/dashboard_update.yaml` permette a Home Assistant di controllare la disponibilità di nuove versioni. Non installa automaticamente il firmware.
 
 ## microSD
 
-`sd_storage.h` mounts the onboard microSD and can write:
+Il supporto microSD è integrato come external component e viene caricato automaticamente dal bundle.
 
-```text
-/sdcard/waveshare/display.log
-/sdcard/waveshare/energy_history.csv
+La scheda può essere utilizzata per il logging energetico e per conservare le baseline giornaliere utilizzate dalla pagina Energia.
+
+Il dashboard continua a funzionare anche senza microSD; in quel caso le funzioni che dipendono dalla scheda non sono disponibili.
+
+## Immagini personalizzate
+
+Nel file `.user_config.yaml` sono presenti anche gli URL delle immagini standard:
+
+```yaml
+robot_image_file: "..."
+ev_image_file: "..."
+pdc_image_file: "..."
 ```
 
-The energy history CSV includes:
+Per utilizzare immagini personali è sufficiente sostituire l'URL mantenendo invariato il nome della substitution.
+
+## Struttura del repository
 
 ```text
-timestamp,solar_w,grid_w,battery_w,home_w,pdc_w,battery_soc_pct
+esphome/
+  dashboard-bundle.yaml
+  dashboard-package.yaml
+  waveshare-display.example.yaml
+  user_config.example.yaml
+  energy-page-v1.2.2.yaml
+  wallbox-flow-v1.2.yaml
+  pdc-page-v1.2.yaml
+  heating-slider-v1.2.yaml
+  update-client-v1.2.yaml
+
+components/
+  waveshare_sd/
+
+home-assistant/
+  display_weather.yaml
+  home_assistant_display.yaml
+  dashboard_update.yaml
+  CONFIGURATION.md
+
+docs/
+  images/
 ```
 
-The display continues to operate if the microSD is not available; logging is simply unavailable.
+## Cover 3D
 
-## 3D printed enclosure
+![Supporto a parete](docs/images/wall-support-vimar.jpg)
 
-![Wall support](docs/images/wall-support-vimar.jpg)
+![Interno cover](docs/images/enclosure-inside-1.jpg)
 
-![Enclosure](docs/images/enclosure-inside-1.jpg)
+![Pulsanti RESET e BOOT](docs/images/reset-boot-buttons.jpg)
 
-![RESET and BOOT](docs/images/reset-boot-buttons.jpg)
+![Scheda montata](docs/images/board-mounted.jpg)
 
-![Board mounted](docs/images/board-mounted.jpg)
+## Progetto correlato
 
-## Versioning
+Robot Arduino 4.0:
 
-- `v1.0.x` — bug fixes to the initial public version
-- `v1.x.0` — backward-compatible features and configuration improvements
-- `v2.0.0` — major/incompatible changes
-
-v1.1.x has been validated, compiled and tested successfully on the real Waveshare ESP32-S3 Touch LCD 7B hardware. v1.2.0 development has also been tested on the real display for version reporting and Home Assistant update notifications.
-
-## Related project
-
-Robot Arduino 4.0:  
 https://github.com/Marcobedendo78/Robot-Arduino-4.0
 
-## Author
+## Autore
 
 Marco Bedendo — `Marcobedendo78`
