@@ -1,0 +1,26 @@
+# ============================================================
+# WAVESHARE DASHBOARD - WALLBOX POWER FLOW
+# v1.2 development
+#
+# Uses the real three-phase Wallbox power sensor in the energy-flow page.
+# The existing AUTO circle is updated with the actual instantaneous power
+# instead of relying only on the configured charging current estimate.
+# ============================================================
+
+substitutions:
+  wallbox_flow_power: "sensor.consumo_istantaneo_wallbox"
+
+sensor:
+  - platform: homeassistant
+    id: ha_wallbox_power_flow
+    entity_id: ${wallbox_flow_power}
+    internal: true
+    on_value:
+      - lvgl.label.update:
+          id: lbl_auto_power
+          text: !lambda |-
+            char buf[24];
+            if (isnan(x)) snprintf(buf, sizeof(buf), "---");
+            else if (fabsf(x) < 1000.0f) snprintf(buf, sizeof(buf), "%.0f W", x);
+            else snprintf(buf, sizeof(buf), "%.2f kW", x / 1000.0f);
+            return std::string(buf);
