@@ -1,6 +1,6 @@
 # ============================================================
 # WAVESHARE ESP32-S3 TOUCH LCD 7B
-# Local ESPHome configuration example for v1.2.0+
+# Local ESPHome configuration example - v1.2.0
 #
 # QUICK SETUP
 # 1) Copy this file as: waveshare-display.yaml
@@ -9,13 +9,8 @@
 # 4) Copy the required secret values from secrets.example.yaml into
 #    your normal ESPHome secrets.yaml.
 #
-# DASHBOARD FILES / IMAGES / SUPPORT CODE
-# All dashboard YAML packages are loaded automatically from GitHub.
-# Robot.jpg, capture_card.png and pdc-background.png are fetched
-# automatically from GitHub during compilation.
-# microSD support is also fetched automatically as an external ESPHome
-# component. No dashboard image, header or support source file needs to be
-# copied manually into the user's ESPHome directory.
+# All dashboard packages, standard images and microSD support are
+# downloaded automatically from GitHub.
 # ============================================================
 
 substitutions: !include .user_config.yaml
@@ -28,31 +23,17 @@ packages:
       - esphome/dashboard-bundle.yaml
     refresh: always
 
-external_components:
-  - source:
-      type: git
-      url: https://github.com/Marcobedendo78/Waveshare-ESPHome-Home-Assistant-Dashboard
-      ref: ${dashboard_version}
-    components:
-      - waveshare_sd
-    refresh: always
-
-waveshare_sd:
-  id: dashboard_sd
-
 esphome:
   name: ${device_name}
   friendly_name: ${friendly_name}
   name_add_mac_suffix: false
-
   project:
     name: marcobedendo78.waveshare-dashboard
-    version: "1.2.0-dev"
+    version: "1.2.0"
 
-# Allows ESPHome Device Builder to adopt an installed dashboard and create
-# a minimal configuration backed by the public GitHub repository.
+# ESPHome Device Builder adoption entry for the stable release.
 dashboard_import:
-  package_import_url: github://Marcobedendo78/Waveshare-ESPHome-Home-Assistant-Dashboard/esphome/waveshare-display.example.yaml@dev-v1.2.0
+  package_import_url: github://Marcobedendo78/Waveshare-ESPHome-Home-Assistant-Dashboard/esphome/waveshare-display.example.yaml@v1.2.0
   import_full_config: false
 
 esp32:
@@ -93,7 +74,6 @@ captive_portal:
 
 improv_serial:
 
-# Exposes the exact dashboard release used by this device to Home Assistant.
 text_sensor:
   - platform: template
     name: "Waveshare Dashboard Version"
