@@ -1,11 +1,9 @@
 # ============================================================
 # WAVESHARE ESPHOME HOME ASSISTANT DASHBOARD - REMOTE BUNDLE
+# v1.2.0
 #
 # This is the ONLY remote package file that the local
 # waveshare-display.yaml needs to load.
-#
-# New dashboard modules and support components are added here on GitHub so
-# existing installations do not need local package-list changes.
 # ============================================================
 
 packages:
@@ -18,14 +16,13 @@ packages:
   energy_page: !include energy-page-v1.2.2.yaml
   update_client: !include update-client-v1.2.yaml
 
-# Remote support code. Existing installations that load only this bundle
-# automatically receive the component too; no local external_components
-# block and no copied header file are required.
+# The external component follows the same release selected in
+# .user_config.yaml, so a stable installation remains pinned to its tag.
 external_components:
   - source:
       type: git
       url: https://github.com/Marcobedendo78/Waveshare-ESPHome-Home-Assistant-Dashboard
-      ref: dev-v1.2.0
+      ref: ${dashboard_version}
     components:
       - waveshare_sd
     refresh: always
