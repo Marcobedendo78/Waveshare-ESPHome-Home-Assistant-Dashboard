@@ -1,7 +1,7 @@
 {
   "channel": "dev",
   "version": "v1.2.0",
-  "build": "2026.08.29.11",
+  "build": "2026.08.29.12",
   "branch": "dev-v1.2.0",
-  "message": "Pagina Energia integrata: cerchi e riquadri inferiori alzati, icone entità aggiunte e icone nei cerchi colorate"
+  "message": "Flussi energia: aggiunto sensore reale di potenza istantanea Wallbox nel cerchio Auto"
 }
