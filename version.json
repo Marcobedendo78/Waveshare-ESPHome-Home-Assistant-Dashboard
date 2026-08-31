@@ -1,7 +1,7 @@
 {
   "channel": "dev",
   "version": "v1.2.0",
-  "build": "2026.08.31.15",
+  "build": "2026.08.31.17",
   "branch": "dev-v1.2.0",
-  "message": "Hotfix stabilità: rimossi gli overlay Energia v1.2.3 che causavano Task WDT e rollback OTA; ripristinata la pagina Energia integrata v1.2.2"
+  "message": "Pagina Energia: consumi dispositivi compattati verso l'alto, Totale monitorato completamente visibile e icone luci sostituite con lightbulb-outline 24x24"
 }
