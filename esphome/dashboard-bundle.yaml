@@ -1,6 +1,6 @@
 # ============================================================
 # WAVESHARE ESPHOME HOME ASSISTANT DASHBOARD - REMOTE BUNDLE
-# v1.2.0
+# v1.2.0 development
 #
 # This is the ONLY remote package file that the local
 # waveshare-display.yaml needs to load.
@@ -18,13 +18,15 @@ packages:
   energy_date_fix: !include energy-date-fix-v1.2.3.yaml
   update_client: !include update-client-v1.2.yaml
 
-# The external component follows the same release selected in
-# .user_config.yaml, so a stable installation remains pinned to its tag.
+# Development branch: always load the matching development component.
+# Do NOT use ${dashboard_version} here because older local configurations
+# may still report v1.1.1 even while the remote dashboard package itself
+# is explicitly loaded from dev-v1.2.0.
 external_components:
   - source:
       type: git
       url: https://github.com/Marcobedendo78/Waveshare-ESPHome-Home-Assistant-Dashboard
-      ref: ${dashboard_version}
+      ref: dev-v1.2.0
     components:
       - waveshare_sd
     refresh: always
