@@ -14,6 +14,8 @@ packages:
   wallbox_flow: !include wallbox-flow-v1.2.yaml
   energy_font: !include energy-font-v1.2.yaml
   energy_page: !include energy-page-v1.2.2.yaml
+  energy_layout_fix: !include energy-layout-fix-v1.2.3.yaml
+  energy_date_fix: !include energy-date-fix-v1.2.3.yaml
   update_client: !include update-client-v1.2.yaml
 
 # The external component follows the same release selected in
