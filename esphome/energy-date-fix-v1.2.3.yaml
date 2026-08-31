@@ -1,0 +1,31 @@
+# Keeps the date in the refined Energy flow card synchronized with Home Assistant time.
+
+script:
+  - id: energy_layout_date_refresh
+    mode: restart
+    then:
+      - lvgl.label.update:
+          id: energy_layout_date
+          text: !lambda |-
+            auto now=id(ha_time).now();
+            if(!now.is_valid()) return std::string("--/--/----");
+            return str_sprintf("%02d/%02d/%04d",now.day_of_month,now.month,now.year);
+
+interval:
+  - interval: 30s
+    then:
+      - script.execute: energy_layout_date_refresh
+
+lvgl:
+  pages:
+    - id: !extend page_energy
+      widgets:
+        - label:
+            id: energy_layout_date
+            x: 440
+            y: 22
+            width: 165
+            text_align: RIGHT
+            text: "--/--/----"
+            text_font: roboto_16
+            text_color: 0xDCE2E8
