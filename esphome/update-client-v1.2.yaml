@@ -1,12 +1,12 @@
 # ============================================================
 # WAVESHARE DASHBOARD - UPDATE CLIENT
-# v1.2.0 stable
+# v1.2.0 development
 # ============================================================
 
 substitutions:
-  dashboard_channel: "stable"
+  dashboard_channel: "dev"
   dashboard_code_version: "v1.2.0"
-  dashboard_build: "2026.08.31.13"
+  dashboard_build: "2026.08.31.14"
 
 text_sensor:
   - platform: template
