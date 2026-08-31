@@ -174,12 +174,12 @@ lvgl:
       widgets:
         - obj: {x: 0, y: 0, width: 1024, height: 512, bg_color: 0x10151B, bg_opa: COVER, border_width: 0, radius: 0, scrollable: false, scrollbar_mode: "OFF"}
 
-        # TOP LEFT - all flow nodes raised
+        # TOP LEFT - compact flow card, shifted left
         - obj:
             x: 10
             y: 8
             width: 620
-            height: 322
+            height: 280
             bg_color: 0x151C24
             border_color: 0x303A45
             border_width: 1
@@ -189,11 +189,11 @@ lvgl:
             widgets:
               - label: {x: 18, y: 12, text: "Energia", text_font: roboto_bold_22, text_color: 0xFFFFFF}
               - label: {id: energy_lbl_date, x: 430, y: 14, width: 165, text_align: RIGHT, text: "--/--/----", text_font: roboto_16, text_color: 0xDCE2E8}
-              - obj: {x: 115, y: 188, width: 145, height: 3, bg_color: 0x3FA7FF, border_width: 0, radius: 0}
-              - obj: {x: 296, y: 142, width: 3, height: 9, bg_color: 0xFFC400, border_width: 0, radius: 0}
-              - obj: {x: 336, y: 188, width: 156, height: 3, bg_color: 0x75D34B, border_width: 0, radius: 0}
+              - obj: {x: 99, y: 158, width: 144, height: 3, bg_color: 0x3FA7FF, border_width: 0, radius: 0}
+              - obj: {x: 279, y: 92, width: 3, height: 67, bg_color: 0xFFC400, border_width: 0, radius: 0}
+              - obj: {x: 319, y: 158, width: 154, height: 3, bg_color: 0x75D34B, border_width: 0, radius: 0}
               - obj:
-                  x: 261
+                  x: 244
                   y: 18
                   width: 74
                   height: 74
@@ -204,12 +204,12 @@ lvgl:
                   scrollable: false
                   widgets:
                     - image: {src: img_solar, align: CENTER, image_recolor: 0xFFC400, image_recolor_opa: COVER}
-              - label: {x: 243, y: 96, width: 110, text_align: CENTER, text: "Solare", text_font: roboto_bold_16, text_color: 0xFFFFFF}
-              - label: {x: 240, y: 116, width: 116, text_align: CENTER, text: "Produzione", text_font: roboto_12, text_color: 0xAEB4BF}
-              - label: {id: energy_lbl_solar, x: 220, y: 134, width: 156, text_align: CENTER, text: "-- kWh", text_font: roboto_bold_18, text_color: 0xFFC400}
+              - label: {x: 330, y: 27, width: 105, text: "Solare", text_font: roboto_bold_16, text_color: 0xFFFFFF}
+              - label: {x: 330, y: 48, width: 105, text: "Produzione", text_font: roboto_12, text_color: 0xAEB4BF}
+              - label: {id: energy_lbl_solar, x: 330, y: 66, width: 125, text: "-- kWh", text_font: roboto_bold_18, text_color: 0xFFC400}
               - obj:
-                  x: 40
-                  y: 150
+                  x: 23
+                  y: 121
                   width: 76
                   height: 76
                   radius: 38
@@ -219,14 +219,14 @@ lvgl:
                   scrollable: false
                   widgets:
                     - image: {src: img_grid, align: CENTER, image_recolor: 0x3FA7FF, image_recolor_opa: COVER}
-              - label: {x: 22, y: 228, width: 112, text_align: CENTER, text: "Rete", text_font: roboto_bold_16, text_color: 0xFFFFFF}
-              - label: {x: 8, y: 247, width: 72, text_align: CENTER, text: "Consumo", text_font: roboto_12, text_color: 0xAEB4BF}
-              - label: {x: 80, y: 247, width: 72, text_align: CENTER, text: "Esportata", text_font: roboto_12, text_color: 0xAEB4BF}
-              - label: {id: energy_lbl_grid_import, x: 0, y: 265, width: 88, text_align: CENTER, text: "-- kWh", text_font: roboto_bold_14, text_color: 0x3FA7FF}
-              - label: {id: energy_lbl_grid_export, x: 76, y: 265, width: 92, text_align: CENTER, text: "-- kWh", text_font: roboto_bold_14, text_color: 0x7FC5FF}
+              - label: {x: 5, y: 199, width: 112, text_align: CENTER, text: "Rete", text_font: roboto_bold_16, text_color: 0xFFFFFF}
+              - label: {x: 0, y: 218, width: 66, text_align: CENTER, text: "Consumo", text_font: roboto_12, text_color: 0xAEB4BF}
+              - label: {x: 64, y: 218, width: 76, text_align: CENTER, text: "Esportata", text_font: roboto_12, text_color: 0xAEB4BF}
+              - label: {id: energy_lbl_grid_import, x: 0, y: 237, width: 72, text_align: CENTER, text: "-- kWh", text_font: roboto_bold_14, text_color: 0x3FA7FF}
+              - label: {id: energy_lbl_grid_export, x: 68, y: 237, width: 82, text_align: CENTER, text: "-- kWh", text_font: roboto_bold_14, text_color: 0x7FC5FF}
               - obj:
-                  x: 260
-                  y: 150
+                  x: 243
+                  y: 121
                   width: 76
                   height: 76
                   radius: 38
@@ -236,12 +236,12 @@ lvgl:
                   scrollable: false
                   widgets:
                     - image: {src: img_home, align: CENTER, image_recolor: 0xF2F2F2, image_recolor_opa: COVER}
-              - label: {x: 243, y: 228, width: 110, text_align: CENTER, text: "Casa", text_font: roboto_bold_16, text_color: 0xFFFFFF}
-              - label: {x: 228, y: 247, width: 140, text_align: CENTER, text: "Consumo totale", text_font: roboto_12, text_color: 0xAEB4BF}
-              - label: {id: energy_lbl_home, x: 218, y: 265, width: 160, text_align: CENTER, text: "-- kWh", text_font: roboto_bold_18, text_color: 0xFFFFFF}
+              - label: {x: 226, y: 199, width: 110, text_align: CENTER, text: "Casa", text_font: roboto_bold_16, text_color: 0xFFFFFF}
+              - label: {x: 211, y: 218, width: 140, text_align: CENTER, text: "Consumo totale", text_font: roboto_12, text_color: 0xAEB4BF}
+              - label: {id: energy_lbl_home, x: 201, y: 237, width: 160, text_align: CENTER, text: "-- kWh", text_font: roboto_bold_18, text_color: 0xFFFFFF}
               - obj:
-                  x: 492
-                  y: 150
+                  x: 473
+                  y: 121
                   width: 76
                   height: 76
                   radius: 38
@@ -251,11 +251,11 @@ lvgl:
                   scrollable: false
                   widgets:
                     - image: {src: img_battery, align: CENTER, image_recolor: 0x75D34B, image_recolor_opa: COVER}
-              - label: {x: 474, y: 228, width: 112, text_align: CENTER, text: "Batteria", text_font: roboto_bold_16, text_color: 0xFFFFFF}
-              - label: {x: 448, y: 247, width: 84, text_align: CENTER, text: "Caricata", text_font: roboto_12, text_color: 0xAEB4BF}
-              - label: {x: 530, y: 247, width: 84, text_align: CENTER, text: "Scaricata", text_font: roboto_12, text_color: 0xAEB4BF}
-              - label: {id: energy_lbl_battery_charge, x: 434, y: 265, width: 106, text_align: CENTER, text: "-- kWh", text_font: roboto_bold_14, text_color: 0x75D34B}
-              - label: {id: energy_lbl_battery_discharge, x: 524, y: 265, width: 106, text_align: CENTER, text: "-- kWh", text_font: roboto_bold_14, text_color: 0xA6E789}
+              - label: {x: 455, y: 199, width: 112, text_align: CENTER, text: "Batteria", text_font: roboto_bold_16, text_color: 0xFFFFFF}
+              - label: {x: 423, y: 218, width: 84, text_align: CENTER, text: "Caricata", text_font: roboto_12, text_color: 0xAEB4BF}
+              - label: {x: 506, y: 218, width: 84, text_align: CENTER, text: "Scaricata", text_font: roboto_12, text_color: 0xAEB4BF}
+              - label: {id: energy_lbl_battery_charge, x: 412, y: 237, width: 100, text_align: CENTER, text: "-- kWh", text_font: roboto_bold_14, text_color: 0x75D34B}
+              - label: {id: energy_lbl_battery_discharge, x: 500, y: 237, width: 100, text_align: CENTER, text: "-- kWh", text_font: roboto_bold_14, text_color: 0xA6E789}
 
         # TOP RIGHT - entity symbols + values
         - obj:
@@ -295,12 +295,12 @@ lvgl:
               - label: {x: 58, y: 250, text: "Consumo totale", text_font: roboto_bold_16, text_color: 0xFFFFFF}
               - label: {id: energy_sum_home, x: 210, y: 247, width: 142, text_align: RIGHT, text: "-- kWh", text_font: roboto_bold_18, text_color: 0xFFFFFF}
 
-        # BOTTOM LEFT - moved upward and entity symbols added
+        # BOTTOM LEFT - taller card with more row spacing
         - obj:
             x: 10
-            y: 332
+            y: 298
             width: 620
-            height: 172
+            height: 206
             bg_color: 0x151C24
             border_color: 0x303A45
             border_width: 1
@@ -309,33 +309,33 @@ lvgl:
             scrollbar_mode: "OFF"
             widgets:
               - label: {x: 18, y: 6, text: "Consumi dispositivi", text_font: roboto_bold_18, text_color: 0xFFFFFF}
-              - image: {x: 16, y: 27, src: img_auto, image_recolor: 0xD68AFF, image_recolor_opa: COVER}
-              - label: {x: 54, y: 31, width: 92, text: "Wallbox", text_font: roboto_14, text_color: 0xE8EDF2}
-              - bar: {id: energy_bar_wallbox, x: 148, y: 39, width: 247, height: 7, min_value: 0, max_value: 100, value: 0, bg_color: 0x28313B, radius: 4, indicator: {bg_color: 0xB667E8, radius: 4}}
-              - label: {id: energy_dev_wallbox_value, x: 405, y: 29, width: 112, text_align: RIGHT, text: "-- kWh", text_font: roboto_bold_14, text_color: 0xD68AFF}
-              - label: {id: energy_dev_wallbox_pct, x: 525, y: 29, width: 72, text_align: RIGHT, text: "-- %", text_font: roboto_14, text_color: 0xAEB4BF}
-              - image: {x: 14, y: 49, src: img_pdc, image_recolor: 0x6DCCFF, image_recolor_opa: COVER}
-              - label: {x: 54, y: 53, width: 92, text: "Pompa di calore", text_font: roboto_14, text_color: 0xE8EDF2}
-              - bar: {id: energy_bar_pdc, x: 148, y: 61, width: 247, height: 7, min_value: 0, max_value: 100, value: 0, bg_color: 0x28313B, radius: 4, indicator: {bg_color: 0x37B9FF, radius: 4}}
-              - label: {id: energy_dev_pdc_value, x: 405, y: 51, width: 112, text_align: RIGHT, text: "-- kWh", text_font: roboto_bold_14, text_color: 0x6DCCFF}
-              - label: {id: energy_dev_pdc_pct, x: 525, y: 51, width: 72, text_align: RIGHT, text: "-- %", text_font: roboto_14, text_color: 0xAEB4BF}
-              - image: {x: 8, y: 70, src: img_gate, image_recolor: 0xFFD54F, image_recolor_opa: COVER}
-              - label: {x: 54, y: 75, width: 92, text: "Luci cancello", text_font: roboto_14, text_color: 0xE8EDF2}
-              - bar: {id: energy_bar_gate, x: 148, y: 83, width: 247, height: 7, min_value: 0, max_value: 100, value: 0, bg_color: 0x28313B, radius: 4, indicator: {bg_color: 0xFFC400, radius: 4}}
-              - label: {id: energy_dev_gate_value, x: 405, y: 73, width: 112, text_align: RIGHT, text: "-- kWh", text_font: roboto_bold_14, text_color: 0xFFD54F}
-              - label: {id: energy_dev_gate_pct, x: 525, y: 73, width: 72, text_align: RIGHT, text: "-- %", text_font: roboto_14, text_color: 0xAEB4BF}
-              - image: {x: 11, y: 95, src: img_light_switch, image_recolor: 0xFFBE4A, image_recolor_opa: COVER}
-              - label: {x: 54, y: 97, width: 92, text: "Luci vialetto", text_font: roboto_14, text_color: 0xE8EDF2}
-              - bar: {id: energy_bar_path, x: 148, y: 105, width: 247, height: 7, min_value: 0, max_value: 100, value: 0, bg_color: 0x28313B, radius: 4, indicator: {bg_color: 0xF2A51A, radius: 4}}
-              - label: {id: energy_dev_path_value, x: 405, y: 95, width: 112, text_align: RIGHT, text: "-- kWh", text_font: roboto_bold_14, text_color: 0xFFBE4A}
-              - label: {id: energy_dev_path_pct, x: 525, y: 95, width: 72, text_align: RIGHT, text: "-- %", text_font: roboto_14, text_color: 0xAEB4BF}
-              - obj: {x: 18, y: 126, width: 580, height: 1, bg_color: 0x303A45, border_width: 0}
-              - image: {x: 16, y: 130, src: img_home, image_recolor: 0xFFFFFF, image_recolor_opa: COVER}
-              - label: {x: 54, y: 136, text: "Totale monitorato", text_font: roboto_bold_14, text_color: 0xFFFFFF}
-              - label: {id: energy_dev_total_value, x: 392, y: 133, width: 125, text_align: RIGHT, text: "-- kWh", text_font: roboto_bold_16, text_color: 0xFFFFFF}
-              - label: {id: energy_dev_total_pct, x: 525, y: 134, width: 72, text_align: RIGHT, text: "-- %", text_font: roboto_14, text_color: 0xAEB4BF}
+              - image: {x: 16, y: 30, src: img_auto, image_recolor: 0xD68AFF, image_recolor_opa: COVER}
+              - label: {x: 54, y: 34, width: 128, text: "Wallbox", text_font: roboto_14, text_color: 0xE8EDF2}
+              - bar: {id: energy_bar_wallbox, x: 185, y: 42, width: 210, height: 7, min_value: 0, max_value: 100, value: 0, bg_color: 0x28313B, radius: 4, indicator: {bg_color: 0xB667E8, radius: 4}}
+              - label: {id: energy_dev_wallbox_value, x: 405, y: 32, width: 112, text_align: RIGHT, text: "-- kWh", text_font: roboto_bold_14, text_color: 0xD68AFF}
+              - label: {id: energy_dev_wallbox_pct, x: 525, y: 32, width: 72, text_align: RIGHT, text: "-- %", text_font: roboto_14, text_color: 0xAEB4BF}
+              - image: {x: 14, y: 62, src: img_pdc, image_recolor: 0x6DCCFF, image_recolor_opa: COVER}
+              - label: {x: 54, y: 66, width: 128, text: "Pompa di calore", text_font: roboto_14, text_color: 0xE8EDF2}
+              - bar: {id: energy_bar_pdc, x: 185, y: 74, width: 210, height: 7, min_value: 0, max_value: 100, value: 0, bg_color: 0x28313B, radius: 4, indicator: {bg_color: 0x37B9FF, radius: 4}}
+              - label: {id: energy_dev_pdc_value, x: 405, y: 64, width: 112, text_align: RIGHT, text: "-- kWh", text_font: roboto_bold_14, text_color: 0x6DCCFF}
+              - label: {id: energy_dev_pdc_pct, x: 525, y: 64, width: 72, text_align: RIGHT, text: "-- %", text_font: roboto_14, text_color: 0xAEB4BF}
+              - image: {x: 13, y: 93, src: img_gate, zoom: 0.75, image_recolor: 0xFFD54F, image_recolor_opa: COVER}
+              - label: {x: 54, y: 98, width: 128, text: "Luci cancello", text_font: roboto_14, text_color: 0xE8EDF2}
+              - bar: {id: energy_bar_gate, x: 185, y: 106, width: 210, height: 7, min_value: 0, max_value: 100, value: 0, bg_color: 0x28313B, radius: 4, indicator: {bg_color: 0xFFC400, radius: 4}}
+              - label: {id: energy_dev_gate_value, x: 405, y: 96, width: 112, text_align: RIGHT, text: "-- kWh", text_font: roboto_bold_14, text_color: 0xFFD54F}
+              - label: {id: energy_dev_gate_pct, x: 525, y: 96, width: 72, text_align: RIGHT, text: "-- %", text_font: roboto_14, text_color: 0xAEB4BF}
+              - image: {x: 14, y: 125, src: img_light_switch, zoom: 0.75, image_recolor: 0xFFBE4A, image_recolor_opa: COVER}
+              - label: {x: 54, y: 130, width: 128, text: "Luci vialetto", text_font: roboto_14, text_color: 0xE8EDF2}
+              - bar: {id: energy_bar_path, x: 185, y: 138, width: 210, height: 7, min_value: 0, max_value: 100, value: 0, bg_color: 0x28313B, radius: 4, indicator: {bg_color: 0xF2A51A, radius: 4}}
+              - label: {id: energy_dev_path_value, x: 405, y: 128, width: 112, text_align: RIGHT, text: "-- kWh", text_font: roboto_bold_14, text_color: 0xFFBE4A}
+              - label: {id: energy_dev_path_pct, x: 525, y: 128, width: 72, text_align: RIGHT, text: "-- %", text_font: roboto_14, text_color: 0xAEB4BF}
+              - obj: {x: 18, y: 160, width: 580, height: 1, bg_color: 0x303A45, border_width: 0}
+              - image: {x: 16, y: 165, src: img_home, image_recolor: 0xFFFFFF, image_recolor_opa: COVER}
+              - label: {x: 54, y: 171, text: "Totale monitorato", text_font: roboto_bold_14, text_color: 0xFFFFFF}
+              - label: {id: energy_dev_total_value, x: 392, y: 168, width: 125, text_align: RIGHT, text: "-- kWh", text_font: roboto_bold_16, text_color: 0xFFFFFF}
+              - label: {id: energy_dev_total_pct, x: 525, y: 169, width: 72, text_align: RIGHT, text: "-- %", text_font: roboto_14, text_color: 0xAEB4BF}
 
-        # BOTTOM RIGHT - moved upward and entity symbols added
+        # BOTTOM RIGHT - unchanged
         - obj:
             x: 640
             y: 332
