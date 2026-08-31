@@ -1,7 +1,7 @@
 {
   "channel": "stable",
   "version": "v1.2.0",
-  "build": "2026.08.29.12",
+  "build": "2026.08.31.13",
   "branch": "main",
-  "message": "v1.2.0 stabile: nuova pagina Energia, microSD remota, PDC, slider riscaldamento e potenza reale Wallbox"
+  "message": "Pagina Energia: flussi traslati a sinistra, collegamento Solare-Casa, box dispositivi ampliato e icone ridimensionate"
 }
