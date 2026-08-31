@@ -1,7 +1,7 @@
 {
   "channel": "dev",
   "version": "v1.2.0",
-  "build": "2026.08.31.14",
+  "build": "2026.08.31.15",
   "branch": "dev-v1.2.0",
-  "message": "Fix package dev: componente microSD caricato da dev-v1.2.0 indipendentemente dal vecchio dashboard_version locale"
+  "message": "Hotfix stabilità: rimossi gli overlay Energia v1.2.3 che causavano Task WDT e rollback OTA; ripristinata la pagina Energia integrata v1.2.2"
 }
