@@ -6,7 +6,7 @@
 substitutions:
   dashboard_channel: "stable"
   dashboard_code_version: "v1.2.0"
-  dashboard_build: "2026.08.29.12"
+  dashboard_build: "2026.08.31.13"
 
 text_sensor:
   - platform: template
